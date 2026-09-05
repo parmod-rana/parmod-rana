@@ -1,0 +1,30 @@
+{
+  "format": "VARDHANI_HIGH_SPECIALIST_R3_V5_AUTHORITY",
+  "source_snapshot": {
+    "file": "VARDHANI_HIGH_SPECIALIST_R3_SOURCE_SNAPSHOT_V5.zip",
+    "bytes": 131159,
+    "sha256": "2d57a25838affa4a2e997097cfd73398644ee570555df8a76fb673b4215b7946"
+  },
+  "source_manifest_sha256": "3d39e0521f5f0e20a87954d19293e771e0c4a0b7b206340552bf2bb13fbb67b4",
+  "master_gpu_bundle": {
+    "file": "VARDHANI_R3_MASTER_GPU_BUNDLE_V5.zip",
+    "bytes": 755209971,
+    "sha256": "e734c5a53fd96499db10028340a0bedc8b3b3e986bd5289d4931ee998398ad06"
+  },
+  "bundle_manifest_sha256": "73c61018e41b66725e7e08e8ddd3467f54a6d3c05933f0bb0e1b24d22f4e9fa1",
+  "portable_preregistration_v2_sha256": "640ce13c078dbd477bd892649cc8b0879ec1845080cc24336034cca7def3362e",
+  "strict_preflight": "PASS_READY_FOR_PAID_MASTER_OPTIMIZER",
+  "selected_master_parameters": 1457039900,
+  "development_sequences": 530877,
+  "optimizer_steps": 0,
+  "development_assets_prelaunch_hashed": 25,
+  "validation_assets_prelaunch_hashed": 0,
+  "validation_assets_deferred_registered": 4,
+  "local_dryrun_guard": "CUDA_MASTER_RUNTIME_REQUIRED_NO_CPU_FALLBACK",
+  "2025_fit_or_selection": false,
+  "2026_opened": false,
+  "frozen_r2_modified": false,
+  "real_orders_enabled": false,
+  "economic_edge_claimed": false,
+  "prospective_authority": "NONE"
+}
