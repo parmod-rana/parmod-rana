@@ -1,0 +1,46 @@
+{
+  "format": "VARDHANI_R3_FULL_TEACHER_TRAINING_PREREGISTRATION_V1",
+  "status": "FROZEN_PRE_OPTIMIZER",
+  "optimizer_steps_at_freeze": 0,
+  "training_data": "2022-2024 development only",
+  "training_order": "single chronological pass; NIFTY/SENSEX sequence endpoints merged by timestamp; equal timestamps NIFTY then SENSEX",
+  "shuffle": false,
+  "schedule": {
+    "seed": 20260905,
+    "epochs": 1,
+    "batch_size": 1,
+    "gradient_accumulation": 8,
+    "learning_rate": 0.0001,
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "crash_recovery_checkpoint_interval_optimizer_steps": 5000
+  },
+  "checkpoint_policy": "final development checkpoint frozen before any 2025 model evaluation; crash-recovery checkpoints are not eligible for validation-based selection",
+  "validation_2025": "read-only after final development checkpoint freeze; zero gradients; no early stopping; no checkpoint selection; no normalization/threshold/regime fitting",
+  "sealed_2026": "never opened by teacher trainer",
+  "teacher_config_sha256": "0a45aa435804049409d4867c004f2fd639448b63cf1614c25f79f2de0bfd27a0",
+  "strict_preflight_sha256": "89852c6760ee9bf9644538758b7bf9a0cda5a06a0ffcd117dbf8e4223b828cc1",
+  "train_only_contract_sha256": "64a20e437b2473802d4ca77dc348eb74648997fd2ba47d76c44f14efed9e1d10",
+  "r3_input_contract_sha256": "b8aadfe7a5ad936ded1982cda1d0cf300b8ec59ee9c75f4f4f7b6d88a2713549",
+  "development_inputs": {
+    "nifty": "d8195f0d54f36d701fa82669b26876c805a3e7e9f7945216bbe7469eebeaa4a1",
+    "sensex": "8a6aa12dbd7a2b9ea312c2675830ad8e4d7f069be4c66ca2de980a864c8904c7"
+  },
+  "development_targets": {
+    "nifty": "b1617071d8edb837a60631bd0e9b8c9564e41d7e354dfd3bddc4a8e12018fe62",
+    "sensex": "bace7d4278f8f22d7bcc7ef80ca512f8ce9056367bfb80c6a996cb652d4098b9"
+  },
+  "validation_inputs": {
+    "nifty": "b6292ee21632f7a7f7414ebfe06d46a0bd13ea062c46a8955585441bc310b41c",
+    "sensex": "ccd623c7133ef75e4522ebf43a1489799e0d16062247adef25a4ffe8685445cc"
+  },
+  "validation_targets": {
+    "nifty": "6da81c0ba7a3461102f9950130fd08a6f7ce03517726aba8db04d762a35a671c",
+    "sensex": "58b2cba81f7e6530b110f65c0504a0d69aa65462041b33e7a5c7be9150a6e08f"
+  },
+  "frozen_r2_modified": false,
+  "economic_edge_claimed": false,
+  "prospective_authority": "NONE",
+  "real_orders": "DISABLED",
+  "semantic_preregistration_sha256": "2cd895b7c850f013ae2b3f34af56d013e1e4dbd6af22f94245af136ef31b60e9"
+}
