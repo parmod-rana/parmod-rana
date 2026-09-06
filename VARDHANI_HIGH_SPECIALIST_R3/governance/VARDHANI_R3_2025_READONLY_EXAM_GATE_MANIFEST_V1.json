@@ -1,0 +1,24 @@
+{
+  "format": "VARDHANI_R3_2025_READONLY_EXAM_GATE_MANIFEST_V1",
+  "status": "FROZEN_BEFORE_DEVELOPMENT_OPTIMIZER_STEP_1",
+  "teacher": "GPT-5.6 Sol (ChatGPT)",
+  "student": "VARDHANI Master AI Brain",
+  "student_parameters": 1457069501,
+  "required_development_optimizer_steps": 66360,
+  "development_checkpoint_must_be_frozen_before_validation_open": true,
+  "validation_asset_sha256": {
+    "R3_FULL_MARKET_V2/teacher_inputs/nifty_validation_teacher_input.npz": "5e05107e1de66713772c32b29960e0e65fa2e6b8c20ff2fe455701c7e3035f83",
+    "R3_FULL_MARKET_V2/teacher_inputs/sensex_validation_teacher_input.npz": "4245aed9ea796599f10d1ad20bb2e643c14ef90b571232d9744ee0e1d47f3b86",
+    "R3_FULL_MARKET_V2/targets/nifty_validation_targets.npz": "ca2e6479b4ce084a39f4e373f62d741532902a7c0a142fa3563e25d46b278979",
+    "R3_FULL_MARKET_V2/targets/sensex_validation_targets.npz": "753287d3567aa651171405cfbf719c8df9e48c9b15c5d06e94499a37ef8bb705"
+  },
+  "optimizer_allowed_in_2025": false,
+  "checkpoint_selection_allowed_on_2025": false,
+  "retuning_allowed_on_2025": false,
+  "normalization_fitting_allowed_on_2025": false,
+  "2026_opened": false,
+  "economic_promotion_from_2025_exam": false,
+  "script": "VARDHANI_R3_2025_READONLY_EXAM_GATE_V1.sh",
+  "script_sha256": "5640ac1a14a69622d1e9be27dd8947c623fe6284d05b10ec23cf9e6000ef3d71",
+  "methodology_changed": false
+}
