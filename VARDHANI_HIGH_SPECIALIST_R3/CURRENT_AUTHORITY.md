@@ -1,29 +1,35 @@
-# VARDHANI R3 — Current Authority V7.2
+# VARDHANI R3 — Current Authority V7.3
 
 **Teacher:** GPT-5.6 Sol (ChatGPT)  
 **Student:** VARDHANI Master AI Brain  
 **Teacher curriculum:** `VARDHANI_R3_GPT56SOL_TEACHER_CURRICULUM_FREEZE_V1`  
 **Teacher phase:** COMPLETE / frozen / completion audit 20-of-20 PASS.  
-**Student learning preflight:** `PASS_READY_FOR_STUDENT_OPTIMIZER` / 39-of-39 PASS.  
+**Student learning preflight:** `PASS_READY_FOR_STUDENT_OPTIMIZER` / 43-of-43 PASS.  
 **Student parameters:** 1,457,069,501.  
 **Development sequences:** 530,877.  
 **Expected optimizer steps:** 66,360.  
 **Student optimizer steps:** 0.  
 
-V7.2 is an execution/recovery-integrity patch before optimizer step 1. It does not change the frozen GPT-5.6 Sol teacher curriculum, VARDHANI student architecture, loss weights, training corpus, chronology, optimizer hyperparameters, 15m authority rule, 2025 boundary, or 2026 seal.
+V7.3 is a pre-optimizer execution-integrity completion. It does not change the frozen GPT-5.6 Sol teacher curriculum, VARDHANI student architecture, loss weights, development corpus, chronology, optimizer hyperparameters, 15m authority rule, 2025 boundary, or 2026 seal.
 
-V7.2 corrects operational recovery integrity only: persistent student output now lives outside disposable bundle extraction; the launcher supports explicit resume; recovery checkpoints are bound to the exact frozen preregistration/preflight authority; resume cursor, timestamp and reporting counters are verified; DataLoader iterator seeding is isolated from restored global CPU RNG; non-finite loss/gradient norms fail closed; whole-run reporting survives resume; final sequence/optimizer-step/timestamp accounting is asserted; and final checkpoint/report writes are atomic.
+V7.3 adds four execution safeguards only: PyTorch 2.6+ weights-only-safe recovery RNG serialization/loading; explicit `weights_only=True` loading for the frozen 2025 checkpoint; a persistent authority-bound Torch/CUDA/cuDNN/GPU runtime fingerprint before model allocation; and a measurement-only runtime benchmark after 256 real development sequences with throughput and CUDA-memory telemetry. The benchmark cannot tune, select, retune, or alter the run.
 
-GPT teacher supervision remains the primary loss authority. Historical future outcomes remain a physically/logically separate, lower-weight reality-feedback channel.
+Crash recovery remains persistent and authority-bound. Final partial accumulation is normalized by its actual 5 microbatches. Python/NumPy/Torch CPU/CUDA RNG state is preserved. Non-finite loss/gradients fail closed. Final sequence count, optimizer-step count, last timestamp, checkpoint SHA, and 2025/2026 boundaries remain asserted.
+
+GPT-5.6 Sol teacher supervision remains the primary loss authority. Historical future outcomes remain a physically/logically separate, lower-weight reality-feedback channel.
 
 The development bundle contains only 2022–2024 training assets. It contains no 2025 market/target data. The 2025 exam remains a separately frozen read-only phase after the final development checkpoint is frozen. 2026 remains sealed.
 
-Development bundle V1.2 SHA256: `d5c35a71335bd30b19400c1f345438788b266dc241ccf04920d6f805cac94326`  
-Source V7.2 SHA256: `e6c3da588c36dd3f22b1413e77a33d23ed0975e50500ba2f65f068ecabb7d7ae`  
-Execution gate V1.2 SHA256: `cd78627af61f7363a2c77fd7e4f743187ecbde75e340c0698f82e5faf1f777c7`  
-Split manifest V1.2 SHA256: `6b33084dd1d6f836210ac6f18e2d96c040498436cff32a514b3949dc0eb0b35c`
+Development bundle V1.3: 272,456,437 bytes  
+Development bundle V1.3 SHA256: `6f43d214389dc32c0d5c973583baca057388aab2f789a6c144b8cd8f5c364a07`  
+Source V7.3 SHA256: `24b2e0444c8e8cb9767c1f48db75c1d76b9a391aa31d774a947d890e1efec67e`  
+Source manifest V7.3 SHA256: `6085ace1b5d28f39bcfb4d2dc7f0f97f7a0bcd90fe0c47fa860b6e6ff9653877`  
+Preregistration V4 SHA256: `5c8fb7e7dd0d16ebf28a56f4d866787f8d4da0f222c8b8df9edf561b0819b3d4`  
+Preflight SHA256: `11e3a252a31617e3030f576933e0177ad771e9ba32ac806f303e09e41e5140f3`  
+Execution gate V1.3 SHA256: `5a84d86751a6fd7adc66cc5a0e054222fd9e84ba992966a1471224de7635ee95`  
+Export split manifest V1.3 SHA256: `6e6efa87e57d454232075c69e729a45fdc640225af3a9f295f0ec84bbb71bd2b`
 
-The V7.2 gate was dry-run on the current non-GPU runtime. It reassembled the exact bundle, passed the development boundary check, then stopped at `NVIDIA_SMI_NOT_FOUND` before model allocation or optimizer creation. Persistent `student_output` remained untouched/empty.
+The V7.3 gate was dry-run on the current non-GPU runtime. It reassembled the exact bundle, passed ZIP/bundle-boundary and 43/43 preflight checks, then stopped at `NVIDIA_SMI_NOT_FOUND` before model allocation or optimizer creation. Persistent `student_output` remained empty.
 
 The 2025 read-only exam procedure remains frozen before development optimizer step 1. It permits no optimizer, fitting, retuning, normalization fitting, or checkpoint selection.
 
