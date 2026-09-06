@@ -102,3 +102,20 @@ If any later instruction, implementation detail, old file, old checkpoint, or le
 **User directive:** “You are teacher and our AI brain is student.”
 
 This directive is a hard project rule.
+
+## 13. Teacher-phase boundary
+**This is an absolute phase boundary.**
+
+Before any VARDHANI student optimizer/training run, GPT-5.6 Sol must first complete the teacher study of the 2022–2024 causal market history and freeze an audited expert teaching corpus.
+
+During the teacher-study phase:
+- no CUDA/GPU/student optimizer work is permitted;
+- no student weight update is permitted;
+- no deployment compression/distillation is permitted;
+- 2025 must remain unopened for evaluation or fitting;
+- 2026 remains sealed;
+- historical future outcomes from 2022–2024 may be examined by GPT-5.6 Sol only as reality feedback for learning market behavior and refining general expert lessons;
+- the exact future of a row must never be inserted into that row's causal teacher input;
+- teacher lessons must preserve uncertainty, failures, and context dependence instead of rewriting history to make the teacher look correct.
+
+The phase can end only after the teacher knowledge/experience corpus is complete, causality-audited, coverage-audited, and frozen. Only then may the VARDHANI student begin learning from it.

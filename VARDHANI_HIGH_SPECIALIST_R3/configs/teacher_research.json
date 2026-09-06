@@ -1,7 +1,0 @@
-{
-  "name":"teacher-research-offdevice","input_dim":160,"lower_dim":128,"context15_dim":32,
-  "hidden_dim":1280,"layers":24,"heads":20,"ff_mult":4,"experts":12,"expert_hidden":3072,
-  "seq_len":384,"latent_dim":512,"regimes":16,"actions":3,"horizons":[1,3,5,10,15],
-  "dropout":0.08,"episodic_dim":512,"option_dim":49,
-  "model_asset_budget_bytes":0,"memory_asset_budget_bytes":0,"total_android_ceiling_bytes":1073741824
-}
