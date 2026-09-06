@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# VARDHANI R3 — frozen 2025 read-only examination gate.
+# This gate MUST NOT be used until the 2022-2024 development student is trained
+# and frozen with exactly 66,360 optimizer steps.
+
 VALIDATION_ROOT="${1:?validation root required}"
 WORKTREE="${2:?V7.1 source/worktree required}"
 DEV_CHECKPOINT="${3:?frozen development checkpoint required}"
 DEV_REPORT="${4:?frozen development training report required}"
 OUT_JSON="${5:?2025 exam output path required}"
+
 EXPECTED_PARAMS=1457069501
 EXPECTED_STEPS=66360
 
@@ -16,19 +21,29 @@ ck=Path(sys.argv[1]); rp=Path(sys.argv[2]); expected_steps=int(sys.argv[3])
 if not ck.exists(): raise SystemExit("FROZEN_DEVELOPMENT_CHECKPOINT_MISSING")
 if not rp.exists(): raise SystemExit("FROZEN_DEVELOPMENT_REPORT_MISSING")
 r=json.load(open(rp))
-if r.get("status")!="DEVELOPMENT_TRAINED_AND_FROZEN_2025_NOT_OPENED": raise SystemExit("FROZEN_DEVELOPMENT_REPORT_REQUIRED")
-if r.get("optimizer_steps")!=expected_steps: raise SystemExit(f"DEVELOPMENT_OPTIMIZER_STEP_COUNT_INVALID:{r.get('optimizer_steps')}")
-if r.get("2025_opened") is not False: raise SystemExit("DEVELOPMENT_BOUNDARY_VIOLATION_2025_ALREADY_OPENED")
-if r.get("2025_optimizer_steps")!=0: raise SystemExit("DEVELOPMENT_BOUNDARY_VIOLATION_2025_OPTIMIZER_STEPS")
-if r.get("checkpoint_selected_on_2025") is not False: raise SystemExit("DEVELOPMENT_BOUNDARY_VIOLATION_CHECKPOINT_SELECTION")
-if r.get("2026_opened") is not False: raise SystemExit("SEALED_2026_BOUNDARY_VIOLATION")
+if r.get("status")!="DEVELOPMENT_TRAINED_AND_FROZEN_2025_NOT_OPENED":
+    raise SystemExit("FROZEN_DEVELOPMENT_REPORT_REQUIRED")
+if r.get("optimizer_steps")!=expected_steps:
+    raise SystemExit(f"DEVELOPMENT_OPTIMIZER_STEP_COUNT_INVALID:{r.get('optimizer_steps')}")
+if r.get("2025_opened") is not False:
+    raise SystemExit("DEVELOPMENT_BOUNDARY_VIOLATION_2025_ALREADY_OPENED")
+if r.get("2025_optimizer_steps")!=0:
+    raise SystemExit("DEVELOPMENT_BOUNDARY_VIOLATION_2025_OPTIMIZER_STEPS")
+if r.get("checkpoint_selected_on_2025") is not False:
+    raise SystemExit("DEVELOPMENT_BOUNDARY_VIOLATION_CHECKPOINT_SELECTION")
+if r.get("2026_opened") is not False:
+    raise SystemExit("SEALED_2026_BOUNDARY_VIOLATION")
 h=hashlib.sha256()
 with ck.open("rb") as f:
-    for b in iter(lambda:f.read(8*1024*1024),b""): h.update(b)
-if r.get("final_checkpoint_sha256")!=h.hexdigest(): raise SystemExit("FROZEN_DEVELOPMENT_CHECKPOINT_SHA_MISMATCH")
+    for b in iter(lambda:f.read(8*1024*1024),b""):
+        h.update(b)
+actual=h.hexdigest()
+if r.get("final_checkpoint_sha256")!=actual:
+    raise SystemExit("FROZEN_DEVELOPMENT_CHECKPOINT_SHA_MISMATCH")
 print("FROZEN_DEVELOPMENT_CHECKPOINT_GATE_PASS")
 PY
 
+# Only after the frozen-development gate passes do we touch/register the validation files.
 python - <<'PY' "$VALIDATION_ROOT"
 import sys, hashlib
 from pathlib import Path
@@ -44,22 +59,28 @@ for rel,want in expected.items():
     if not p.exists(): raise SystemExit(f"VALIDATION_ASSET_MISSING:{rel}")
     h=hashlib.sha256()
     with p.open("rb") as f:
-        for b in iter(lambda:f.read(8*1024*1024),b""): h.update(b)
+        for b in iter(lambda:f.read(8*1024*1024),b""):
+            h.update(b)
     got=h.hexdigest()
     if got!=want: raise SystemExit(f"VALIDATION_SHA_MISMATCH:{rel}:{got}")
 print("REGISTERED_2025_VALIDATION_HASHES_PASS")
 PY
 
-command -v nvidia-smi >/dev/null 2>&1 || { echo "NVIDIA_SMI_NOT_FOUND"; exit 12; }
+command -v nvidia-smi >/dev/null 2>&1 || {
+  echo "NVIDIA_SMI_NOT_FOUND"
+  exit 12
+}
 nvidia-smi
 
 PYTHONPATH="$WORKTREE" python - <<'PY'
 import torch
-if not torch.cuda.is_available(): raise SystemExit("CUDA_EVALUATION_RUNTIME_REQUIRED")
+if not torch.cuda.is_available():
+    raise SystemExit("CUDA_EVALUATION_RUNTIME_REQUIRED")
 print("gpu",torch.cuda.get_device_name(0))
 print("bf16_supported",torch.cuda.is_bf16_supported())
 PY
 
+# Static read-only guard: evaluator must not contain an optimizer.
 python - <<'PY' "$WORKTREE"
 import sys
 from pathlib import Path
@@ -95,7 +116,8 @@ assert r["economic_promotion"] is False
 assert r["prospective_authority"]=="NONE"
 h=hashlib.sha256()
 with ck.open("rb") as f:
-    for b in iter(lambda:f.read(8*1024*1024),b""): h.update(b)
+    for b in iter(lambda:f.read(8*1024*1024),b""):
+        h.update(b)
 assert r["checkpoint_sha256"]==h.hexdigest()
 print("VARDHANI_2025_READONLY_EXAM_ACCEPTED")
 PY
