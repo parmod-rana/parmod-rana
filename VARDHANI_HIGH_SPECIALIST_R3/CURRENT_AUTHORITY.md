@@ -22,4 +22,9 @@ Development bundle SHA256: `e50c5d95c28bfa9747ffc3598ab794d773ef7801e8fde3f15722
 Source V7.1 SHA256: `4d3a07d4d13ab74a1099d45bbe8afa2f84b44bdf3c18e0b4489a5c8562a47cdc`  
 Execution gate SHA256: `82bb6eb97785973b3aa45a8b8ae350ca11d49f4b0220436b62845defe6c60dee`
 
-No real orders. No economic/profitability claim follows from preflight or implementation success.
+The 2025 read-only exam procedure is frozen before development optimizer step 1. It will refuse to touch validation assets unless a completed development report proves exactly 66,360 optimizer steps, a frozen checkpoint SHA match, 2025 unopened during training, zero 2025 optimizer steps, no 2025 checkpoint selection, and 2026 sealed. The exam itself permits no optimizer, fitting, retuning, normalization fitting, or checkpoint selection.
+
+2025 read-only exam gate SHA256: `5640ac1a14a69622d1e9be27dd8947c623fe6284d05b10ec23cf9e6000ef3d71`  
+2025 exam gate manifest SHA256: `8500e98986855177acec66bbabb36cb6f3e933d16e3407c89e7a991b5942f968`
+
+No real orders. No economic/profitability claim follows from preflight, implementation success, student training, or a read-only 2025 exam alone.
