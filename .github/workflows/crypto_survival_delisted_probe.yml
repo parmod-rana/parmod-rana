@@ -1,0 +1,31 @@
+name: Crypto Survival Delisted Universe Probe
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/probe_okx_delisted_universe.py'
+      - '.github/workflows/crypto_survival_delisted_probe.yml'
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check requests
+      - name: Probe delisted perpetual history
+        run: python crypto_survival_training/probe_okx_delisted_universe.py | tee delisted_probe.log
+      - name: Upload survivorship audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-delisted-universe-probe
+          path: |
+            delisted_universe_probe/
+            delisted_probe.log
+          if-no-files-found: warn
+          retention-days: 7
