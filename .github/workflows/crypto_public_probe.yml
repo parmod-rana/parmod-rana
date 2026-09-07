@@ -1,0 +1,20 @@
+name: Crypto Public Source Probe
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'source_probe/**'
+      - '.github/workflows/crypto_public_probe.yml'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python source_probe/probe_public_crypto.py
