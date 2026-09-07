@@ -25,6 +25,7 @@ jobs:
           HORIZON_BARS: '4'
           ROUNDTRIP_COST_BPS: '30'
           OUT_DIR: 'trained_artifact'
+          PYTHONPATH: '.'
         run: |
           mkdir -p trained_artifact
           python crypto_survival_training/train_verified_macro.py | tee trained_artifact/workflow.log
