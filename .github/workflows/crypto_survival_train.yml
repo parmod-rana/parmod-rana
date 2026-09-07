@@ -20,16 +20,14 @@ jobs:
           python-version: '3.12'
       - name: Install training dependencies
         run: pip install --disable-pip-version-check requests numpy pandas scikit-learn joblib
-      - name: Train on genuine Binance history
+      - name: Train on genuine historical crypto data
         env:
-          TRAIN_START: '2023-01-01'
-          TRAIN_END: '2026-08-31 23:59:59'
-          MAX_SYMBOLS: '80'
-          INTERVAL: '1h'
           HORIZON_BARS: '4'
           ROUNDTRIP_COST_BPS: '30'
           OUT_DIR: 'trained_artifact'
-        run: python crypto_survival_training/train_real.py | tee trained_artifact/workflow.log
+        run: |
+          mkdir -p trained_artifact
+          python crypto_survival_training/train_verified_macro.py | tee trained_artifact/workflow.log
       - name: Upload trained brain and evidence
         if: always()
         uses: actions/upload-artifact@v4
