@@ -1,0 +1,37 @@
+name: Crypto Survival Gen3B Walk Forward
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/train_okx_dynamic_brain_gen3b.py'
+      - '.github/workflows/crypto_survival_gen3b_walkforward.yml'
+  workflow_dispatch:
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact training dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas scikit-learn==1.9.0 joblib
+      - name: Train Gen3B on genuine OKX history with rolling walk-forward calibration
+        env:
+          PYTHONPATH: '.'
+          MAX_SYMBOLS: '72'
+          ROUNDTRIP_COST_BPS: '30'
+          MAX_TRAIN_ROWS: '150000'
+          OUT_DIR: 'trained_artifact_gen3b'
+        run: |
+          mkdir -p trained_artifact_gen3b
+          python crypto_survival_training/train_okx_dynamic_brain_gen3b.py | tee trained_artifact_gen3b/workflow.log
+      - name: Upload Gen3B brain and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-r1f-gen3b-walkforward
+          path: trained_artifact_gen3b/
+          if-no-files-found: warn
+          retention-days: 7
