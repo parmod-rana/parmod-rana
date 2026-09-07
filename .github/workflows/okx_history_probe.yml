@@ -1,0 +1,21 @@
+name: OKX History Probe
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths: ['.github/workflows/okx_history_probe.yml']
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Latest 4H candles
+        run: |
+          curl -fsSL 'https://www.okx.com/api/v5/market/history-candles?instId=BTC-USDT-SWAP&bar=4H&limit=5' -o /tmp/latest.json
+          cat /tmp/latest.json
+          OLDEST=$(python -c "import json; d=json.load(open('/tmp/latest.json'))['data']; print(min(int(x[0]) for x in d))")
+          echo "OLDEST=$OLDEST"
+          curl -fsSL "https://www.okx.com/api/v5/market/history-candles?instId=BTC-USDT-SWAP&bar=4H&after=$OLDEST&limit=5"
+      - name: Instrument counts
+        run: |
+          curl -fsSL 'https://www.okx.com/api/v5/public/instruments?instType=SWAP' -o /tmp/inst.json
+          python -c "import json; d=json.load(open('/tmp/inst.json'))['data']; x=[r['instId'] for r in d if r.get('state')=='live' and r.get('settleCcy')=='USDT']; print('LIVE_USDT_SWAPS',len(x)); print(x[:25])"
