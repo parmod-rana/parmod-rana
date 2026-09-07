@@ -4,6 +4,7 @@ on:
     branches: [crypto-survival-r1d-training]
     paths:
       - 'crypto_survival_training/train_okx_gen2.py'
+      - 'crypto_survival_training/train_okx_gen2_fast.py'
       - '.github/workflows/crypto_survival_gen2.yml'
   workflow_dispatch:
 jobs:
@@ -23,15 +24,15 @@ jobs:
           MAX_SYMBOLS: '60'
           HORIZON_BARS: '2'
           ROUNDTRIP_COST_BPS: '30'
-          OUT_DIR: 'trained_artifact_gen2'
+          OUT_DIR: 'trained_artifact_gen2_fast'
         run: |
-          mkdir -p trained_artifact_gen2
-          python crypto_survival_training/train_okx_gen2.py | tee trained_artifact_gen2/workflow.log
+          mkdir -p trained_artifact_gen2_fast
+          python crypto_survival_training/train_okx_gen2_fast.py | tee trained_artifact_gen2_fast/workflow.log
       - name: Upload Generation 2 brain and evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: crypto-survival-r1e-okx-real-training
-          path: trained_artifact_gen2/
+          name: crypto-survival-r1e-okx-real-training-fast
+          path: trained_artifact_gen2_fast/
           if-no-files-found: warn
           retention-days: 7
