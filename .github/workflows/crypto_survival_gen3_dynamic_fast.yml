@@ -35,3 +35,4 @@ jobs:
           path: trained_artifact_gen3_dynamic_fast/
           if-no-files-found: warn
           retention-days: 7
+# transport optimization only; research architecture and sealed boundaries unchanged
