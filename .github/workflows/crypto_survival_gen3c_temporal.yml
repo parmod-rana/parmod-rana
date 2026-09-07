@@ -1,0 +1,38 @@
+name: Crypto Survival Gen3C Temporal Ensemble
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/train_okx_dynamic_brain_gen3c.py'
+      - '.github/workflows/crypto_survival_gen3c_temporal.yml'
+  workflow_dispatch:
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact training dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas scikit-learn==1.9.0 joblib
+      - name: Train Gen3C temporal ensemble on genuine OKX history
+        env:
+          PYTHONPATH: '.'
+          MAX_SYMBOLS: '72'
+          ROUNDTRIP_COST_BPS: '30'
+          MAX_TRAIN_ROWS: '110000'
+          OUT_DIR: 'trained_artifact_gen3c'
+        run: |
+          set -o pipefail
+          mkdir -p trained_artifact_gen3c
+          python crypto_survival_training/train_okx_dynamic_brain_gen3c.py | tee trained_artifact_gen3c/workflow.log
+      - name: Upload Gen3C brain and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-r1f-gen3c-temporal
+          path: trained_artifact_gen3c/
+          if-no-files-found: warn
+          retention-days: 7
