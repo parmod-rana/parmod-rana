@@ -1,0 +1,37 @@
+name: Crypto Survival Generation 3 Dynamic Policy
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/train_okx_dynamic_brain.py'
+      - '.github/workflows/crypto_survival_gen3_dynamic.yml'
+  workflow_dispatch:
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas scikit-learn joblib
+      - name: Train dynamic policy brain on genuine OKX history
+        env:
+          PYTHONPATH: '.'
+          MAX_SYMBOLS: '72'
+          ROUNDTRIP_COST_BPS: '30'
+          MAX_TRAIN_ROWS: '180000'
+          OUT_DIR: 'trained_artifact_gen3_dynamic'
+        run: |
+          mkdir -p trained_artifact_gen3_dynamic
+          python crypto_survival_training/train_okx_dynamic_brain.py | tee trained_artifact_gen3_dynamic/workflow.log
+      - name: Upload dynamic brain and sealed evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-r1f-dynamic-real-training
+          path: trained_artifact_gen3_dynamic/
+          if-no-files-found: warn
+          retention-days: 7
