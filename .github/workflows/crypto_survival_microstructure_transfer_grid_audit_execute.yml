@@ -1,0 +1,96 @@
+name: Crypto Survival Frozen Transfer Bank Exact Grid Audit
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_TRANSFER_GRID_AUDIT_START.json'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      AUDIT_SOURCE_COMMIT: 4662c1782e4b420b8d46be280ec067b143a746de
+      EXPECTED_AUDIT_BLOB: 03c9a2b55e3a462230ecbce5da47d5d6947e34a8
+      TRANSFER_BANK_RUN_ID: '34188108465'
+      ARTIFACT_NAME: crypto-survival-microstructure-transfer-bank-v1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          path: trigger_repo
+      - name: Validate exact audit authorization lock
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          x=json.load(open('trigger_repo/crypto_survival_training/MICROSTRUCTURE_TRANSFER_GRID_AUDIT_START.json'))
+          required={
+            'status':'AUTHORIZED_AFTER_160_PAIR_MERGE_PASS',
+            'transfer_bank_run_id':34188108465,
+            'audit_source_commit':'4662c1782e4b420b8d46be280ec067b143a746de',
+            'audit_validation_run_id':34188910425,
+            'authority':'DATA_INTEGRITY_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v,(k,x.get(k),v)
+          assert x.get('transfer_bank_artifact_id')
+          assert x.get('transfer_bank_states_sha256')
+          assert x.get('real_money_authority') is False
+          print('GRID_AUDIT_LOCK_PASS')
+          PY
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AUDIT_SOURCE_COMMIT }}
+          path: audit_source
+      - name: Verify exact validated auditor blob
+        working-directory: audit_source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object crypto_survival_training/audit_microstructure_transfer_bank_grid.py)" = "$EXPECTED_AUDIT_BLOB"
+          echo 'FROZEN_GRID_AUDITOR_PASS'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data-integrity dependencies
+        run: pip install --disable-pip-version-check numpy pandas
+      - name: Download exact merged transfer bank
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ART=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${TRANSFER_BANK_RUN_ID}/artifacts?per_page=100")
+          ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ART")
+          LOCK_ID=$(python -c 'import json; print(json.load(open("trigger_repo/crypto_survival_training/MICROSTRUCTURE_TRANSFER_GRID_AUDIT_START.json"))["transfer_bank_artifact_id"])')
+          test "$ID" = "$LOCK_ID"
+          mkdir -p transfer_download
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ID}/zip" > transfer_download/bank.zip
+          unzip -q transfer_download/bank.zip -d transfer_download/unpacked
+          M=$(find transfer_download/unpacked -path '*/microstructure_transfer_bank_v1/manifest.json' -print -quit)
+          test -n "$M"
+          DIR=$(dirname "$M")
+          EXPECTED=$(python -c 'import json; print(json.load(open("trigger_repo/crypto_survival_training/MICROSTRUCTURE_TRANSFER_GRID_AUDIT_START.json"))["transfer_bank_states_sha256"])')
+          ACTUAL=$(sha256sum "$DIR/states_15m.csv.gz" | awk '{print $1}')
+          test "$ACTUAL" = "$EXPECTED"
+          echo "$DIR" > transfer_bank_dir.txt
+      - name: Execute validated exact-grid auditor
+        run: |
+          set -o pipefail
+          python audit_source/crypto_survival_training/audit_microstructure_transfer_bank_grid.py \
+            --bank-dir "$(cat transfer_bank_dir.txt)" \
+            --out microstructure_transfer_bank_grid_audit.json \
+            | tee microstructure_transfer_bank_grid_audit.log
+      - name: Upload immutable exact-grid evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-transfer-grid-audit-v1
+          path: |
+            microstructure_transfer_bank_grid_audit.json
+            microstructure_transfer_bank_grid_audit.log
+            trigger_repo/crypto_survival_training/MICROSTRUCTURE_TRANSFER_GRID_AUDIT_START.json
+          retention-days: 14
