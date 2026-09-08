@@ -1,0 +1,115 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "study": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_FIXED_MODELS",
+  "status": "FROZEN_BEFORE_FULL_BANK_EVALUATION",
+  "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
+  "input_bank_version": "MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1",
+  "teacher_input": "teacher_states_15m.csv.gz",
+  "historical_evaluation_input": "historical_evaluation_states_15m.csv.gz",
+  "state_resolution_minutes": 15,
+  "label_horizons_minutes": [15, 60, 240],
+  "label_rule": {
+    "entry_reference": "mid_last from the completed state bucket ending at t",
+    "future_reference": "mid_last from the completed bucket ending exactly at t+h within the same frozen symbol/day",
+    "future_path": "only subsequent completed state mids strictly after t and through t+h",
+    "missing_future_state": "drop label; never interpolate or carry forward",
+    "direction": "future_mid_return_bps > 0",
+    "mfe_mae": "max/min future path return relative to entry reference when the full path exists"
+  },
+  "feature_policy": {
+    "exclude": ["symbol", "date", "state_time_ms", "mid_last"],
+    "no_symbol_identity_feature": true,
+    "no_future_or_label_feature": true,
+    "numeric_only": true,
+    "median_imputation_fit_on_teacher_only": true,
+    "linear_scaler_fit_on_teacher_only": true,
+    "fixed_transformations": {
+      "depth_notional_columns": "log1p(max(x,0))",
+      "book_updates": "log1p(max(x,0))",
+      "capture_latency_ms_columns": "signed_log1p",
+      "update_interval_ms_columns": "log1p(max(x,0))"
+    }
+  },
+  "fixed_models": {
+    "magnitude_linear": {
+      "type": "Ridge",
+      "alpha": 10.0
+    },
+    "direction_linear": {
+      "type": "LogisticRegression",
+      "C": 0.25,
+      "class_weight": "balanced",
+      "max_iter": 2000,
+      "solver": "lbfgs"
+    },
+    "magnitude_nonlinear": {
+      "type": "HistGradientBoostingRegressor",
+      "max_depth": 3,
+      "learning_rate": 0.05,
+      "max_iter": 200,
+      "min_samples_leaf": 30,
+      "l2_regularization": 5.0,
+      "random_state": 42
+    },
+    "direction_nonlinear": {
+      "type": "HistGradientBoostingClassifier",
+      "max_depth": 3,
+      "learning_rate": 0.05,
+      "max_iter": 200,
+      "min_samples_leaf": 30,
+      "l2_regularization": 5.0,
+      "random_state": 42
+    }
+  },
+  "fixed_baselines": {
+    "magnitude": "constant teacher median future return",
+    "direction": "constant teacher positive-rate probability"
+  },
+  "historical_evaluation_folds": {
+    "F1": ["2025-07-15", "2025-08-15"],
+    "F2": ["2025-11-15", "2025-12-15"],
+    "F3": ["2026-03-15", "2026-04-15"],
+    "F4": ["2026-06-15", "2026-07-15"]
+  },
+  "metrics": {
+    "magnitude": ["MAE", "RMSE", "Spearman correlation"],
+    "direction": ["ROC_AUC", "balanced_accuracy_at_0.5", "log_loss", "Brier_score"],
+    "feature_relationship": "Spearman correlation to future return",
+    "ofi_incremental": "full-feature model versus otherwise identical model with all top_ofi features removed"
+  },
+  "stability_rules_frozen": {
+    "feature_relationship": {
+      "teacher_abs_spearman_min": 0.02,
+      "same_sign_eval_folds_min": 3,
+      "eval_median_abs_spearman_min": 0.02
+    },
+    "magnitude_model": {
+      "folds_beating_constant_baseline_on_MAE_min": 3,
+      "median_eval_spearman_must_be_positive": true
+    },
+    "direction_model": {
+      "folds_beating_constant_baseline_on_log_loss_min": 3,
+      "median_eval_ROC_AUC_must_exceed": 0.5
+    },
+    "ofi_incremental": {
+      "folds_full_beats_no_ofi_MAE_min": 3,
+      "folds_full_beats_no_ofi_log_loss_min": 3
+    },
+    "trust_state": {
+      "teacher_defined_quintiles": true,
+      "variables": ["spread_bps_mean", "depth_notional_50_mean", "capture_latency_ms_mean"],
+      "material_error_ratio": 1.10,
+      "same_direction_eval_folds_min": 3
+    }
+  },
+  "governance": {
+    "no_hyperparameter_search": true,
+    "no_post_result_threshold_change": true,
+    "no_trade_rule_selection": true,
+    "no_gen3c_change": true,
+    "no_direct_integration": true,
+    "stable_information_only_may_be_considered_for_a_future_pre_registered_generation": true,
+    "historical_evaluation_not_fresh_forward_qualification": true,
+    "real_money_authority": false
+  }
+}
