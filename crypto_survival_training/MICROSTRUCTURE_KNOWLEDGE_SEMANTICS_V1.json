@@ -6,6 +6,11 @@
   "purpose": "Separate genuine market-state information from execution/liquidity context and provider measurement-quality variables before breadth results are known, preventing future profitable-mind integration from treating every statistically stable feature as directional alpha.",
   "source_feature_definition_blob": "cd624a934beca47ef3d6864e4eb996b0d412b65c",
   "accepted_knowledge_file": "crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json",
+  "teacher_model_scope_constraint": {
+    "fact": "The five trust candidates describe forecast-error structure of the frozen nonlinear magnitude model, while no fixed magnitude/direction model family passed the V1.1 predictive-stability gate.",
+    "consequence": "Even if a trust candidate breadth-confirms, it is evidence about reliability/error concentration for the frozen model/context, not proof of universal market predictability or profitable alpha.",
+    "future_use": "Any broader confidence-controller or risk-gating interpretation requires a separately preregistered integration study and its own economic evaluation."
+  },
   "classes": {
     "directional_or_state_candidates": {
       "top_ofi_norm_mean": {
@@ -48,15 +53,15 @@
     "execution_or_trust_context": {
       "spread_bps_mean": {
         "semantic": "Average quoted bid-ask spread in basis points.",
-        "role": "EXECUTION_LIQUIDITY_AND_FORECAST_TRUST_CONTEXT",
+        "role": "EXECUTION_LIQUIDITY_AND_FROZEN_MODEL_TRUST_CONTEXT",
         "directional_alpha_by_current_teacher": false,
-        "interpretation_constraint": "Even if trust breadth-confirmed, may inform uncertainty/execution quality only unless a separate directional study is preregistered."
+        "interpretation_constraint": "Even if trust breadth-confirmed, may describe uncertainty/error concentration or execution quality only; it cannot be elevated to general forecast confidence or directional alpha without a separately preregistered study."
       },
       "depth_notional_50_mean": {
         "semantic": "Average absolute displayed notional depth across 50 bid and ask levels.",
-        "role": "LIQUIDITY_AND_FORECAST_TRUST_CONTEXT",
+        "role": "LIQUIDITY_AND_FROZEN_MODEL_TRUST_CONTEXT",
         "portability": "ABSOLUTE_SCALE_SENSITIVE",
-        "interpretation_constraint": "The frozen teacher quintiles must remain unchanged for the current breadth confirmation. Because absolute depth differs greatly by coin, failure from sparse threshold occupancy is evidence against universal raw thresholds, not permission to retune them. A future normalized-depth study would be a new preregistered experiment."
+        "interpretation_constraint": "The frozen teacher quintiles must remain unchanged for the current breadth confirmation. Because absolute depth differs greatly by coin, failure from sparse threshold occupancy is evidence against universal raw thresholds, not permission to retune them. Even a breadth pass remains model-specific trust evidence rather than universal predictability. A future normalized-depth study would be a new preregistered experiment."
       }
     },
     "measurement_quality_only": {
@@ -65,7 +70,7 @@
         "role": "DATA_CAPTURE_QUALITY_OR_PIPELINE_TIMING_ONLY",
         "directional_alpha_authorized": false,
         "future_allowed_use": "Data-quality confidence, stale/capture anomaly diagnostics, or sample-quality weighting only after separate preregistration.",
-        "forbidden_use": "Never count breadth confirmation of capture latency as evidence of an economically causal market direction signal."
+        "forbidden_use": "Never count breadth confirmation of capture latency as evidence of an economically causal market direction signal or universal model confidence."
       }
     }
   },
@@ -75,7 +80,7 @@
     "no_post_result_feature_reselection": true,
     "no_direct_trade_rule": true,
     "no_gen3c_change": true,
-    "future_integration_must_distinguish_market_state_execution_context_and_measurement_quality": true,
+    "future_integration_must_distinguish_market_state_execution_context_measurement_quality_and_model_specific_trust": true,
     "fresh_forward_shadow_required": true,
     "real_money_authority": false
   }
