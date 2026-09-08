@@ -1,0 +1,81 @@
+name: Crypto Survival Full Microstructure Experience Bank
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_FULL_BANK_START.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        symbol: [BAT-USDT, ZRX-USDT, ATOM-USDT, BCH-USDT]
+        block: [B0, B1, B2, EVAL]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas
+      - name: Build exact frozen shard
+        env:
+          PYTHONPATH: .
+          MICRO_CHUNKSIZE: '40000'
+        run: |
+          set -o pipefail
+          python crypto_survival_training/build_microstructure_experience_shard.py \
+            --symbol '${{ matrix.symbol }}' \
+            --block '${{ matrix.block }}' \
+            --out-root microstructure_experience_shards \
+            | tee microstructure_shard.log
+      - name: Upload compact shard and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microbank-${{ matrix.symbol }}-${{ matrix.block }}
+          path: |
+            microstructure_shard.log
+            microstructure_experience_shards/
+          retention-days: 14
+  merge:
+    needs: build
+    if: ${{ success() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install merge dependencies
+        run: pip install --disable-pip-version-check numpy pandas
+      - name: Download all exact shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: microbank-*
+          path: downloaded_shards
+      - name: Fail-closed merge with teacher/evaluation separation
+        env:
+          PYTHONPATH: .
+        run: |
+          set -o pipefail
+          python crypto_survival_training/merge_microstructure_experience_shards.py \
+            --root downloaded_shards \
+            --out microstructure_experience_bank_full \
+            | tee microstructure_full_merge.log
+      - name: Upload full compact causal experience bank
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-experience-bank-full
+          path: |
+            microstructure_full_merge.log
+            microstructure_experience_bank_full/
+          retention-days: 14
