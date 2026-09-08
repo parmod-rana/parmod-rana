@@ -4,6 +4,7 @@ on:
     branches: [crypto-survival-r1d-training]
     paths:
       - '.github/workflows/crypto_survival_gen3f_v2_leverage.yml'
+      - 'crypto_survival_training/train_okx_dynamic_brain_gen3f_v2.py'
   workflow_dispatch:
 permissions:
   contents: read
