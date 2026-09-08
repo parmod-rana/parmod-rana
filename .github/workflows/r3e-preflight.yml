@@ -25,6 +25,7 @@ jobs:
         run: |
           python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runner.py
           python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_cpu_resume.py
+          python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runtime_smoke.py
       - name: Freeze consistency checks
         run: |
           python - <<'PY'
@@ -50,3 +51,6 @@ jobs:
           assert cpu['immutable_research_contract']['feature_logic_changed'] is False
           print('R3E CPU-ONLY PREFLIGHT PASS')
           PY
+      - name: CPU runtime smoke
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E
+        run: python r3e_runtime_smoke.py
