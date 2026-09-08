@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-"""Frozen research-only microstructure experience teacher.
+"""Frozen research-only microstructure experience teacher V1.1.
 
 Consumes the fail-closed MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1 and answers
 pre-registered questions about genuine order-flow information. It cannot select
 trades, modify Gen3C, or promote any future generation.
+
+V1.1 was frozen before any full-bank evaluation was exposed. It adds explicit
+cross-symbol robustness diagnostics/acceptance to the original cross-regime
+checks. Model families, hyperparameters, labels and horizons are unchanged.
 """
 
 import argparse
@@ -16,7 +20,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
-from sklearn.compose import TransformedTargetRegressor
 from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression, Ridge
@@ -206,11 +209,35 @@ def direction_metrics(y: np.ndarray, prob: np.ndarray) -> dict:
     }
 
 
+def _evaluation_slice(
+    sub: pd.DataFrame,
+    x: pd.DataFrame,
+    fitted: dict,
+    constant_return: float,
+    constant_prob: float,
+) -> dict:
+    y = sub["target_return_bps"].to_numpy(float)
+    yd = sub["target_direction"].to_numpy(int)
+    rec = {
+        "samples": int(len(sub)),
+        "baseline": {
+            "magnitude": magnitude_metrics(y, np.full(len(y), constant_return)),
+            "direction": direction_metrics(yd, np.full(len(yd), constant_prob)),
+        },
+    }
+    for name, (reg, clf) in fitted.items():
+        rec[name] = {
+            "magnitude": magnitude_metrics(y, reg.predict(x)),
+            "direction": direction_metrics(yd, clf.predict_proba(x)[:, 1]),
+        }
+    return rec
+
+
 def eval_models(
     teacher: pd.DataFrame,
     evaluation: pd.DataFrame,
     cols: list[str],
-) -> tuple[dict, dict]:
+) -> tuple[dict, dict, dict]:
     xt = transform_features(teacher, cols)
     xe = transform_features(evaluation, cols)
     yt = teacher["target_return_bps"].to_numpy(float)
@@ -229,65 +256,99 @@ def eval_models(
         clf.fit(xt, ydt)
         fitted[name] = (reg, clf)
 
-    results = {}
+    fold_results = {}
     for fold, dates in FOLDS.items():
         mask = evaluation["date"].astype(str).isin(dates).to_numpy()
         sub = evaluation.loc[mask]
         if sub.empty:
             raise RuntimeError(f"historical evaluation fold {fold} is empty")
-        x = xe.loc[mask]
-        y = sub["target_return_bps"].to_numpy(float)
-        yd = sub["target_direction"].to_numpy(int)
-        rec = {
-            "samples": int(len(sub)),
-            "symbols": sorted(sub["symbol"].astype(str).unique().tolist()),
-            "dates": list(dates),
-            "baseline": {
-                "magnitude": magnitude_metrics(y, np.full(len(y), constant_return)),
-                "direction": direction_metrics(yd, np.full(len(yd), constant_prob)),
-            },
-        }
-        for name, (reg, clf) in fitted.items():
-            rec[name] = {
-                "magnitude": magnitude_metrics(y, reg.predict(x)),
-                "direction": direction_metrics(yd, clf.predict_proba(x)[:, 1]),
-            }
-        results[fold] = rec
+        rec = _evaluation_slice(sub, xe.loc[mask], fitted, constant_return, constant_prob)
+        rec["symbols"] = sorted(sub["symbol"].astype(str).unique().tolist())
+        rec["dates"] = list(dates)
+        fold_results[fold] = rec
+
+    symbol_results = {}
+    for symbol in sorted(evaluation["symbol"].astype(str).unique()):
+        mask = evaluation["symbol"].astype(str).eq(symbol).to_numpy()
+        sub = evaluation.loc[mask]
+        if sub.empty:
+            raise RuntimeError(f"historical evaluation symbol {symbol} is empty")
+        rec = _evaluation_slice(sub, xe.loc[mask], fitted, constant_return, constant_prob)
+        rec["dates"] = sorted(sub["date"].astype(str).unique().tolist())
+        symbol_results[symbol] = rec
 
     stability = {}
     for name in models:
-        mag_beats = 0
-        dir_beats = 0
-        rs = []
-        aucs = []
+        mag_fold_beats = 0
+        dir_fold_beats = 0
+        fold_rs = []
+        fold_aucs = []
         for fold in FOLDS:
-            r = results[fold]
+            r = fold_results[fold]
             if r[name]["magnitude"]["mae"] < r["baseline"]["magnitude"]["mae"]:
-                mag_beats += 1
+                mag_fold_beats += 1
             if r[name]["direction"]["log_loss"] < r["baseline"]["direction"]["log_loss"]:
-                dir_beats += 1
-            if r[name]["magnitude"]["spearman"] is not None:
-                rs.append(r[name]["magnitude"]["spearman"])
-            if r[name]["direction"]["roc_auc"] is not None:
-                aucs.append(r[name]["direction"]["roc_auc"])
+                dir_fold_beats += 1
+            sr = r[name]["magnitude"]["spearman"]
+            auc = r[name]["direction"]["roc_auc"]
+            if sr is not None:
+                fold_rs.append(sr)
+            if auc is not None:
+                fold_aucs.append(auc)
+
+        mag_symbol_beats = 0
+        dir_symbol_beats = 0
+        positive_symbol_rs = 0
+        good_symbol_auc = 0
+        for symbol, r in symbol_results.items():
+            if r[name]["magnitude"]["mae"] < r["baseline"]["magnitude"]["mae"]:
+                mag_symbol_beats += 1
+            if r[name]["direction"]["log_loss"] < r["baseline"]["direction"]["log_loss"]:
+                dir_symbol_beats += 1
+            sr = r[name]["magnitude"]["spearman"]
+            auc = r[name]["direction"]["roc_auc"]
+            positive_symbol_rs += int(sr is not None and sr > 0)
+            good_symbol_auc += int(auc is not None and auc > 0.5)
+
+        median_fold_spearman = safe_float(np.median(fold_rs)) if fold_rs else None
+        median_fold_auc = safe_float(np.median(fold_aucs)) if fold_aucs else None
+        magnitude_stable = bool(
+            mag_fold_beats >= 3
+            and median_fold_spearman is not None
+            and median_fold_spearman > 0
+            and mag_symbol_beats >= 3
+            and positive_symbol_rs >= 3
+        )
+        direction_stable = bool(
+            dir_fold_beats >= 3
+            and median_fold_auc is not None
+            and median_fold_auc > 0.5
+            and dir_symbol_beats >= 3
+            and good_symbol_auc >= 3
+        )
         stability[name] = {
-            "magnitude_folds_beating_baseline_MAE": mag_beats,
-            "median_eval_spearman": safe_float(np.median(rs)) if rs else None,
-            "magnitude_stable": bool(mag_beats >= 3 and rs and np.median(rs) > 0),
-            "direction_folds_beating_baseline_log_loss": dir_beats,
-            "median_eval_ROC_AUC": safe_float(np.median(aucs)) if aucs else None,
-            "direction_stable": bool(dir_beats >= 3 and aucs and np.median(aucs) > 0.5),
+            "magnitude_folds_beating_baseline_MAE": mag_fold_beats,
+            "median_eval_fold_spearman": median_fold_spearman,
+            "magnitude_symbols_beating_baseline_MAE": mag_symbol_beats,
+            "symbols_with_positive_eval_spearman": positive_symbol_rs,
+            "magnitude_stable": magnitude_stable,
+            "direction_folds_beating_baseline_log_loss": dir_fold_beats,
+            "median_eval_fold_ROC_AUC": median_fold_auc,
+            "direction_symbols_beating_baseline_log_loss": dir_symbol_beats,
+            "symbols_with_eval_ROC_AUC_above_0_5": good_symbol_auc,
+            "direction_stable": direction_stable,
         }
-    return results, stability
+    return fold_results, symbol_results, stability
 
 
 def feature_relationships(teacher: pd.DataFrame, evaluation: pd.DataFrame, cols: list[str]) -> list[dict]:
     rows = []
     y_teacher = teacher["target_return_bps"]
+    teacher_symbols = sorted(teacher["symbol"].astype(str).unique())
     for c in cols:
         tr = spearman(teacher[c], y_teacher)
         fold_corr = {}
-        same = 0
+        same_fold_sign = 0
         abs_eval = []
         for fold, dates in FOLDS.items():
             sub = evaluation[evaluation["date"].astype(str).isin(dates)]
@@ -296,21 +357,41 @@ def feature_relationships(teacher: pd.DataFrame, evaluation: pd.DataFrame, cols:
             if r is not None:
                 abs_eval.append(abs(r))
                 if tr is not None and tr != 0 and np.sign(r) == np.sign(tr):
-                    same += 1
-        med_abs = safe_float(np.median(abs_eval)) if abs_eval else None
+                    same_fold_sign += 1
+
+        symbol_corr = {}
+        same_symbol_sign = 0
+        abs_symbol = []
+        for symbol in teacher_symbols:
+            sub = teacher[teacher["symbol"].astype(str).eq(symbol)]
+            r = spearman(sub[c], sub["target_return_bps"])
+            symbol_corr[symbol] = r
+            if r is not None:
+                abs_symbol.append(abs(r))
+                if tr is not None and tr != 0 and np.sign(r) == np.sign(tr):
+                    same_symbol_sign += 1
+
+        med_abs_eval = safe_float(np.median(abs_eval)) if abs_eval else None
+        med_abs_symbol = safe_float(np.median(abs_symbol)) if abs_symbol else None
         stable = bool(
             tr is not None
             and abs(tr) >= 0.02
-            and same >= 3
-            and med_abs is not None
-            and med_abs >= 0.02
+            and same_fold_sign >= 3
+            and med_abs_eval is not None
+            and med_abs_eval >= 0.02
+            and same_symbol_sign >= 3
+            and med_abs_symbol is not None
+            and med_abs_symbol >= 0.02
         )
         rows.append({
             "feature": c,
             "teacher_spearman": tr,
             "eval_fold_spearman": fold_corr,
-            "same_sign_eval_folds": same,
-            "median_abs_eval_spearman": med_abs,
+            "same_sign_eval_folds": same_fold_sign,
+            "median_abs_eval_spearman": med_abs_eval,
+            "teacher_symbol_spearman": symbol_corr,
+            "same_sign_teacher_symbols": same_symbol_sign,
+            "median_abs_teacher_symbol_spearman": med_abs_symbol,
             "stable_relationship": stable,
         })
     rows.sort(key=lambda r: abs(r["teacher_spearman"] or 0.0), reverse=True)
@@ -332,8 +413,10 @@ def ofi_incremental(teacher: pd.DataFrame, evaluation: pd.DataFrame, cols: list[
         yd = teacher["target_direction"].to_numpy(int)
         rf, cf = reg_factory(), clf_factory()
         rn, cn = reg_factory(), clf_factory()
-        rf.fit(x_full, y); cf.fit(x_full, yd)
-        rn.fit(x_no, y); cn.fit(x_no, yd)
+        rf.fit(x_full, y)
+        cf.fit(x_full, yd)
+        rn.fit(x_no, y)
+        cn.fit(x_no, yd)
         folds = {}
         mae_wins = 0
         ll_wins = 0
@@ -371,7 +454,6 @@ def ofi_incremental(teacher: pd.DataFrame, evaluation: pd.DataFrame, cols: list[
 def trust_state_diagnostic(
     teacher: pd.DataFrame,
     evaluation: pd.DataFrame,
-    cols: list[str],
     pred_by_fold: dict[str, np.ndarray],
 ) -> dict:
     out = {}
@@ -463,9 +545,11 @@ def main() -> None:
     raw_eval = pd.read_csv(eval_path)
     if set(raw_teacher["date"].astype(str)) & set(raw_eval["date"].astype(str)):
         raise RuntimeError("teacher/evaluation date leakage detected before study")
+    if len(raw_teacher["symbol"].astype(str).unique()) != 4 or len(raw_eval["symbol"].astype(str).unique()) != 4:
+        raise RuntimeError("cross-symbol teacher requires all four frozen representative symbols")
 
     result = {
-        "version": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_RESULT",
+        "version": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1_RESULT",
         "built_at": datetime.now(timezone.utc).isoformat(),
         "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
         "input_bank": {
@@ -484,6 +568,7 @@ def main() -> None:
             "no_gen3c_change": True,
             "direct_integration_forbidden": True,
             "historical_evaluation_not_fresh_forward_qualification": True,
+            "broader_non_teacher_symbol_confirmation_required_before_future_integration": True,
             "real_money_authority": False,
         },
     }
@@ -493,7 +578,7 @@ def main() -> None:
         teacher = label_horizon(raw_teacher, h)
         evaluation = label_horizon(raw_eval, h)
         cols = feature_columns(teacher, evaluation)
-        models, stability = eval_models(teacher, evaluation, cols)
+        fold_models, symbol_models, stability = eval_models(teacher, evaluation, cols)
         relationships = feature_relationships(teacher, evaluation, cols)
         stable_relationships = [r for r in relationships if r["stable_relationship"]]
         stable_rows_all.extend([{"horizon_minutes": h, **r} for r in stable_relationships])
@@ -506,14 +591,15 @@ def main() -> None:
         for fold, dates in FOLDS.items():
             sub = evaluation[evaluation["date"].astype(str).isin(dates)]
             pred_by_fold[fold] = reg.predict(transform_features(sub, cols))
-        trust = trust_state_diagnostic(teacher, evaluation, cols, pred_by_fold)
+        trust = trust_state_diagnostic(teacher, evaluation, pred_by_fold)
 
         result["horizons"][str(h)] = {
             "teacher_samples": int(len(teacher)),
             "historical_evaluation_samples": int(len(evaluation)),
             "feature_count": int(len(cols)),
             "features": cols,
-            "model_evaluation": models,
+            "model_evaluation_by_regime": fold_models,
+            "model_evaluation_by_symbol": symbol_models,
             "model_stability": stability,
             "stable_feature_relationship_count": int(len(stable_relationships)),
             "stable_feature_relationships": stable_relationships,
@@ -534,13 +620,14 @@ def main() -> None:
     else:
         (out / "stable_feature_relationships.csv").write_text("horizon_minutes,feature\n")
 
-    # Research conclusion is descriptive only; it cannot promote or trade.
     result["summary"] = {
         "stable_relationships_total": int(len(stable_rows_all)),
         "horizons_with_any_stable_relationship": int(sum(
             1 for h in result["horizons"].values() if h["stable_feature_relationship_count"] > 0
         )),
-        "future_integration_status": "REQUIRES_SEPARATE_PRE_REGISTERED_GENERATION",
+        "cross_symbol_robustness_required": True,
+        "broader_non_teacher_symbol_confirmation_required": True,
+        "future_integration_status": "REQUIRES_SEPARATE_PRE_REGISTERED_GENERATION_AFTER_BREADTH_CONFIRMATION",
         "economic_edge_claim": False,
         "trade_authority": False,
     }
