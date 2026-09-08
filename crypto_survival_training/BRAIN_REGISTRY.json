@@ -1,6 +1,6 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "updated_at": "2026-09-08T04:11:00Z",
+  "updated_at": "2026-09-08T04:24:00Z",
   "invariants": {
     "fixed_strategy_expert_authority": false,
     "paper_only": true,
@@ -105,17 +105,23 @@
   ],
   "challenger": null,
   "next_frozen_stage": {
-    "name": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1",
+    "name": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1",
     "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
-    "protocol_file": "crypto_survival_training/MICROSTRUCTURE_EXPERIENCE_PROTOCOL.json",
-    "status": "FULL_EXPERIENCE_BANK_BUILDING",
+    "experience_protocol_file": "crypto_survival_training/MICROSTRUCTURE_EXPERIENCE_PROTOCOL.json",
+    "model_protocol_file": "crypto_survival_training/MICROSTRUCTURE_TEACHER_MODEL_PROTOCOL.json",
+    "knowledge_acceptance_file": "crypto_survival_training/MICROSTRUCTURE_KNOWLEDGE_ACCEPTANCE_PROTOCOL.json",
+    "frozen_source_commit": "a76b6234478f406b7d3bb80bec0e9795489d035c",
+    "teacher_code_blob": "69188ed4c1d3932907ca7d0e249c5a1f581c8659",
+    "model_protocol_blob": "59e6286b03f7a3e1bd663382be1c3b1c0ca05aed",
+    "validation_run_id": 34186770762,
+    "validation_status": "PASS",
+    "status": "FULL_EXPERIENCE_BANK_BUILDING_NO_EVALUATION_EXPOSED",
     "full_bank_run_id": 34185837887,
-    "integration_rule": "No Gen3H or other trading challenger may be defined from evaluation outcomes post hoc. First complete the frozen teacher study, identify only cross-symbol/cross-regime stable information, then pre-register any future integration generation before its economic evaluation."
+    "integration_rule": "No Gen3H or other trading challenger may be defined from teacher evaluation outcomes post hoc. First complete V1.1, accept only cross-regime plus cross-symbol stable knowledge, then confirm accepted families on non-teacher symbols from the verified 24-symbol TBT panel. Only after that may a future architecture be pre-registered before its own economic evaluation."
   },
   "research_layers": {
-    "microstructure_experience_teacher_v1": {
+    "microstructure_experience_teacher_v1_1": {
       "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
-      "protocol_file": "crypto_survival_training/MICROSTRUCTURE_EXPERIENCE_PROTOCOL.json",
       "breadth_audit_run_id": 34184578729,
       "breadth_result": "PASS_192_OF_192_PAIRS_AVAILABLE",
       "date_exact_pilot_run_id": 34185447355,
@@ -133,7 +139,9 @@
       },
       "full_bank_run_id": 34185837887,
       "full_bank_plan": "16 deterministic shards, max 4 parallel, 4 frozen symbols x 32 frozen dates = 128 symbol-days; training and evaluation states remain physically separated.",
-      "separation": "Cannot alter Gen3C authority; any integration requires a separately pre-registered future generation."
+      "cross_symbol_upgrade": "V1.1 was refrozen before any full-bank evaluation exposure to explicitly require cross-symbol evidence in addition to cross-regime evidence; fixed models/hyperparameters/labels/horizons did not change.",
+      "broader_confirmation": "Any accepted microstructure family must later survive a separately frozen non-teacher-symbol confirmation before integration research.",
+      "separation": "Cannot alter Gen3C authority; any integration requires a separately pre-registered future generation after breadth confirmation."
     }
   }
 }
