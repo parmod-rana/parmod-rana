@@ -1,0 +1,12 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "status": "PRESERVE_EXACT_TEACHER_V1_1_RESULT",
+  "authority": "RESEARCH_EVIDENCE_ONLY_NO_TRADE_AUTHORITY",
+  "teacher_run_id": 34187582373,
+  "artifact_id": 10041050467,
+  "artifact_zip_sha256": "741e33409ab47e7e9a04203813fed34f6842af504a2855647cc2165df4a07530",
+  "teacher_result_json_sha256": "3248e9801bcef7df954a557f3081cd99f5b70e5f71ee38f9de1edb297a1b945b",
+  "stable_relationships_csv_sha256": "ab3aee2065485f783db46c283976696153c30c18a01269e64b1e830b1c5d5478",
+  "gen3c_change": false,
+  "real_money_authority": false
+}
