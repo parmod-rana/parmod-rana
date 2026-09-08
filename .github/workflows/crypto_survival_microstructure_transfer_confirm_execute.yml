@@ -1,0 +1,167 @@
+name: Crypto Survival Frozen Microstructure Transfer Confirmation
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_BREADTH_EVALUATE.json'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  confirm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EVALUATOR_SOURCE_COMMIT: b54ea322c35ebef8638c501bb0798900e37a3146
+      EXPECTED_EVALUATOR_BLOB: 5c2dcc179f377c4dd7af86ad05cfb334153cdc86
+      EXPECTED_PROTOCOL_BLOB: 62602cc3cbb3e743a6aa3973aa0471a796c73c7b
+      EXPECTED_KNOWLEDGE_BLOB: ac03c53150a7e76e6e66b43862a788a0d4e8964c
+      TEACHER_SOURCE_COMMIT: a76b6234478f406b7d3bb80bec0e9795489d035c
+      EXPECTED_TEACHER_MODULE_BLOB: 69188ed4c1d3932907ca7d0e249c5a1f581c8659
+      TEACHER_BANK_RUN_ID: '34187443705'
+      TEACHER_BANK_ARTIFACT_NAME: crypto-survival-microstructure-experience-bank-full
+      TRANSFER_BANK_RUN_ID: '34188108465'
+      TRANSFER_BANK_ARTIFACT_NAME: crypto-survival-microstructure-transfer-bank-v1
+    steps:
+      - name: Read one-time confirmation lock
+        uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          path: trigger_repo
+      - name: Validate exact confirmation authorization
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          x=json.load(open('trigger_repo/crypto_survival_training/MICROSTRUCTURE_BREADTH_EVALUATE.json'))
+          required={
+            'status':'AUTHORIZED_AFTER_160_PAIR_TRANSFER_BANK_PASS',
+            'study':'MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1',
+            'transfer_bank_run_id':34188108465,
+            'evaluator_source_commit':'b54ea322c35ebef8638c501bb0798900e37a3146',
+            'evaluator_validation_run_id':34188424674,
+            'teacher_bank_run_id':34187443705,
+            'authority':'CONFIRMATORY_RESEARCH_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v,(k,x.get(k),v)
+          assert x.get('transfer_bank_artifact_id')
+          assert x.get('transfer_bank_states_sha256')
+          assert x.get('real_money_authority') is False
+          assert x.get('gen3c_change') is False
+          print('TRANSFER_CONFIRMATION_LOCK_PASS')
+          PY
+      - name: Checkout exact validated evaluator source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EVALUATOR_SOURCE_COMMIT }}
+          path: evaluator_source
+      - name: Verify frozen evaluator, protocol and knowledge blobs
+        working-directory: evaluator_source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object crypto_survival_training/run_microstructure_transfer_confirmation.py)" = "$EXPECTED_EVALUATOR_BLOB"
+          test "$(git hash-object crypto_survival_training/MICROSTRUCTURE_BREADTH_CONFIRMATION_PROTOCOL.json)" = "$EXPECTED_PROTOCOL_BLOB"
+          test "$(git hash-object crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json)" = "$EXPECTED_KNOWLEDGE_BLOB"
+          echo 'FROZEN_EVALUATOR_SOURCE_PASS'
+      - name: Checkout exact frozen V1.1 teacher module
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TEACHER_SOURCE_COMMIT }}
+          path: teacher_source
+      - name: Verify frozen teacher module blob
+        working-directory: teacher_source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object crypto_survival_training/run_microstructure_experience_teacher.py)" = "$EXPECTED_TEACHER_MODULE_BLOB"
+          echo 'FROZEN_TEACHER_MODULE_PASS'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact confirmation dependencies
+        run: pip install --disable-pip-version-check numpy pandas scipy scikit-learn==1.9.0
+      - name: Download exact frozen teacher bank
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p bank_download/teacher
+          ART=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${TEACHER_BANK_RUN_ID}/artifacts?per_page=100")
+          ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["TEACHER_BANK_ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ART")
+          test "$ID" = '10040995477'
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ID}/zip" > bank_download/teacher.zip
+          unzip -q bank_download/teacher.zip -d bank_download/teacher
+          TM=$(find bank_download/teacher -path '*/microstructure_experience_bank_full/manifest.json' -print -quit)
+          test -n "$TM"
+          python - "$TM" <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          m=Path(sys.argv[1]); x=json.load(open(m)); c=x['checks']
+          assert x['version']=='MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1'
+          assert x['shard_count']==16 and x['symbol_date_pairs']==128
+          for k in ['all_16_frozen_shards_present','all_128_frozen_symbol_date_pairs_present','unique_symbol_state_time','teacher_evaluation_dates_disjoint','no_forward_returns_used','no_model_fit','no_trade_authority']:
+              assert c[k] is True,(k,c.get(k))
+          expected={
+            'teacher':'74d76d3250186ec3b20a0ff578297994cafd4ab9b07b82806b1a1f1559c732c2',
+            'historical_evaluation':'d6467309c6312f4a7481bba5117762e9b323ba1237ac30771921decee1230a55'
+          }
+          names={'teacher':'teacher_states_15m.csv.gz','historical_evaluation':'historical_evaluation_states_15m.csv.gz'}
+          for k,name in names.items():
+              actual=hashlib.sha256((m.parent/name).read_bytes()).hexdigest()
+              assert actual==expected[k] and x['sha256'][k]==expected[k],(k,actual,x['sha256'][k])
+          print('TEACHER_BANK_INTEGRITY_PASS')
+          PY
+          dirname "$TM" > teacher_bank_dir.txt
+      - name: Download and verify exact 160-pair transfer bank
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p bank_download/transfer
+          ART=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${TRANSFER_BANK_RUN_ID}/artifacts?per_page=100")
+          ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["TRANSFER_BANK_ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ART")
+          LOCK_ID=$(python -c 'import json; print(json.load(open("trigger_repo/crypto_survival_training/MICROSTRUCTURE_BREADTH_EVALUATE.json"))["transfer_bank_artifact_id"])')
+          test "$ID" = "$LOCK_ID"
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ID}/zip" > bank_download/transfer.zip
+          unzip -q bank_download/transfer.zip -d bank_download/transfer
+          TM=$(find bank_download/transfer -path '*/microstructure_transfer_bank_v1/manifest.json' -print -quit)
+          test -n "$TM"
+          python - "$TM" trigger_repo/crypto_survival_training/MICROSTRUCTURE_BREADTH_EVALUATE.json <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          m=Path(sys.argv[1]); lock=json.load(open(sys.argv[2])); x=json.load(open(m)); c=x['checks']
+          assert x['version']=='MICROSTRUCTURE_TRANSFER_BANK_V1'
+          assert x['pair_count']==160 and len(x['symbols'])==20 and len(x['dates'])==8
+          for k in ['all_160_frozen_pairs_present','teacher_symbols_excluded','unique_symbol_state_time','no_forward_returns_used','no_model_fit','no_trade_authority']:
+              assert c[k] is True,(k,c.get(k))
+          assert float(c['finite_mid_fraction'])>=0.999999
+          p=m.parent/'states_15m.csv.gz'
+          actual=hashlib.sha256(p.read_bytes()).hexdigest()
+          expected=lock['transfer_bank_states_sha256']
+          assert actual==expected==x['states_sha256'],(actual,expected,x['states_sha256'])
+          print('TRANSFER_BANK_INTEGRITY_PASS',x['rows'],actual)
+          PY
+          dirname "$TM" > transfer_bank_dir.txt
+      - name: Execute frozen transfer confirmation once
+        run: |
+          set -o pipefail
+          python evaluator_source/crypto_survival_training/run_microstructure_transfer_confirmation.py \
+            --teacher-bank-dir "$(cat teacher_bank_dir.txt)" \
+            --confirmation-bank-dir "$(cat transfer_bank_dir.txt)" \
+            --teacher-module teacher_source/crypto_survival_training/run_microstructure_experience_teacher.py \
+            --knowledge evaluator_source/crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json \
+            --protocol evaluator_source/crypto_survival_training/MICROSTRUCTURE_BREADTH_CONFIRMATION_PROTOCOL.json \
+            --out microstructure_transfer_confirmation_result \
+            | tee microstructure_transfer_confirmation.log
+      - name: Upload immutable transfer confirmation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-transfer-confirmation-v1-result
+          path: |
+            microstructure_transfer_confirmation.log
+            microstructure_transfer_confirmation_result/
+            trigger_repo/crypto_survival_training/MICROSTRUCTURE_BREADTH_EVALUATE.json
+          retention-days: 14
