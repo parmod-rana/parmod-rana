@@ -47,9 +47,14 @@ PILOT_SYMBOLS = ["BAT-USDT", "ZRX-USDT"]
 PILOT_DATES = ["2024-07-01", "2024-11-01", "2025-03-01", "2026-03-15"]
 
 
-def day_ms(day: str) -> tuple[str, str]:
+def day_bounds(day: str) -> tuple[int, int]:
     d = datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-    return str(int(d.timestamp() * 1000)), str(int((d + timedelta(days=1)).timestamp() * 1000))
+    return int(d.timestamp() * 1000), int((d + timedelta(days=1)).timestamp() * 1000)
+
+
+def day_ms(day: str) -> tuple[str, str]:
+    begin, end = day_bounds(day)
+    return str(begin), str(end)
 
 
 def archive_files(session: requests.Session, symbol: str, day: str) -> list[dict]:
@@ -96,12 +101,7 @@ def download_stream(session: requests.Session, url: str, destination: Path) -> t
 
 
 def normalize_archive_schema(raw: pd.DataFrame) -> tuple[pd.DataFrame, str]:
-    """Losslessly rename the verified legacy OKX TBT header to canonical names.
-
-    The 2024-07 archive schema uses bidPx1/bidSz1/bidCnt1 and askPx1/...;
-    later archives use bid_1_px/bid_1_qty/bid_1_ordCnt. Both contain the same
-    genuine 50-level fields. No value is synthesized here.
-    """
+    """Losslessly rename the verified legacy OKX TBT header to canonical names."""
     if "bid_1_px" in raw.columns and "ask_1_px" in raw.columns:
         return raw, "canonical_underscore"
     if "bidPx1" not in raw.columns or "askPx1" not in raw.columns:
@@ -141,13 +141,26 @@ def accumulate_chunk(acc: dict, mid_last: dict[int, float], features: pd.DataFra
             mid_last[int(state_time)] = float(valid.iloc[-1])
 
 
-def process_one_gz(path: Path, acc: dict, mid_last: dict[int, float], previous_raw: pd.DataFrame | None):
+def process_one_gz(
+    path: Path,
+    acc: dict,
+    mid_last: dict[int, float],
+    previous_raw: pd.DataFrame | None,
+    target_begin_ms: int,
+    target_end_ms: int,
+):
     schema_names = set()
+    target_rows = 0
     for raw in pd.read_csv(path, compression="gzip", chunksize=CHUNKSIZE):
         if raw.empty:
             continue
         raw, schema_name = normalize_archive_schema(raw)
         schema_names.add(schema_name)
+        exch = pd.to_numeric(raw["exchTimeMs"], errors="coerce")
+        raw = raw.loc[(exch >= target_begin_ms) & (exch < target_end_ms)].copy()
+        if raw.empty:
+            continue
+        target_rows += len(raw)
         if previous_raw is not None:
             joined = pd.concat([previous_raw, raw], ignore_index=True)
             features = mf.snapshot_features(joined).iloc[1:].copy()
@@ -155,29 +168,37 @@ def process_one_gz(path: Path, acc: dict, mid_last: dict[int, float], previous_r
             features = mf.snapshot_features(raw)
         accumulate_chunk(acc, mid_last, features)
         previous_raw = raw.iloc[[-1]].copy()
-    return previous_raw, sorted(schema_names)
+    return previous_raw, sorted(schema_names), int(target_rows)
 
 
 def process_symbol_day(session: requests.Session, symbol: str, day: str, tmpdir: Path):
     files = archive_files(session, symbol, day)
     if not files:
         raise RuntimeError(f"no module-6 files for {symbol} {day}")
+    target_begin_ms, target_end_ms = day_bounds(day)
     acc: dict = {}
     mid_last: dict[int, float] = {}
     previous_raw = None
     provenance = []
+    total_target_rows = 0
     for i, f in enumerate(files):
         local = tmpdir / f"{symbol.replace('-', '_')}_{day}_{i}.csv.gz"
         sha, nbytes = download_stream(session, f["url"], local)
-        previous_raw, schema_names = process_one_gz(local, acc, mid_last, previous_raw)
+        previous_raw, schema_names, target_rows = process_one_gz(
+            local, acc, mid_last, previous_raw, target_begin_ms, target_end_ms
+        )
+        total_target_rows += target_rows
         provenance.append({
             "filename": f["filename"],
             "reported_size_mb": f.get("sizeMB"),
             "download_bytes": nbytes,
             "sha256": sha,
             "schema_names": schema_names,
+            "rows_inside_target_utc_day": target_rows,
         })
         local.unlink(missing_ok=True)
+    if total_target_rows <= 0:
+        raise RuntimeError(f"no genuine TBT rows inside exact UTC target day {symbol} {day}")
     states = mf._finalize_accumulator(acc)
     if states.empty:
         raise RuntimeError(f"no completed states for {symbol} {day}")
@@ -189,10 +210,12 @@ def process_symbol_day(session: requests.Session, symbol: str, day: str, tmpdir:
         raise RuntimeError(f"duplicate completed states {symbol} {day}")
     if not states.state_time_ms.is_monotonic_increasing:
         raise RuntimeError(f"nonmonotonic completed states {symbol} {day}")
+    if int(states.state_time_ms.min()) <= target_begin_ms or int(states.state_time_ms.max()) > target_end_ms:
+        raise RuntimeError(f"state escaped exact target UTC day {symbol} {day}")
     spread = pd.to_numeric(states["spread_bps_last"], errors="coerce").dropna()
     if (spread < 0).any():
         raise RuntimeError(f"negative spread {symbol} {day}")
-    return states, provenance
+    return states, provenance, total_target_rows
 
 
 def main() -> None:
@@ -220,17 +243,18 @@ def main() -> None:
         tmpdir = Path(t)
         for day in dates:
             for symbol in symbols:
-                states, provenance = process_symbol_day(session, symbol, day, tmpdir)
+                states, provenance, target_rows = process_symbol_day(session, symbol, day, tmpdir)
                 frames.append(states)
                 all_provenance.append({
                     "symbol": symbol,
                     "date": day,
+                    "genuine_rows_inside_target_utc_day": int(target_rows),
                     "completed_15m_states": int(len(states)),
                     "first_state_time_ms": int(states.state_time_ms.iloc[0]),
                     "last_state_time_ms": int(states.state_time_ms.iloc[-1]),
                     "archives": provenance,
                 })
-                print("BUILT", symbol, day, "states", len(states), "archives", len(provenance), flush=True)
+                print("BUILT", symbol, day, "rows", target_rows, "states", len(states), "archives", len(provenance), flush=True)
 
     bank = pd.concat(frames, ignore_index=True).sort_values(["symbol", "state_time_ms"]).reset_index(drop=True)
     bank.to_csv(out / "states_15m.csv.gz", index=False, compression="gzip")
@@ -252,6 +276,7 @@ def main() -> None:
         "states_sha256": bank_hash,
         "raw_archives_retained": False,
         "cross_file_ofi_continuity": True,
+        "exact_target_day_filter": "target_begin_ms <= exchTimeMs < target_end_ms",
         "historical_schema_normalization": {
             "legacy": "bidPxN/bidSzN/bidCntN and askPxN/askSzN/askCntN are renamed losslessly",
             "canonical": "bid_N_px/bid_N_qty/bid_N_ordCnt and ask_N_px/ask_N_qty/ask_N_ordCnt",
