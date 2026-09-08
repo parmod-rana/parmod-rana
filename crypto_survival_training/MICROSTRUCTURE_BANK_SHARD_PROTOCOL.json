@@ -1,0 +1,62 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "protocol": "MICROSTRUCTURE_EXPERIENCE_BANK_SHARDING_V1",
+  "status": "PREPARED_NOT_AUTHORIZED_UNTIL_DATE_EXACT_PILOT_PASSES",
+  "economic_role": "NONE_DATA_ENGINEERING_ONLY",
+  "source_protocol": "crypto_survival_training/MICROSTRUCTURE_EXPERIENCE_PROTOCOL.json",
+  "pilot_required": {
+    "workflow_run_id": 34185447355,
+    "head_sha": "a07b93ff3ae474e094ae89965cec211b15e4fb9d",
+    "must_pass_before_full_build": true
+  },
+  "frozen_symbols": ["BAT-USDT", "ZRX-USDT", "ATOM-USDT", "BCH-USDT"],
+  "frozen_training_dates": [
+    "2024-07-01", "2024-07-15", "2024-08-01", "2024-08-15",
+    "2024-09-01", "2024-09-15", "2024-10-01", "2024-10-15",
+    "2024-11-01", "2024-11-15", "2024-12-01", "2024-12-15",
+    "2025-01-01", "2025-01-15", "2025-02-01", "2025-02-15",
+    "2025-03-01", "2025-03-15", "2025-04-01", "2025-04-15",
+    "2025-05-01", "2025-05-15", "2025-06-01", "2025-06-15"
+  ],
+  "frozen_historical_evaluation_dates": [
+    "2025-07-15", "2025-08-15", "2025-11-15", "2025-12-15",
+    "2026-03-15", "2026-04-15", "2026-06-15", "2026-07-15"
+  ],
+  "shard_design": {
+    "unit": "one_symbol_x_eight_predeclared_dates",
+    "date_blocks": {
+      "B0": ["2024-07-01", "2024-07-15", "2024-08-01", "2024-08-15", "2024-09-01", "2024-09-15", "2024-10-01", "2024-10-15"],
+      "B1": ["2024-11-01", "2024-11-15", "2024-12-01", "2024-12-15", "2025-01-01", "2025-01-15", "2025-02-01", "2025-02-15"],
+      "B2": ["2025-03-01", "2025-03-15", "2025-04-01", "2025-04-15", "2025-05-01", "2025-05-15", "2025-06-01", "2025-06-15"],
+      "EVAL": ["2025-07-15", "2025-08-15", "2025-11-15", "2025-12-15", "2026-03-15", "2026-04-15", "2026-06-15", "2026-07-15"]
+    },
+    "planned_shards": 16,
+    "reason": "Bounds temporary raw storage and runtime while preserving the frozen history exactly."
+  },
+  "required_per_shard_checks": [
+    "all requested symbol-date pairs produce genuine rows inside the exact UTC day",
+    "target_begin_ms <= exchTimeMs < target_end_ms for every admitted tick",
+    "historical schema normalization is lossless and records which schema was observed",
+    "completed 15m state timestamps are monotonic and unique",
+    "no completed state escapes its requested UTC day",
+    "finite mid_last is present for later causal labeling",
+    "every downloaded raw archive is SHA256 hashed",
+    "raw archive is deleted after compact aggregation",
+    "no forward-return label or economic metric is computed by the bank builder"
+  ],
+  "merge_rules": {
+    "input": "only shards whose manifests pass all required checks",
+    "key": ["symbol", "state_time_ms"],
+    "duplicates_allowed": false,
+    "sort": ["symbol", "state_time_ms"],
+    "merged_file_hash_required": true,
+    "shard_manifest_hashes_required": true,
+    "missing_pair_policy": "FAIL_CLOSED_DO_NOT_IMPUTE"
+  },
+  "governance": [
+    "Sharding cannot add, remove or reselect symbols or dates based on profitability.",
+    "Historical evaluation dates remain separate from teacher training dates.",
+    "A successful bank build proves data integrity only, not predictive edge.",
+    "Any economic learner using this bank must be separately frozen before its historical evaluation is observed."
+  ]
+}
