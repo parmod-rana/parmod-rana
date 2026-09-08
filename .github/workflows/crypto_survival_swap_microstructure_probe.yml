@@ -1,0 +1,37 @@
+name: Crypto Survival Swap Microstructure Probe
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_swap_microstructure_probe.yml'
+      - 'crypto_survival_training/probe_okx_swap_microstructure.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check requests
+      - name: Probe direct swap L2 and TBT historical archives
+        env:
+          PYTHONPATH: .
+        run: |
+          set -o pipefail
+          python crypto_survival_training/probe_okx_swap_microstructure.py | tee swap_microstructure_probe.log
+      - name: Upload probe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-swap-microstructure-probe
+          path: |
+            swap_microstructure_probe/
+            swap_microstructure_probe.log
+          retention-days: 7
