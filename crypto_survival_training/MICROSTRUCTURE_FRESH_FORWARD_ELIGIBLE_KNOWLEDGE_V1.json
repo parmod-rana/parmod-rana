@@ -1,0 +1,45 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "knowledge_set": "MICROSTRUCTURE_FRESH_FORWARD_ELIGIBLE_KNOWLEDGE_V1",
+  "status": "FROZEN_AFTER_HISTORICAL_BREADTH_RESULT_BEFORE_ALL_FORWARD_HOLDOUT_DATES",
+  "frozen_at_utc": "2026-09-08T06:33:00Z",
+  "authority": "FUTURE_KNOWLEDGE_QUALIFICATION_ONLY_NO_TRADE_AUTHORITY",
+  "historical_transfer_evidence": {
+    "workflow_run_id": 34194815090,
+    "artifact_id": 10043512651,
+    "artifact_zip_sha256": "6744b789c9e1c7b8df088c6586c303416caeb1d62abf6a798a71977d677b7672",
+    "result_json_sha256": "757a6b11889878540c3b0312f21ec60a8e1edf5eca6fa6ad07e57d4ae372ef3d",
+    "immutable_preservation_commit": "8cde7ee",
+    "pre_registered_relationship_candidates": 7,
+    "breadth_confirmed_relationships": 1,
+    "pre_registered_trust_candidates": 5,
+    "breadth_confirmed_trust_candidates": 0,
+    "economic_edge_claim": false,
+    "trade_authority": false
+  },
+  "eligible_relationships": [
+    {
+      "horizon_minutes": 60,
+      "feature": "top_ofi_norm_mean",
+      "teacher_sign": "NEGATIVE",
+      "teacher_spearman": -0.020065438108059,
+      "historical_breadth_confirmed": true,
+      "historical_confirmation_symbols_same_sign_as_teacher": 13,
+      "historical_confirmation_symbol_median_abs_spearman": 0.047443487283819974,
+      "historical_confirmation_folds_same_sign_as_teacher": 3,
+      "semantic_role": "POTENTIALLY_CONTRARIAN_OR_EXHAUSTION_MARKET_STATE_RELATIONSHIP_NOT_A_DIRECT_TRADE_RULE"
+    }
+  ],
+  "eligible_trust_candidates": [],
+  "eligible_model_families": [],
+  "ofi_incremental_eligible": false,
+  "forward_holdout_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json",
+  "forward_protocol_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1.json",
+  "feature_reselection": false,
+  "sign_reselection": false,
+  "symbol_reselection": false,
+  "date_reselection": false,
+  "threshold_retuning": false,
+  "gen3c_change": false,
+  "real_money_authority": false
+}
