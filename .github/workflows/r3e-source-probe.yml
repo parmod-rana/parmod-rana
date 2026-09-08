@@ -14,7 +14,7 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe exact frozen source URLs without auth
+      - name: Probe exact frozen source byte identity
         shell: bash
         run: |
           set -euo pipefail
@@ -22,25 +22,25 @@ jobs:
           curl -L --fail --silent --show-error 'https://api.upstox.com/v3/historical-candle/NSE_INDEX%7CNifty%2050/minutes/1/2023-06-30/2023-06-01' -o /tmp/r3e_probe/nifty.json
           curl -L --fail --silent --show-error 'https://api.upstox.com/v3/historical-candle/BSE_INDEX%7CSENSEX/minutes/1/2023-06-30/2023-06-01' -o /tmp/r3e_probe/sensex.json
           curl -L --fail --silent --show-error 'https://api.upstox.com/v3/historical-candle/NSE_INDEX%7CIndia%20VIX/minutes/1/2023-06-30/2023-06-01' -o /tmp/r3e_probe/vix.json
-          echo CURRENT_RAW_SHA_AND_BYTES
-          sha256sum /tmp/r3e_probe/*.json
-          wc -c /tmp/r3e_probe/*.json
           python - <<'PY'
-          import json, hashlib, pathlib
+          import hashlib, pathlib
           expected={
             'nifty':('f16922be41d71e48a4c2c2c25044b8268f3084b4c51c6752acf3394f5beb73c5',535425),
             'sensex':('f49fa9be27d16b1b7842e1495a335e951b6483b035df01c3b716b83693e4c45a',548190),
             'vix':('5210eeae3180054cefc8aa7841256289889473cbfcd86f895b35574f1f613219',453715),
           }
+          all_pass=True
           for k,(want_sha,want_bytes) in expected.items():
             p=pathlib.Path('/tmp/r3e_probe')/(k+'.json')
-            raw=p.read_bytes(); obj=json.loads(raw); candles=obj.get('data',{}).get('candles',[])
-            normalized=json.dumps(candles,separators=(',',':'),ensure_ascii=False).encode()
-            print(k, 'raw_match', hashlib.sha256(raw).hexdigest()==want_sha,
-                  'bytes_expected',want_bytes,'bytes_now',len(raw),
-                  'candles',len(candles),
-                  'first',candles[0] if candles else None,
-                  'last',candles[-1] if candles else None,
-                  'candle_array_sha',hashlib.sha256(normalized).hexdigest())
+            raw=p.read_bytes()
+            candidates=[('raw',raw),('raw_plus_lf',raw+b'\n'),('raw_plus_crlf',raw+b'\r\n')]
+            found=None
+            for label,b in candidates:
+              if len(b)==want_bytes and hashlib.sha256(b).hexdigest()==want_sha:
+                found=label; break
+            print(k,'expected_bytes',want_bytes,'current_bytes',len(raw),'identity_reconstruction',found)
+            all_pass &= found is not None
+          if not all_pass:
+            raise SystemExit('R3E_ARCHIVED_BYTE_IDENTITY_NOT_RECONSTRUCTED')
+          print('R3E_ARCHIVED_BYTE_IDENTITY_RECONSTRUCTED_PASS')
           PY
-          echo R3E_SOURCE_SEMANTIC_PROBE_COMPLETE
