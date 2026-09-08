@@ -1,0 +1,89 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "experiment": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1",
+  "status": "PRE_REGISTERED_DATA_AND_LEARNING_STUDY",
+  "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
+  "purpose": "Teach the future crypto brain genuine order-flow relationships from historical 50-level tick-by-tick books without contaminating Gen3C or the frozen Gen3G evaluation.",
+  "data_source": {
+    "provider": "OKX historical market-data archive",
+    "module": 6,
+    "market_type": "SPOT",
+    "schema": "50-level full-book TBT csv.gz",
+    "breadth_audit_run_id": 34184578729,
+    "breadth_audit_result": "PASS_192_OF_192_PAIRS_AVAILABLE"
+  },
+  "representative_symbols_frozen": [
+    "BAT-USDT",
+    "ZRX-USDT",
+    "ATOM-USDT",
+    "BCH-USDT"
+  ],
+  "symbol_selection_reason": "Fixed before economic results. Four established markets with verified archive continuity and materially lower raw-file burden than BTC/ETH, allowing genuine high-frequency chronology to be studied within hosted-runner storage limits. Selection is based on compute/storage economics, not historical profitability.",
+  "training_dates_frozen": [
+    "2024-07-01", "2024-07-15",
+    "2024-08-01", "2024-08-15",
+    "2024-09-01", "2024-09-15",
+    "2024-10-01", "2024-10-15",
+    "2024-11-01", "2024-11-15",
+    "2024-12-01", "2024-12-15",
+    "2025-01-01", "2025-01-15",
+    "2025-02-01", "2025-02-15",
+    "2025-03-01", "2025-03-15",
+    "2025-04-01", "2025-04-15",
+    "2025-05-01", "2025-05-15",
+    "2025-06-01", "2025-06-15"
+  ],
+  "historical_evaluation_dates_frozen": {
+    "F1": ["2025-07-15", "2025-08-15"],
+    "F2": ["2025-11-15", "2025-12-15"],
+    "F3": ["2026-03-15", "2026-04-15"],
+    "F4": ["2026-06-15", "2026-07-15"]
+  },
+  "state_resolution": "15m_completed_bucket",
+  "chronology": {
+    "feature_timestamp": "completed observation bucket END",
+    "outcomes_visible_to_features": false,
+    "cross_file_ofi_continuity_required": true,
+    "raw_archive_hash_required": true,
+    "raw_archive_deleted_after_compact_aggregation": true
+  },
+  "prepared_feature_families": [
+    "spread",
+    "microprice_deviation",
+    "quantity_imbalance_multidepth",
+    "order_count_imbalance_multidepth",
+    "notional_imbalance_multidepth",
+    "depth_notional",
+    "top1_depth_concentration",
+    "normalized_top_of_book_ofi",
+    "capture_latency",
+    "update_interval",
+    "within_bucket_mean_std_last_extremes_update_count"
+  ],
+  "labels_frozen": {
+    "source": "future TBT midprice only after state timestamp",
+    "horizons_minutes": [15, 60, 240],
+    "targets": [
+      "future_mid_return_bps",
+      "direction",
+      "future_path_mfe_bps_when_available",
+      "future_path_mae_bps_when_available"
+    ]
+  },
+  "study_questions_frozen": [
+    "Does book pressure predict future return direction or magnitude after the bucket closes?",
+    "Which depth bands carry stable information across symbols and regimes?",
+    "Does OFI add information beyond static imbalance?",
+    "Do spread/depth/latency states identify conditions where directional forecasts should be trusted less?",
+    "Are any relationships consistent in at least three of four historical evaluation regimes rather than concentrated in one period?"
+  ],
+  "governance": {
+    "no_named_strategy_selection": true,
+    "no_gen3c_parameter_change": true,
+    "no_gen3g_parameter_change": true,
+    "no_integration_into_trade_authority_from_this_study": true,
+    "integration_requires_separate_future_generation_pre_registered_before_economic_results": true,
+    "historical_evaluation_is_not_fresh_forward_qualification": true,
+    "fresh_forward_shadow_evidence_required_for_any_real_money_qualification": true
+  }
+}
