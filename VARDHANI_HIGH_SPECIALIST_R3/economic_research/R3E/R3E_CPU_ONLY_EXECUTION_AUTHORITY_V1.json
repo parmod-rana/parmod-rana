@@ -1,0 +1,38 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3E_CPU_ONLY_EXECUTION_AUTHORITY_V1",
+  "status": "ADDITIVE_EXECUTION_AUTHORITY__MODEL_AND_GATES_UNCHANGED",
+  "project_identity": "VARDHANI HIGH-SPECIALIST R3 — GPT-5.6 SOL TEACHER V2",
+  "user_directive": "CPU only; no GPU",
+  "parent_execution_manifest": "R3E_EXECUTION_MANIFEST_V1.json",
+  "immutable_research_contract": {
+    "features": 42,
+    "training_window_calendar_days": 252,
+    "minimum_training_dates": 60,
+    "horizons_minutes": [15, 30, 60],
+    "q_grid": [0.99, 0.995, 0.9975],
+    "costs_bps": [3, 5],
+    "calibration_year": 2023,
+    "audit_year": 2024,
+    "audit_2024_may_open_only_after_2023_selectivity_gate_pass": true,
+    "model_params_changed": false,
+    "gate_logic_changed": false,
+    "feature_logic_changed": false
+  },
+  "compute": {
+    "device": "CPU_ONLY",
+    "gpu_allowed": false,
+    "lightgbm_n_jobs": 1,
+    "monthly_checkpointing": true,
+    "resume_without_retraining_completed_months": true,
+    "checkpointing_may_change_numerical_policy": false
+  },
+  "boundaries": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "economic_edge_claimed": false
+  },
+  "purpose": "Make the frozen R3E evaluation practical on CPU with durable month-level restart protection. This authority changes execution mechanics only and cannot alter research semantics, thresholds, features, labels, model parameters, costs, gates, chronology, or promotion rules."
+}
