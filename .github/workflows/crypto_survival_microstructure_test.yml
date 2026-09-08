@@ -1,0 +1,36 @@
+name: Crypto Survival Microstructure Feature Test
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_microstructure_test.yml'
+      - 'crypto_survival_training/microstructure_features.py'
+      - 'crypto_survival_training/test_microstructure_features.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check numpy pandas
+      - name: Verify causal microstructure streaming equivalence
+        env:
+          PYTHONPATH: .
+        run: |
+          set -o pipefail
+          python crypto_survival_training/test_microstructure_features.py | tee microstructure_test.log
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-test
+          path: microstructure_test.log
+          retention-days: 7
