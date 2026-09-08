@@ -1,0 +1,34 @@
+name: Crypto Survival Funding Archive Schema
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_funding_archive_schema.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check requests
+      - name: Inspect genuine OKX funding archive ZIP
+        run: |
+          set -o pipefail
+          python crypto_survival_training/probe_okx_funding_archive_schema.py | tee funding_archive_schema.log
+      - name: Upload schema probe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-funding-archive-schema
+          path: |
+            funding_archive_schema/
+            funding_archive_schema.log
+          retention-days: 7
