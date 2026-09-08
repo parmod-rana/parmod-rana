@@ -63,7 +63,6 @@ def relationship_confirmation(teacher_mod, labeled: dict[int, pd.DataFrame], kno
         df = labeled[h]
         if feature not in df.columns:
             raise RuntimeError(f"locked feature missing from confirmation bank: {feature}")
-
         symbol_corr = {}
         same_symbols = 0
         abs_symbols = []
@@ -74,7 +73,6 @@ def relationship_confirmation(teacher_mod, labeled: dict[int, pd.DataFrame], kno
             if r is not None:
                 abs_symbols.append(abs(float(r)))
                 same_symbols += int(np.sign(float(r)) == expected_sign)
-
         fold_corr = {}
         same_folds = 0
         for fold, dates in FOLDS.items():
@@ -83,7 +81,6 @@ def relationship_confirmation(teacher_mod, labeled: dict[int, pd.DataFrame], kno
             fold_corr[fold] = r
             if r is not None:
                 same_folds += int(np.sign(float(r)) == expected_sign)
-
         med_abs = safe_float(np.median(abs_symbols)) if abs_symbols else None
         passed = bool(same_symbols >= 12 and med_abs is not None and med_abs >= 0.02 and same_folds >= 3)
         out.append({
@@ -133,7 +130,6 @@ def trust_confirmation(teacher_mod, teacher_raw: pd.DataFrame, teacher_eval_raw:
     candidates_by_horizon: dict[int, list[dict]] = {}
     for c in knowledge["eligible_trust_information"]:
         candidates_by_horizon.setdefault(int(c["horizon_minutes"]), []).append(c)
-
     for h, candidates in sorted(candidates_by_horizon.items()):
         t = teacher_mod.label_horizon(teacher_raw, h)
         e = teacher_mod.label_horizon(teacher_eval_raw, h)
@@ -145,7 +141,6 @@ def trust_confirmation(teacher_mod, teacher_raw: pd.DataFrame, teacher_eval_raw:
         model.fit(xt, t["target_return_bps"].to_numpy(float))
         pred = model.predict(xc)
         err = np.abs(cdf["target_return_bps"].to_numpy(float) - pred)
-
         for cand in candidates:
             feature = str(cand["feature"])
             if feature not in cdf.columns:
@@ -154,7 +149,6 @@ def trust_confirmation(teacher_mod, teacher_raw: pd.DataFrame, teacher_eval_raw:
             q20 = float(cand["teacher_q20"])
             q80 = float(cand["teacher_q80"])
             vals = pd.to_numeric(cdf[feature], errors="coerce").to_numpy(float)
-
             symbols = {}
             symbol_pass = 0
             for symbol in EXPECTED_SYMBOLS:
@@ -163,7 +157,6 @@ def trust_confirmation(teacher_mod, teacher_raw: pd.DataFrame, teacher_eval_raw:
                 symbols[symbol] = rec
                 ratio = rec["bad_over_good_error_ratio"]
                 symbol_pass += int(ratio is not None and ratio >= 1.10)
-
             folds = {}
             fold_pass = 0
             for fold, dates in FOLDS.items():
@@ -172,7 +165,6 @@ def trust_confirmation(teacher_mod, teacher_raw: pd.DataFrame, teacher_eval_raw:
                 folds[fold] = rec
                 ratio = rec["bad_over_good_error_ratio"]
                 fold_pass += int(ratio is not None and ratio >= 1.10)
-
             passed = bool(symbol_pass >= 12 and fold_pass >= 3)
             out.append({
                 "horizon_minutes": h,
@@ -203,7 +195,6 @@ def main() -> None:
     ap.add_argument("--protocol", required=True)
     ap.add_argument("--out", default="microstructure_transfer_confirmation_result")
     args = ap.parse_args()
-
     tdir = Path(args.teacher_bank_dir)
     cdir = Path(args.confirmation_bank_dir)
     teacher_module_path = Path(args.teacher_module)
@@ -211,7 +202,6 @@ def main() -> None:
     protocol_path = Path(args.protocol)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-
     knowledge = json.loads(knowledge_path.read_text())
     protocol = json.loads(protocol_path.read_text())
     if knowledge.get("knowledge_set") != "MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1":
@@ -224,7 +214,6 @@ def main() -> None:
         raise RuntimeError("accepted trust candidate count changed")
     if knowledge.get("ineligible_classes", {}).get("magnitude_models") != "NO_V1_1_MODEL_FAMILY_PASSED_STABILITY_GATE":
         raise RuntimeError("model eligibility changed")
-
     tman = json.loads((tdir / "manifest.json").read_text())
     cman = json.loads((cdir / "manifest.json").read_text())
     if tman.get("version") != "MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1":
@@ -241,7 +230,6 @@ def main() -> None:
             raise RuntimeError(f"transfer bank check failed {k}")
     if float(checks.get("finite_mid_fraction", 0.0)) < 0.999999:
         raise RuntimeError("transfer bank finite-mid check failed")
-
     teacher_path = tdir / "teacher_states_15m.csv.gz"
     eval_path = tdir / "historical_evaluation_states_15m.csv.gz"
     confirmation_path = cdir / "states_15m.csv.gz"
@@ -253,20 +241,16 @@ def main() -> None:
         raise RuntimeError("teacher historical-evaluation hash mismatch")
     if sha256(confirmation_path) != cman.get("states_sha256"):
         raise RuntimeError("confirmation state hash mismatch")
-
     teacher_mod = load_teacher_module(teacher_module_path)
     teacher_raw = pd.read_csv(teacher_path)
     teacher_eval_raw = pd.read_csv(eval_path)
     confirmation_raw = pd.read_csv(confirmation_path)
-
     needed_horizons = sorted(set([int(x["horizon_minutes"]) for x in knowledge["eligible_stable_feature_relationships"]] + [int(x["horizon_minutes"]) for x in knowledge["eligible_trust_information"]]))
     labeled_confirmation = {h: teacher_mod.label_horizon(confirmation_raw, h) for h in needed_horizons}
-
     relationships = relationship_confirmation(teacher_mod, labeled_confirmation, knowledge)
     trust = trust_confirmation(teacher_mod, teacher_raw, teacher_eval_raw, labeled_confirmation, knowledge)
     confirmed_relationships = [x for x in relationships if x["breadth_confirmed"]]
     confirmed_trust = [x for x in trust if x["breadth_confirmed"]]
-
     result = {
         "version": "MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1_RESULT",
         "built_at": datetime.now(timezone.utc).isoformat(),
@@ -290,21 +274,21 @@ def main() -> None:
             "breadth_confirmed_trust_candidates": len(confirmed_trust),
             "any_transferable_knowledge_confirmed": bool(confirmed_relationships or confirmed_trust),
             "eligible_model_families_confirmed": 0,
-            "ofi_incremental_confirmed": false,
-            "economic_edge_claim": false,
-            "trade_authority": false
+            "ofi_incremental_confirmed": False,
+            "economic_edge_claim": False,
+            "trade_authority": False
         },
         "governance": {
-            "feature_reselection": false,
-            "symbol_reselection": false,
-            "sign_reselection": false,
-            "threshold_retuning": false,
-            "hyperparameter_search": false,
-            "confirmation_model_refit_on_confirmation_data": false,
-            "trading_rule_selection": false,
-            "gen3c_change": false,
-            "historical_confirmation_is_not_fresh_forward_qualification": true,
-            "real_money_authority": false
+            "feature_reselection": False,
+            "symbol_reselection": False,
+            "sign_reselection": False,
+            "threshold_retuning": False,
+            "hyperparameter_search": False,
+            "confirmation_model_refit_on_confirmation_data": False,
+            "trading_rule_selection": False,
+            "gen3c_change": False,
+            "historical_confirmation_is_not_fresh_forward_qualification": True,
+            "real_money_authority": False
         }
     }
     (out / "transfer_confirmation_result.json").write_text(json.dumps(result, indent=2))
