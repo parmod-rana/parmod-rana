@@ -1,0 +1,65 @@
+name: Crypto Survival Microstructure Fresh Forward Data Plumbing Validation
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/build_microstructure_fresh_forward_pair.py'
+      - 'crypto_survival_training/merge_microstructure_fresh_forward_pairs.py'
+      - '.github/workflows/crypto_survival_microstructure_fresh_forward_data_plumbing_validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify frozen data-plumbing blobs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:crypto_survival_training/build_microstructure_fresh_forward_pair.py)" = "9aee17a991a3465cb3f40d01934c28031e663fc0"
+          test "$(git rev-parse HEAD:crypto_survival_training/merge_microstructure_fresh_forward_pairs.py)" = "c4b89426a94d924aa92f6a43d416f2adee992007"
+          test "$(git rev-parse HEAD:crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1.json)" = "de391d370d21d1b2459c85a7e041058f60d41d43"
+          test "$(git rev-parse HEAD:crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json)" = "5584d2eabee725d722eac2384ca18fb59c878c78"
+          echo FRESH_FORWARD_DATA_PLUMBING_BLOB_LOCK_PASS
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install compile dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas requests
+      - name: Compile frozen data plumbing
+        run: |
+          python -m py_compile crypto_survival_training/build_microstructure_fresh_forward_pair.py
+          python -m py_compile crypto_survival_training/merge_microstructure_fresh_forward_pairs.py
+      - name: Verify frozen symbols and dates equal holdout
+        run: |
+          python - <<'PY'
+          import importlib.util,json
+          from pathlib import Path
+          root=Path('crypto_survival_training')
+          def load(name,path):
+              s=importlib.util.spec_from_file_location(name,path); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
+          b=load('ffbuild',root/'build_microstructure_fresh_forward_pair.py')
+          m=load('ffmerge',root/'merge_microstructure_fresh_forward_pairs.py')
+          h=json.load(open(root/'MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json'))
+          dates=[d for pair in h['future_blocks'].values() for d in pair]
+          assert b.SYMBOLS == h['symbols'] == m.SYMBOLS
+          assert b.DATES == dates == m.DATES
+          assert len(b.SYMBOLS)==20 and len(b.DATES)==8
+          assert len(m.EXPECTED)==160
+          print('FRESH_FORWARD_PANEL_LOCK_PASS',len(b.SYMBOLS),len(b.DATES),len(m.EXPECTED))
+          PY
+      - name: Verify merger fails closed on incomplete bank
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/empty_forward_bank
+          if python crypto_survival_training/merge_microstructure_fresh_forward_pairs.py --root /tmp/empty_forward_bank --out /tmp/should_not_exist > /tmp/merge.log 2>&1; then
+            echo 'ERROR: incomplete bank unexpectedly passed'
+            cat /tmp/merge.log
+            exit 1
+          fi
+          grep -q 'fresh-forward bank incomplete' /tmp/merge.log
+          echo FRESH_FORWARD_INCOMPLETE_BANK_FAIL_CLOSED_PASS
