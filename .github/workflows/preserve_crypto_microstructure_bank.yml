@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
-      FULL_BANK_RUN_ID: '34185837887'
+      FULL_BANK_RUN_ID: '34187443705'
       ARTIFACT_NAME: crypto-survival-microstructure-experience-bank-full
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           x=json.load(open(sys.argv[1]))
           required={
             'status':'PRESERVE_AFTER_FAIL_CLOSED_MERGE_PASS',
-            'full_bank_run_id':34185837887,
+            'full_bank_run_id':34187443705,
             'authority':'DATA_ONLY_NO_TRADE_AUTHORITY',
           }
           for k,v in required.items():
