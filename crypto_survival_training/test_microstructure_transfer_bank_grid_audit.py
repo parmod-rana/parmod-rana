@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# Synthetic integrity tests for the frozen 20x8 exact-grid transfer bank.
+
 import hashlib
 import json
 import tempfile
