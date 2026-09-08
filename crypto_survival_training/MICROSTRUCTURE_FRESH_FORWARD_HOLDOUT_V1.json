@@ -1,0 +1,64 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "holdout": "MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1",
+  "status": "FROZEN_BEFORE_20_SYMBOL_HISTORICAL_TRANSFER_RESULT_AND_BEFORE_ALL_HOLDOUT_DATES",
+  "authority": "FUTURE_KNOWLEDGE_QUALIFICATION_ONLY_NO_TRADE_AUTHORITY",
+  "frozen_at_utc": "2026-09-08T04:57:00Z",
+  "purpose": "Provide a genuinely unseen-time qualification boundary for any microstructure knowledge that first survives the pre-registered 20-symbol historical transfer confirmation.",
+  "symbols": [
+    "BTC-USDT", "ETH-USDT", "SOL-USDT", "XRP-USDT", "ADA-USDT", "DOGE-USDT",
+    "LINK-USDT", "AVAX-USDT", "DOT-USDT", "LTC-USDT", "TRX-USDT", "UNI-USDT",
+    "AAVE-USDT", "NEAR-USDT", "ETC-USDT", "FIL-USDT", "CRV-USDT", "SUSHI-USDT",
+    "ALGO-USDT", "XLM-USDT"
+  ],
+  "future_blocks": {
+    "P1": ["2026-09-15", "2026-10-01"],
+    "P2": ["2026-10-15", "2026-11-01"],
+    "P3": ["2026-11-15", "2026-12-01"],
+    "P4": ["2026-12-15", "2027-01-01"]
+  },
+  "data_preference": {
+    "primary": "EXACT_OKX_MODULE6_SPOT_50_LEVEL_TBT_ARCHIVE_FOR_EACH_FROZEN_DATE_AFTER_IT_BECOMES_AVAILABLE",
+    "reason": "Keeps the forward holdout in the same data domain and feature definition as the historical teacher and breadth study without requiring live VIP4 access.",
+    "optional_live_capture": "OKX_books50-l2-tbt_under_MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1",
+    "public_100ms_books_fallback_may_replace_exact_TBT_for_qualification": false
+  },
+  "eligibility": {
+    "relationship_candidate_must_first_pass_historical_20_symbol_breadth_gate": true,
+    "trust_candidate_must_first_pass_historical_20_symbol_breadth_gate": true,
+    "historically_failed_candidate_may_be_resurrected_from_forward_result": false,
+    "model_family_or_ofi_block_failed_by_teacher_may_be_resurrected": false
+  },
+  "forward_relationship_gate": {
+    "same_sign_symbols_min": 12,
+    "symbol_median_abs_spearman_min": 0.02,
+    "same_sign_future_blocks_min": 3,
+    "all_conditions_required": true,
+    "teacher_sign_is_immutable": true
+  },
+  "forward_trust_gate": {
+    "symbols_bad_over_good_error_ratio_at_least_1_10_min": 12,
+    "future_blocks_bad_over_good_error_ratio_at_least_1_10_min": 3,
+    "teacher_q20_q80_thresholds_immutable": true,
+    "all_conditions_required": true
+  },
+  "missing_or_delisted_symbol_rule": {
+    "substitute_symbol": false,
+    "fabricate_or_impute": false,
+    "record_unavailability_explicitly": true,
+    "qualification_requires_all_20_frozen_symbols_with_genuine_data": true,
+    "reason": "The holdout is deliberately strict; if the frozen universe cannot be observed completely, the knowledge remains unqualified rather than silently changing the universe."
+  },
+  "governance": {
+    "future_dates_reselection": false,
+    "future_symbols_reselection": false,
+    "feature_reselection": false,
+    "sign_reselection": false,
+    "threshold_retuning": false,
+    "post_result_hyperparameter_search": false,
+    "forward_result_is_not_a_trading_strategy": true,
+    "gen3c_change": false,
+    "future_trading_integration_requires_separately_pre_registered_generation": true,
+    "real_money_authority": false
+  }
+}
