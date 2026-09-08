@@ -1,0 +1,41 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "bank_version": "MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1",
+  "status": "PASS_FAIL_CLOSED_MERGE",
+  "authority": "DATA_ONLY_NO_TRADE_AUTHORITY",
+  "original_shard_run_id": 34185837887,
+  "original_shard_source_commit": "0233df870b2ad9a5aaee0c3588d11da72586bf07",
+  "original_shards": 16,
+  "original_merge_issue": "Mechanical only: merge job omitted requests package although imported constants module imported requests. No shard/data/integrity failure occurred.",
+  "recovery_merge_run_id": 34187443705,
+  "recovery_merge_job_id": 101938518455,
+  "recovery_change": "Added missing requests dependency only; exact original merger source commit and exact original 16 successful shard artifacts were reused.",
+  "full_bank_artifact_id": 10040995477,
+  "full_bank_artifact_zip_sha256": "26319c2f8e67dba6fe2b52f1277831e72943876a931eaf653309b2f02b2bc90b",
+  "full_bank_artifact_size_bytes": 8431995,
+  "rows": {
+    "all": 12288,
+    "teacher": 9216,
+    "historical_evaluation": 3072
+  },
+  "data_sha256": {
+    "all": "c3651b318c7a52ff3ffd7a1e4249e76c052aaa275e16a2100f3f87b791f5cffd",
+    "teacher": "74d76d3250186ec3b20a0ff578297994cafd4ab9b07b82806b1a1f1559c732c2",
+    "historical_evaluation": "d6467309c6312f4a7481bba5117762e9b323ba1237ac30771921decee1230a55"
+  },
+  "checks": {
+    "all_16_frozen_shards_present": true,
+    "all_128_frozen_symbol_date_pairs_present": true,
+    "unique_symbol_state_time": true,
+    "teacher_evaluation_dates_disjoint": true,
+    "finite_mid_fraction_all": 1.0,
+    "no_forward_returns_used": true,
+    "no_model_fit": true,
+    "no_trade_authority": true,
+    "missing_pair_policy": "FAIL_CLOSED_DO_NOT_IMPUTE"
+  },
+  "teacher_symbols": ["BAT-USDT", "ZRX-USDT", "ATOM-USDT", "BCH-USDT"],
+  "state_resolution": "15m completed bucket",
+  "interpretation": "The causal order-flow experience bank is complete and valid for the already frozen research-only V1.1 teacher. This is data-integrity evidence, not predictive-edge or profitability evidence.",
+  "real_money_authority": false
+}
