@@ -1,0 +1,44 @@
+name: VARDHANI R3E preflight
+
+on:
+  push:
+    branches: [r3e-economic-router-freeze]
+    paths:
+      - 'VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/**'
+      - '.github/workflows/r3e-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Syntax compile
+        run: python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runner.py
+      - name: Freeze consistency checks
+        run: |
+          python - <<'PY'
+          import importlib.util, json, pathlib
+          base=pathlib.Path('VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E')
+          spec=importlib.util.spec_from_file_location('r3e', base/'r3e_runner.py')
+          m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          schema=json.loads((base/'R3E_42_FEATURE_SCHEMA_FREEZE_V1.json').read_text())
+          manifest=json.loads((base/'R3E_EXECUTION_MANIFEST_V1.json').read_text())
+          assert len(m.FEATURES)==42
+          assert m.FEATURES==[x['name'] for x in schema['columns']]
+          assert m.ARCHIVE_SHA256==manifest['genuine_raw_archive']['sha256']
+          assert m.ALLOWED_CONTENT_YEARS=={2022,2023,2024}
+          assert set(m.HORIZONS)=={15,30,60}
+          assert tuple(m.Q_GRID)==(0.99,0.995,0.9975)
+          assert manifest['student_optimizer_steps']==0
+          assert manifest['economic_edge_claimed'] is False
+          print('R3E PREFLIGHT PASS')
+          PY
