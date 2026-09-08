@@ -1,0 +1,95 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "study": "MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1",
+  "status": "PRE_REGISTERED_BEFORE_TEACHER_RESULT",
+  "authority": "CONFIRMATORY_RESEARCH_ONLY_NO_TRADE_AUTHORITY",
+  "purpose": "Confirm that any microstructure knowledge accepted by the frozen four-symbol teacher transfers to a materially wider crypto panel without reselecting features, signs, thresholds, models or coins after seeing teacher results.",
+  "trigger_condition": {
+    "run_only_if_teacher_has_accepted_knowledge": true,
+    "if_no_teacher_knowledge_passes": "SKIP_AND_RECORD_NO_TRANSFER_CANDIDATE"
+  },
+  "teacher_symbols_excluded": ["BAT-USDT", "ZRX-USDT", "ATOM-USDT", "BCH-USDT"],
+  "confirmation_symbols_frozen": [
+    "BTC-USDT", "ETH-USDT", "SOL-USDT", "XRP-USDT", "ADA-USDT", "DOGE-USDT",
+    "LINK-USDT", "AVAX-USDT", "DOT-USDT", "LTC-USDT", "TRX-USDT", "UNI-USDT",
+    "AAVE-USDT", "NEAR-USDT", "ETC-USDT", "FIL-USDT", "CRV-USDT", "SUSHI-USDT",
+    "ALGO-USDT", "XLM-USDT"
+  ],
+  "confirmation_dates_frozen": {
+    "F1": ["2025-07-15", "2025-08-15"],
+    "F2": ["2025-11-15", "2025-12-15"],
+    "F3": ["2026-03-15", "2026-04-15"],
+    "F4": ["2026-06-15", "2026-07-15"]
+  },
+  "availability_evidence": {
+    "source_file": "crypto_survival_training/MICROSTRUCTURE_BREADTH_EVIDENCE.json",
+    "verified_available_pairs_for_full_24_symbol_panel": 192,
+    "availability_fraction": 1.0,
+    "economic_outcomes_used_to_choose_confirmation_symbols": false
+  },
+  "data_rules": {
+    "provider": "OKX historical market-data archive",
+    "module": 6,
+    "market_type": "SPOT",
+    "raw_type": "50-level tick-by-tick full book snapshots",
+    "state_resolution": "15m completed bucket",
+    "exact_exchange_timestamp_filter": true,
+    "historical_schema_normalization": "lossless names only",
+    "missing_pair_policy": "FAIL_CLOSED_DO_NOT_IMPUTE",
+    "raw_retention": "stream_hash_aggregate_delete",
+    "labels": "same exact 15m/60m/240m future-mid labels as frozen teacher; never interpolate and never cross sampled UTC day"
+  },
+  "candidate_lock_from_teacher": {
+    "stable_feature_relationships": "Use exactly and only rows marked stable_relationship=true by MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1_RESULT. Feature name, horizon and teacher sign are immutable in confirmation.",
+    "model_information": "A fixed teacher model family is eligible only if its V1.1 model_stability flag is true. Refit only on the original frozen four-symbol teacher states with identical frozen hyperparameters; never fit on confirmation symbols.",
+    "ofi_incremental": "Eligible only if V1.1 stable_incremental_information=true. Compare the same full versus no-OFI teacher-fitted models on confirmation states without refitting.",
+    "trust_information": "Eligible only for variables with V1.1 stable_trust_information=true. Reuse exact teacher-defined quintile thresholds and the same teacher-fitted nonlinear magnitude model; do not recompute thresholds on confirmation symbols."
+  },
+  "confirmation_gates_frozen": {
+    "stable_feature_relationship": {
+      "confirmation_symbols_same_sign_as_teacher_min": 12,
+      "confirmation_symbol_median_abs_spearman_min": 0.02,
+      "confirmation_folds_same_sign_as_teacher_min": 3,
+      "all_conditions_required": true
+    },
+    "magnitude_model": {
+      "confirmation_symbols_positive_spearman_min": 12,
+      "confirmation_symbols_beating_teacher_constant_baseline_MAE_min": 12,
+      "confirmation_folds_positive_spearman_min": 3,
+      "confirmation_folds_beating_teacher_constant_baseline_MAE_min": 3,
+      "all_conditions_required": true
+    },
+    "direction_model": {
+      "confirmation_symbols_ROC_AUC_above_0_5_min": 12,
+      "confirmation_symbols_beating_teacher_constant_baseline_log_loss_min": 12,
+      "confirmation_folds_ROC_AUC_above_0_5_min": 3,
+      "confirmation_folds_beating_teacher_constant_baseline_log_loss_min": 3,
+      "all_conditions_required": true
+    },
+    "ofi_incremental": {
+      "confirmation_symbols_full_beats_no_ofi_MAE_min": 12,
+      "confirmation_symbols_full_beats_no_ofi_log_loss_min": 12,
+      "confirmation_folds_full_beats_no_ofi_MAE_min": 3,
+      "confirmation_folds_full_beats_no_ofi_log_loss_min": 3,
+      "all_conditions_required": true
+    },
+    "trust_information": {
+      "confirmation_symbols_bad_over_good_error_ratio_at_least_1_10_min": 12,
+      "confirmation_folds_bad_over_good_error_ratio_at_least_1_10_min": 3,
+      "all_conditions_required": true
+    }
+  },
+  "governance": {
+    "feature_reselection_after_teacher_result": false,
+    "symbol_reselection_after_teacher_result": false,
+    "sign_reselection_after_teacher_result": false,
+    "threshold_retuning": false,
+    "hyperparameter_search": false,
+    "confirmation_model_refit_on_confirmation_data": false,
+    "trading_rule_selection": false,
+    "gen3c_change": false,
+    "historical_confirmation_is_not_fresh_forward_qualification": true,
+    "fresh_forward_shadow_required_before_any_real_money_consideration": true,
+    "real_money_authority": false
+  }
+}
