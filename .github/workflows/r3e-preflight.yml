@@ -22,7 +22,9 @@ jobs:
       - name: Install pinned research dependencies
         run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
       - name: Syntax compile
-        run: python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runner.py
+        run: |
+          python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runner.py
+          python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_cpu_resume.py
       - name: Freeze consistency checks
         run: |
           python - <<'PY'
@@ -31,13 +33,20 @@ jobs:
           ns=runpy.run_path(str(base/'r3e_runner.py'), run_name='r3e_preflight')
           schema=json.loads((base/'R3E_42_FEATURE_SCHEMA_FREEZE_V1.json').read_text())
           manifest=json.loads((base/'R3E_EXECUTION_MANIFEST_V1.json').read_text())
+          cpu=json.loads((base/'R3E_CPU_ONLY_EXECUTION_AUTHORITY_V1.json').read_text())
           assert len(ns['FEATURES'])==42
           assert ns['FEATURES']==[x['name'] for x in schema['columns']]
           assert ns['ARCHIVE_SHA256']==manifest['genuine_raw_archive']['sha256']
           assert ns['ALLOWED_CONTENT_YEARS']=={2022,2023,2024}
           assert set(ns['HORIZONS'])=={15,30,60}
           assert tuple(ns['Q_GRID'])==(0.99,0.995,0.9975)
+          assert ns['MODEL_PARAMS']['n_jobs']==1
           assert manifest['student_optimizer_steps']==0
           assert manifest['economic_edge_claimed'] is False
-          print('R3E PREFLIGHT PASS')
+          assert cpu['compute']['device']=='CPU_ONLY'
+          assert cpu['compute']['gpu_allowed'] is False
+          assert cpu['immutable_research_contract']['model_params_changed'] is False
+          assert cpu['immutable_research_contract']['gate_logic_changed'] is False
+          assert cpu['immutable_research_contract']['feature_logic_changed'] is False
+          print('R3E CPU-ONLY PREFLIGHT PASS')
           PY
