@@ -1,0 +1,67 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "generation": "GEN3G",
+  "version": "R1F-GEN3G-CAUSAL-RELIABILITY-MEMORY",
+  "frozen_before_walk_forward_result": true,
+  "source_commit": "dd13b64823115e6455157454f4e4aa3f20537681",
+  "workflow_run_id": 34184755928,
+  "authority_if_successful": "SHADOW_PAPER_ONLY",
+  "objective": "Increase profitable cross-regime intelligence by letting Gen3C temporal memories gain or lose influence only from genuinely realized, causally available outcomes of their own recent proposals while preserving opportunity coverage.",
+  "non_deviation_rules": {
+    "gen3c_temporal_action_value_memories_remain_decision_source": true,
+    "named_strategy_authority": false,
+    "post_hoc_quality_gate": false,
+    "hard_regime_filter": false,
+    "funding_input": false,
+    "open_interest_input": false,
+    "orderbook_input": false,
+    "liquidation_input": false,
+    "already_inspected_2026_08_01_plus_excluded": true,
+    "post_result_threshold_tuning_forbidden": true
+  },
+  "frozen_configuration": {
+    "timeframe": "4h",
+    "max_symbols": 72,
+    "roundtrip_cost_bps": 30,
+    "capacity": 2.0,
+    "q_floor_bps": 60.0,
+    "risk_penalty": 0.28,
+    "temporal_windows_days": [0, 730, 365],
+    "experience_days": 180,
+    "reliability_alpha": 0.12,
+    "reliability_net_scale_bps": 150.0,
+    "reliability_temperature": 0.35,
+    "adaptive_weight_strength": 0.45,
+    "proposals_per_memory_per_epoch": 2,
+    "reliability_update_rule": "Outcome can change memory utility only after the chosen action horizon has completed.",
+    "equal_weight_anchor": "55% fixed equal-memory weight plus 45% causal reliability softmax."
+  },
+  "gen3c_reference": {
+    "median_fold_avg_net_bps": 24.995931677133225,
+    "worst_fold_avg_net_bps": -84.1294575172906,
+    "worst_fold_profit_factor": 0.7215288019729019,
+    "worst_fold_max_drawdown_bps": 6595.604675176961
+  },
+  "promotion_gate_all_required": {
+    "walk_forward_robust_pass": true,
+    "positive_fold_count_min": 3,
+    "minimum_total_trades": 400,
+    "minimum_trades_each_fold": 80,
+    "median_fold_avg_net_bps_must_exceed_gen3c": true,
+    "worst_fold_avg_net_bps_must_exceed": -84.1294575172906,
+    "worst_fold_profit_factor_must_exceed": 0.7215288019729019,
+    "worst_fold_max_drawdown_bps_must_be_below": 6595.604675176961,
+    "fresh_forward_shadow_evidence_still_required_for_real_money_qualification": true
+  },
+  "failed_generation_experience_used": {
+    "GEN3D": "Learned meta-gating overfit and made all four frozen folds negative; Gen3G therefore has no separate meta model selecting a memory.",
+    "GEN3E": "Trade-quality filtering collapsed to more than 99.9% WAIT; Gen3G therefore preserves Gen3C opportunity coverage and never converts reliability into a hard WAIT gate.",
+    "GEN3F_V2": "Funding/OI improved the worst average loss but damaged median performance and worst drawdown; Gen3G therefore does not add leverage-state features to this frozen experiment."
+  },
+  "parallel_data_research": {
+    "microstructure_breadth_run_id": 34184578729,
+    "purpose": "Data availability only across 24 spot markets and 8 dates spanning F1-F4.",
+    "cannot_change_gen3g_result": true,
+    "future_use_requires_separate_pre_registered_generation": true
+  }
+}
