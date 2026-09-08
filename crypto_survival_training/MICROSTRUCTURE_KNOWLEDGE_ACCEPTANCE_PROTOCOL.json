@@ -52,7 +52,7 @@
     "teacher_result_may_identify_what_information_is_stable": true,
     "teacher_result_may_not_define_a_trade_rule": true,
     "broader_confirmation_must_precede_microstructure_trade_integration": true,
-    "future_architecture_must_be written_after_knowledge_acceptance_and_confirmation_but_before_its_own_economic_evaluation": true,
+    "future_architecture_must_be_written_after_knowledge_acceptance_and_confirmation_but_before_its_own_economic_evaluation": true,
     "gen3c_remains_unchanged_until_a_future_generation_passes_its_own_frozen_gate": true,
     "avoid_hard_gate_by_default": "GEN3D/GEN3E experience shows hard filtering can overfit or collapse opportunity coverage; any future gate requires independent preregistration and justification.",
     "fresh_forward_shadow_required": true,
