@@ -9,10 +9,9 @@ from crypto_survival_training import train_okx_dynamic_brain_gen3f as base
 # GEN3F V2 DATA-INTEGRITY PATCH ONLY.
 # Trading architecture, neural model, folds, costs, q-floor, capacity and all
 # frozen promotion gates remain exactly those defined in Gen3F.
-# This patch handles the verified OKX archive schema where funding_time is a UTC
-# datetime string (for example 2025-01-05 00:00:00), not an integer epoch.
-# Pandas 3.x may preserve microsecond datetime resolution, so never infer the
-# integer unit from astype('int64'); convert explicitly through Unix seconds.
+# OKX funding archives have been observed with epoch-ms values; this parser also
+# accepts genuine datetime text if the upstream schema changes. Never infer a
+# timestamp unit from pandas datetime storage resolution.
 
 MIN_FUNDING_ROWS = 50_000
 MIN_FUNDING_SYMBOLS = 40
@@ -22,10 +21,34 @@ MIN_VALID_EPOCH_MS = 1_600_000_000_000
 MAX_VALID_EPOCH_MS = 2_000_000_000_000
 
 
-def _utc_series_to_epoch_ms(parsed: pd.Series) -> pd.Series:
-    """Convert tz-aware timestamps to epoch milliseconds independent of pandas dtype resolution."""
-    out = parsed.map(lambda ts: int(ts.timestamp() * 1000) if pd.notna(ts) else pd.NA)
-    return out.astype('Int64')
+def _funding_time_to_epoch_ms(values: pd.Series) -> pd.Series:
+    """Parse mixed OKX funding_time values without guessing numeric units."""
+    raw = values.astype('string').str.strip()
+    numeric = pd.to_numeric(raw, errors='coerce')
+    out = pd.Series(pd.NA, index=values.index, dtype='Int64')
+
+    # Verified OKX archive representation: 13-digit Unix epoch milliseconds.
+    valid_num = numeric.between(MIN_VALID_EPOCH_MS, MAX_VALID_EPOCH_MS, inclusive='both')
+    if valid_num.any():
+        out.loc[valid_num] = numeric.loc[valid_num].round().astype('int64')
+
+    # Schema-adaptive fallback for genuinely textual UTC datetimes only.
+    remaining = out.isna() & raw.notna()
+    if remaining.any():
+        parsed = pd.to_datetime(raw.loc[remaining], utc=True, errors='coerce')
+        text_ms = parsed.map(lambda ts: int(ts.timestamp() * 1000) if pd.notna(ts) else pd.NA).astype('Int64')
+        text_valid = text_ms.between(MIN_VALID_EPOCH_MS, MAX_VALID_EPOCH_MS, inclusive='both').fillna(False)
+        out.loc[text_ms.index[text_valid]] = text_ms.loc[text_valid]
+    return out
+
+
+def _self_test_timestamp_parser():
+    sample = pd.Series(['1735776000000', '2025-01-02 00:00:00+00:00', 'bad'])
+    got = _funding_time_to_epoch_ms(sample)
+    expected = 1735776000000
+    if int(got.iloc[0]) != expected or int(got.iloc[1]) != expected or pd.notna(got.iloc[2]):
+        raise RuntimeError(f'funding timestamp parser self-test failed: {got.tolist()}')
+    print('FUNDING_TIMESTAMP_PARSER_SELF_TEST PASS', got.tolist(), flush=True)
 
 
 def fetch_funding_day_fixed(day):
@@ -50,8 +73,7 @@ def fetch_funding_day_fixed(day):
                 raise RuntimeError(f'funding schema changed: {list(df.columns)}')
 
             df = df[['instrument_name', 'funding_rate', 'funding_time']].copy()
-            parsed = pd.to_datetime(df['funding_time'], utc=True, errors='coerce')
-            df['funding_time'] = _utc_series_to_epoch_ms(parsed)
+            df['funding_time'] = _funding_time_to_epoch_ms(df['funding_time'])
             df['funding_rate'] = pd.to_numeric(df['funding_rate'], errors='coerce')
             df = df.dropna(subset=['instrument_name', 'funding_rate', 'funding_time'])
             df['funding_time'] = df['funding_time'].astype('int64')
@@ -103,4 +125,5 @@ base.load_funding = load_funding_verified
 
 
 if __name__ == '__main__':
+    _self_test_timestamp_parser()
     base.main()
