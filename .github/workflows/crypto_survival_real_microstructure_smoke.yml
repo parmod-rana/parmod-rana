@@ -1,0 +1,38 @@
+name: Crypto Survival Real Microstructure Smoke
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_real_microstructure_smoke.yml'
+      - 'crypto_survival_training/test_real_okx_microstructure_archive.py'
+      - 'crypto_survival_training/microstructure_features.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas
+      - name: Verify genuine OKX 50-level TBT extraction
+        env:
+          PYTHONPATH: .
+        run: |
+          set -o pipefail
+          python crypto_survival_training/test_real_okx_microstructure_archive.py | tee real_microstructure_smoke.log
+      - name: Upload real-data evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-real-microstructure-smoke
+          path: |
+            real_microstructure_smoke/
+            real_microstructure_smoke.log
+          retention-days: 7
