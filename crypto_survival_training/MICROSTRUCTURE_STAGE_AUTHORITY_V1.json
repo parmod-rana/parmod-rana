@@ -1,7 +1,7 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
   "checkpoint": "MICROSTRUCTURE_STAGE_AUTHORITY_V1",
-  "updated_at": "2026-09-08T05:00:00Z",
+  "updated_at": "2026-09-08T06:44:00Z",
   "active_shadow": {
     "generation": "GEN3C",
     "authority": "SHADOW_PAPER_ONLY",
@@ -20,48 +20,140 @@
     "economic_edge_claim": false,
     "trade_authority": false
   },
-  "accepted_knowledge_file": "crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json",
-  "knowledge_semantics_file": "crypto_survival_training/MICROSTRUCTURE_KNOWLEDGE_SEMANTICS_V1.json",
-  "next_authorized_stage": {
+  "historical_transfer_breadth_confirmation": {
+    "status": "COMPLETE_IMMUTABLY_PRESERVED",
     "study": "MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1",
     "authority": "CONFIRMATORY_RESEARCH_ONLY_NO_TRADE_AUTHORITY",
-    "data_workflow_run_id": 34188108465,
-    "frozen_symbol_count": 20,
-    "frozen_date_count": 8,
-    "required_pair_count": 160,
-    "required_states_per_pair": 96,
-    "required_total_states": 15360,
-    "data_status": "BUILDING_FAIL_CLOSED",
-    "exact_grid_audit": {
-      "required_before_evaluation": true,
-      "validation_run_id": 34188910425,
-      "validation_status": "PASS",
-      "audit_source_commit": "4662c1782e4b420b8d46be280ec067b143a746de",
-      "audit_blob": "03c9a2b55e3a462230ecbce5da47d5d6947e34a8",
-      "execution": "DORMANT_UNTIL_MERGED_BANK_ARTIFACT_ID_AND_STATES_SHA256_ARE_LOCKED"
+    "transfer_bank": {
+      "workflow_run_id": 34188108465,
+      "artifact_id": 10042015533,
+      "artifact_name": "crypto-survival-microstructure-transfer-bank-v1",
+      "artifact_digest": "sha256:498c6907804ea24bb683a5a1c6f56289691e59a8e52138bc7e14d1dbd1a1aae4",
+      "states_sha256": "5f27360d20ed4c30ce3fe016c902b82c99f418b4fe7a38f87361400bf90dc9c2",
+      "symbol_count": 20,
+      "date_count": 8,
+      "pair_count": 160,
+      "states_per_pair": 96,
+      "rows": 15360,
+      "merge_status": "PASS_FAIL_CLOSED"
     },
-    "evaluator_validation_run_id": 34188424674,
-    "evaluator_validation_status": "PASS",
-    "evaluator_source_commit": "b54ea322c35ebef8638c501bb0798900e37a3146",
-    "evaluator_blob": "5c2dcc179f377c4dd7af86ad05cfb334153cdc86",
-    "evaluation_execution": "FORBIDDEN_UNTIL_160_PAIR_MERGE_AND_EXACT_GRID_AUDIT_BOTH_PASS"
+    "exact_grid_audit": {
+      "status": "PASS",
+      "workflow_run_id": 34194738405,
+      "job_id": 101959900559,
+      "artifact_id": 10043459258,
+      "artifact_sha256": "f865ddc58dce861c1e436639e40bd5eb2597229ccaa1fffe53c3fad41aa25dcd",
+      "exact_15m_grid_all_pairs": true,
+      "pairs": 160,
+      "rows": 15360,
+      "states_per_pair": 96,
+      "states_sha256": "5f27360d20ed4c30ce3fe016c902b82c99f418b4fe7a38f87361400bf90dc9c2"
+    },
+    "confirmation": {
+      "status": "COMPLETE",
+      "workflow_run_id": 34194815090,
+      "job_id": 101960131994,
+      "artifact_id": 10043512651,
+      "artifact_zip_sha256": "6744b789c9e1c7b8df088c6586c303416caeb1d62abf6a798a71977d677b7672",
+      "result_json_sha256": "757a6b11889878540c3b0312f21ec60a8e1edf5eca6fa6ad07e57d4ae372ef3d",
+      "pre_registered_relationship_candidates": 7,
+      "breadth_confirmed_relationships": 1,
+      "confirmed_relationship": {
+        "horizon_minutes": 60,
+        "feature": "top_ofi_norm_mean",
+        "teacher_sign": "NEGATIVE",
+        "teacher_spearman": -0.020065438108059,
+        "confirmation_symbols_same_sign_as_teacher": 13,
+        "confirmation_symbol_median_abs_spearman": 0.047443487283819974,
+        "confirmation_folds_same_sign_as_teacher": 3,
+        "semantic_constraint": "POTENTIALLY_CONTRARIAN_OR_EXHAUSTION_MARKET_STATE_RELATIONSHIP_NOT_A_DIRECT_TRADE_RULE"
+      },
+      "pre_registered_trust_candidates": 5,
+      "breadth_confirmed_trust_candidates": 0,
+      "eligible_model_families_confirmed": 0,
+      "ofi_incremental_confirmed": false,
+      "economic_edge_claim": false,
+      "trade_authority": false,
+      "gen3c_change": false,
+      "real_money_authority": false
+    },
+    "immutable_preservation": {
+      "status": "PASS",
+      "workflow_run_id": 34195062156,
+      "job_id": 101960872423,
+      "preservation_commit": "8cde7ee",
+      "artifact_path": "frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_RESULT_ACTIONS_ARTIFACT.zip",
+      "sha256_path": "frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_SHA256.txt"
+    }
   },
   "fresh_forward": {
+    "status": "PREPARED_AND_FROZEN_BEFORE_FIRST_HOLDOUT_DATE",
+    "authority": "FUTURE_KNOWLEDGE_QUALIFICATION_ONLY_NO_TRADE_AUTHORITY",
     "capture_protocol_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1.json",
+    "capture_protocol_blob": "de391d370d21d1b2459c85a7e041058f60d41d43",
     "frozen_holdout_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json",
-    "status": "PRE_REGISTERED_BEFORE_HISTORICAL_TRANSFER_RESULT",
-    "eligible_only_after_historical_breadth_confirmation": true
+    "frozen_holdout_blob": "5584d2eabee725d722eac2384ca18fb59c878c78",
+    "eligible_knowledge_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_ELIGIBLE_KNOWLEDGE_V1.json",
+    "eligible_knowledge_blob": "bff32c3d7969bfa33081991ed1873e91d879490f",
+    "eligible_relationship_count": 1,
+    "eligible_relationship": {
+      "horizon_minutes": 60,
+      "feature": "top_ofi_norm_mean",
+      "teacher_sign": "NEGATIVE"
+    },
+    "eligible_trust_candidates": [],
+    "eligible_model_families": [],
+    "ofi_incremental_eligible": false,
+    "future_blocks": {
+      "P1": ["2026-09-15", "2026-10-01"],
+      "P2": ["2026-10-15", "2026-11-01"],
+      "P3": ["2026-11-15", "2026-12-01"],
+      "P4": ["2026-12-15", "2027-01-01"]
+    },
+    "forward_gate": {
+      "same_sign_symbols_min": 12,
+      "symbol_median_abs_spearman_min": 0.02,
+      "same_sign_future_blocks_min": 3,
+      "all_conditions_required": true,
+      "teacher_sign_immutable": true
+    },
+    "evaluator": {
+      "path": "crypto_survival_training/run_microstructure_fresh_forward_evaluator.py",
+      "blob": "01607bd4ef37834b8ee5deba7fd854200c9f2e74",
+      "validation_run_id": 34195652830,
+      "validation_job_id": 101962674918,
+      "validation_status": "PASS"
+    },
+    "data_plumbing": {
+      "pair_builder_path": "crypto_survival_training/build_microstructure_fresh_forward_pair.py",
+      "pair_builder_blob": "9aee17a991a3465cb3f40d01934c28031e663fc0",
+      "merger_path": "crypto_survival_training/merge_microstructure_fresh_forward_pairs.py",
+      "merger_blob": "c4b89426a94d924aa92f6a43d416f2adee992007",
+      "validation_run_id": 34195886364,
+      "validation_job_id": 101963390988,
+      "validation_status": "PASS",
+      "incomplete_bank_policy": "FAIL_CLOSED_DO_NOT_IMPUTE_OR_SUBSTITUTE"
+    },
+    "first_genuine_holdout_date": "2026-09-15",
+    "execution_state": "WAITING_FOR_GENUINE_FUTURE_DATE_DO_NOT_BACKFILL",
+    "historically_failed_candidate_resurrection": false,
+    "post_result_retuning": false,
+    "gen3c_change": false,
+    "real_money_authority": false
   },
-  "integration_rule": "No Gen3H or other trading challenger may be defined from these microstructure results until the pre-registered 20-symbol transfer confirmation is complete. Any surviving knowledge may only inform a separately pre-registered future generation whose economic evaluation occurs after its architecture is frozen.",
+  "integration_rule": "No Gen3H or other trading challenger may be defined from these microstructure results until the pre-registered fresh-forward holdout qualification is complete. If the sole survivor later qualifies, any trading integration must be a separately pre-registered generation whose architecture is frozen before its economic evaluation. Historical or fresh-forward relationship evidence alone is not a trading strategy or economic-edge proof.",
   "mandatory_sequence": [
-    "160_PAIR_DATA_BUILD",
-    "FAIL_CLOSED_MERGE",
-    "EXACT_96_STATE_PER_PAIR_GRID_AUDIT",
-    "FROZEN_20_SYMBOL_CONFIRMATION",
-    "IMMUTABLE_RESULT_PRESERVATION",
-    "FRESH_FORWARD_HOLDOUT_QUALIFICATION_BEFORE_ANY_FUTURE_INTEGRATION_AUTHORITY"
+    {"stage": "160_PAIR_DATA_BUILD", "status": "COMPLETE"},
+    {"stage": "FAIL_CLOSED_MERGE", "status": "COMPLETE_PASS"},
+    {"stage": "EXACT_96_STATE_PER_PAIR_GRID_AUDIT", "status": "COMPLETE_PASS"},
+    {"stage": "FROZEN_20_SYMBOL_CONFIRMATION", "status": "COMPLETE_ONE_OF_SEVEN_RELATIONSHIPS_CONFIRMED"},
+    {"stage": "IMMUTABLE_RESULT_PRESERVATION", "status": "COMPLETE_PASS"},
+    {"stage": "FRESH_FORWARD_HOLDOUT_QUALIFICATION_BEFORE_ANY_FUTURE_INTEGRATION_AUTHORITY", "status": "WAITING_FOR_GENUINE_FUTURE_EVIDENCE"}
   ],
   "fresh_forward_shadow_required": true,
   "post_result_retuning_forbidden": true,
+  "economic_edge_claim": false,
+  "trade_authority": false,
+  "gen3c_change": false,
   "real_money_authority": false
 }
