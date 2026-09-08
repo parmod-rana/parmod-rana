@@ -1,0 +1,84 @@
+name: Preserve Frozen Microstructure Transfer Bank V1
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_TRANSFER_BANK_PRESERVE.json'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TRANSFER_BANK_RUN_ID: '34188108465'
+      ARTIFACT_NAME: crypto-survival-microstructure-transfer-bank-v1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          fetch-depth: 0
+      - name: Validate transfer-bank preservation lock
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          x=json.load(open('crypto_survival_training/MICROSTRUCTURE_TRANSFER_BANK_PRESERVE.json'))
+          required={
+            'status':'PRESERVE_AFTER_160_PAIR_MERGE_PASS',
+            'transfer_bank_run_id':34188108465,
+            'authority':'DATA_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v,(k,x.get(k),v)
+          assert x.get('artifact_id')
+          assert x.get('states_sha256')
+          assert x.get('real_money_authority') is False
+          print('TRANSFER_PRESERVE_LOCK_PASS')
+          PY
+      - name: Download, validate and hash exact merged bank
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ART=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${TRANSFER_BANK_RUN_ID}/artifacts?per_page=100")
+          ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ART")
+          LOCK_ID=$(python -c 'import json; print(json.load(open("crypto_survival_training/MICROSTRUCTURE_TRANSFER_BANK_PRESERVE.json"))["artifact_id"])')
+          test "$ID" = "$LOCK_ID"
+          mkdir -p frozen_experience /tmp/transfer_bank
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ID}/zip" > frozen_experience/MICROSTRUCTURE_TRANSFER_BANK_V1_ACTIONS_ARTIFACT.zip
+          unzip -q frozen_experience/MICROSTRUCTURE_TRANSFER_BANK_V1_ACTIONS_ARTIFACT.zip -d /tmp/transfer_bank
+          M=$(find /tmp/transfer_bank -path '*/microstructure_transfer_bank_v1/manifest.json' -print -quit)
+          test -n "$M"
+          python - "$M" crypto_survival_training/MICROSTRUCTURE_TRANSFER_BANK_PRESERVE.json <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          m=Path(sys.argv[1]); lock=json.load(open(sys.argv[2])); x=json.load(open(m)); c=x['checks']
+          assert x['version']=='MICROSTRUCTURE_TRANSFER_BANK_V1'
+          assert x['pair_count']==160 and len(x['symbols'])==20 and len(x['dates'])==8
+          for k in ['all_160_frozen_pairs_present','teacher_symbols_excluded','unique_symbol_state_time','no_forward_returns_used','no_model_fit','no_trade_authority']:
+              assert c[k] is True,(k,c.get(k))
+          assert float(c['finite_mid_fraction'])>=0.999999
+          actual=hashlib.sha256((m.parent/'states_15m.csv.gz').read_bytes()).hexdigest()
+          expected=lock['states_sha256']
+          assert actual==expected==x['states_sha256'],(actual,expected,x['states_sha256'])
+          print('TRANSFER_BANK_PRESERVATION_INTEGRITY_PASS',x['rows'],actual)
+          PY
+          ZIP_SHA=$(sha256sum frozen_experience/MICROSTRUCTURE_TRANSFER_BANK_V1_ACTIONS_ARTIFACT.zip | awk '{print $1}')
+          printf '%s  %s\n' "$ZIP_SHA" 'MICROSTRUCTURE_TRANSFER_BANK_V1_ACTIONS_ARTIFACT.zip' > frozen_experience/MICROSTRUCTURE_TRANSFER_BANK_V1_SHA256.txt
+      - name: Commit immutable compact transfer experience bank
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add frozen_experience/MICROSTRUCTURE_TRANSFER_BANK_V1_ACTIONS_ARTIFACT.zip frozen_experience/MICROSTRUCTURE_TRANSFER_BANK_V1_SHA256.txt
+          if git diff --cached --quiet; then
+            echo 'Transfer bank already preserved.'
+            exit 0
+          fi
+          git commit -m 'Preserve exact frozen 20-symbol microstructure transfer bank'
+          git push origin HEAD:crypto-survival-r1d-training
