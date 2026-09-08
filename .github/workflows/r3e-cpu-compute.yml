@@ -63,3 +63,4 @@ jobs:
             ${{ runner.temp }}/r3e_compute.log
           if-no-files-found: warn
           retention-days: 7
+# Retry 2: dependency-only correction; frozen research semantics unchanged.
