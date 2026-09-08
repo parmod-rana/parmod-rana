@@ -1,0 +1,76 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "protocol": "MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1",
+  "status": "PRE_REGISTERED_BEFORE_20_SYMBOL_TRANSFER_RESULT",
+  "authority": "FUTURE_EVIDENCE_CAPTURE_ONLY_NO_TRADE_AUTHORITY",
+  "purpose": "Prepare genuinely unseen-time order-flow experience so any historically breadth-confirmed knowledge can later be tested without reusing the already inspected 2025-2026 confirmation dates.",
+  "freshness_boundary": {
+    "protocol_frozen_at_utc": "2026-09-08T04:55:00Z",
+    "eligible_observation_time": "STRICTLY_AFTER_PROTOCOL_FREEZE",
+    "already_inspected_historical_dates_forbidden_as_fresh_forward": true
+  },
+  "preferred_exact_live_feed": {
+    "venue": "OKX",
+    "channel": "books50-l2-tbt",
+    "market_type": "SPOT",
+    "depth_levels": 50,
+    "incremental_publish_interval_ms": 10,
+    "requires_login": true,
+    "documented_access_requirement": "VIP4_OR_ABOVE",
+    "book_integrity": "VERIFY_SEQID_PREVSEQID_CONTINUITY",
+    "checksum_policy": "DO_NOT_USE_FOR_INTEGRITY_AFTER_2026_06_23_DEPRECATION",
+    "compatibility": "PREFERRED_FOR_DIRECT_COMPARABILITY_WITH_HISTORICAL_MODULE6_50_LEVEL_TBT_FEATURES"
+  },
+  "degraded_public_fallback": {
+    "channel": "books",
+    "depth_levels": 400,
+    "publish_interval_ms": 100,
+    "classification": "DOMAIN_SHIFT_RESEARCH_ONLY",
+    "reason": "Lower event frequency changes event-weighted OFI, mean, standard-deviation and update-count statistics even when the reconstructed book state is valid.",
+    "may_directly_qualify_historical_10ms_TBT_knowledge": false,
+    "requires_separate_pre_registered_domain_bridge_study": true
+  },
+  "initial_observation_universe": {
+    "minimum_fixed_panel": [
+      "BTC-USDT", "ETH-USDT", "SOL-USDT", "XRP-USDT", "ADA-USDT", "DOGE-USDT",
+      "LINK-USDT", "AVAX-USDT", "DOT-USDT", "LTC-USDT", "TRX-USDT", "UNI-USDT",
+      "AAVE-USDT", "NEAR-USDT", "ETC-USDT", "FIL-USDT", "CRV-USDT", "SUSHI-USDT",
+      "ALGO-USDT", "XLM-USDT"
+    ],
+    "broader_dynamic_symbols_allowed_for_capture": true,
+    "future_qualification_must_report_fixed_panel_separately": true,
+    "symbol_selection_by_future_outcome": false
+  },
+  "capture_rules": {
+    "raw_event_timestamp": true,
+    "local_receive_timestamp": true,
+    "sequence_ids": true,
+    "full_reconstructed_50_level_state": true,
+    "completed_15m_state_features": true,
+    "same_feature_definitions_as_historical_when_exact_feed_used": true,
+    "no_interpolation_of_missing_sequence": true,
+    "sequence_gap_policy": "INVALIDATE_AFFECTED_STATE_UNTIL_FRESH_SNAPSHOT_REESTABLISHES_CONTINUITY",
+    "raw_retention": "OPTIONAL_COMPRESSED_SHORT_TERM_WITH_DURABLE_HASH_AND_COMPACT_STATE_RETENTION",
+    "no_future_label_available_at_capture_time": true
+  },
+  "knowledge_capture_scope": {
+    "capture_all_v1_1_accepted_candidates_before_knowing_breadth_survivors": true,
+    "stable_relationship_candidates": [
+      "depth_notional_10_last", "top_ofi_norm_mean", "top_ofi_norm_std",
+      "qty_imb_50_std", "top_ofi_abs_max", "qty_imb_20_mean"
+    ],
+    "trust_context_candidates": ["spread_bps_mean", "depth_notional_50_mean"],
+    "measurement_quality": ["capture_latency_ms_mean"],
+    "capture_latency_directional_alpha_forbidden": true
+  },
+  "future_evaluation_governance": {
+    "no_threshold_retuning_from_forward_outcomes": true,
+    "no_feature_reselection_from_forward_outcomes": true,
+    "no_symbol_reselection_from_forward_outcomes": true,
+    "no_backfill_to_manufacture_forward_pass": true,
+    "historical_breadth_pass_required_before_candidate_can_be_forward_qualified": true,
+    "fresh_forward_evidence_does_not_change_gen3c_automatically": true,
+    "future_trading_integration_requires_separately_frozen_generation": true,
+    "real_money_authority": false
+  }
+}
