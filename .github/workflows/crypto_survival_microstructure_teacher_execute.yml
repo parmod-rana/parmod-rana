@@ -1,0 +1,115 @@
+name: Crypto Survival Frozen Microstructure Teacher Execution
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  teacher:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      FROZEN_SOURCE_COMMIT: 8867743ba783a15e157d9d034b26da17b5a9e14d
+      EXPECTED_TEACHER_BLOB: 628cba4acdf065c97668b88f7ad74c0952026490
+      EXPECTED_PROTOCOL_BLOB: a65380309e25feda0c85b9abcab4d800e72f3657
+      FULL_BANK_RUN_ID: '34185837887'
+      FULL_BANK_ARTIFACT_NAME: crypto-survival-microstructure-experience-bank-full
+    steps:
+      - name: Read one-time execution lock
+        uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          path: trigger_repo
+      - name: Validate execution lock is exact
+        run: |
+          python - <<'PY'
+          import json
+          p='trigger_repo/crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json'
+          x=json.load(open(p))
+          required={
+            'status':'AUTHORIZED_AFTER_FULL_BANK_PASS',
+            'full_bank_run_id':34185837887,
+            'frozen_source_commit':'8867743ba783a15e157d9d034b26da17b5a9e14d',
+            'validation_run_id':34186426391,
+            'authority':'RESEARCH_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              if x.get(k)!=v:
+                  raise SystemExit(f'lock mismatch {k}: {x.get(k)!r} != {v!r}')
+          if not x.get('full_bank_artifact_id'):
+              raise SystemExit('full_bank_artifact_id missing')
+          if not x.get('full_bank_manifest_sha256'):
+              raise SystemExit('full_bank_manifest_sha256 missing')
+          print('EXECUTION_LOCK_PASS', x)
+          PY
+      - name: Checkout exact validated teacher source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.FROZEN_SOURCE_COMMIT }}
+          path: frozen_source
+      - name: Verify frozen source blobs
+        working-directory: frozen_source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object crypto_survival_training/run_microstructure_experience_teacher.py)" = "$EXPECTED_TEACHER_BLOB"
+          test "$(git hash-object crypto_survival_training/MICROSTRUCTURE_TEACHER_MODEL_PROTOCOL.json)" = "$EXPECTED_PROTOCOL_BLOB"
+          echo "FROZEN_SOURCE_BLOBS_PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact fixed teacher dependencies
+        run: pip install --disable-pip-version-check numpy pandas scipy scikit-learn==1.9.0
+      - name: Resolve and download exact full-bank artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir bank_download
+          ARTIFACT_JSON=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${FULL_BANK_RUN_ID}/artifacts?per_page=100")
+          ARTIFACT_ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["FULL_BANK_ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1, a; print(a[0]["id"])' <<< "$ARTIFACT_JSON")
+          LOCK_ID=$(python -c 'import json; print(json.load(open("trigger_repo/crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json"))["full_bank_artifact_id"])')
+          test "$ARTIFACT_ID" = "$LOCK_ID"
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > bank_download/bank.zip
+          unzip -q bank_download/bank.zip -d bank_download/unpacked
+          echo "FULL_BANK_ARTIFACT_ID=$ARTIFACT_ID"
+      - name: Verify exact bank manifest hash and integrity
+        run: |
+          set -euo pipefail
+          MANIFEST=$(find bank_download/unpacked -path '*/microstructure_experience_bank_full/manifest.json' -print -quit)
+          test -n "$MANIFEST"
+          EXPECTED=$(python -c 'import json; print(json.load(open("trigger_repo/crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json"))["full_bank_manifest_sha256"])')
+          ACTUAL=$(sha256sum "$MANIFEST" | awk '{print $1}')
+          test "$ACTUAL" = "$EXPECTED"
+          python - "$MANIFEST" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['version']=='MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1'
+          c=x['checks']
+          for k in ['all_16_frozen_shards_present','all_128_frozen_symbol_date_pairs_present','unique_symbol_state_time','teacher_evaluation_dates_disjoint','no_forward_returns_used','no_model_fit','no_trade_authority']:
+              assert c[k] is True, (k,c.get(k))
+          assert float(c['finite_mid_fraction_all']) >= 0.999999
+          print('FULL_BANK_INTEGRITY_PASS', x['rows'], x['sha256'])
+          PY
+          dirname "$MANIFEST" > bank_dir.txt
+      - name: Execute frozen research-only teacher
+        working-directory: frozen_source
+        run: |
+          set -o pipefail
+          BANK_DIR="../$(cat ../bank_dir.txt)"
+          python crypto_survival_training/run_microstructure_experience_teacher.py \
+            --bank-dir "$BANK_DIR" \
+            --protocol crypto_survival_training/MICROSTRUCTURE_TEACHER_MODEL_PROTOCOL.json \
+            --out ../microstructure_teacher_result \
+            | tee ../microstructure_teacher.log
+      - name: Upload immutable teacher evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-teacher-v1-result
+          path: |
+            microstructure_teacher.log
+            microstructure_teacher_result/
+            trigger_repo/crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json
+          retention-days: 14
