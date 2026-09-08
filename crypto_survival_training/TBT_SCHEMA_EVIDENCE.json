@@ -1,0 +1,49 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "evidence": "OKX_HISTORICAL_TBT_SCHEMA_AND_UTC_BOUNDARY_V1",
+  "verified_at": "2026-09-08T03:57:51Z",
+  "workflow_run_id": 34185287254,
+  "workflow_job_id": 101932289005,
+  "actions_artifact_id": 10040283793,
+  "actions_artifact_sha256": "1d2f589eaff609801fd652e9dd13b77da7cc747d928c1a986fcdf9ebfdc13f04",
+  "provider": "OKX historical market-data archive",
+  "module": 6,
+  "market_type": "SPOT",
+  "findings": {
+    "legacy_schema_verified": {
+      "sample": "BAT-USDT 2024-07-01 archive",
+      "columns": "bidPxN,bidSzN,bidCntN,askPxN,askSzN,askCntN for N=1..50 plus timeMs/exchTimeMs",
+      "full_50_levels_present": true
+    },
+    "canonical_schema_verified": {
+      "samples": ["ZRX-USDT 2024-11-01", "ATOM-USDT 2025-03-01", "BAT-USDT 2026-03-15"],
+      "columns": "bid_N_px,bid_N_qty,bid_N_ordCnt,ask_N_px,ask_N_qty,ask_N_ordCnt for N=1..50 plus timeMs/exchTimeMs",
+      "full_50_levels_present": true
+    },
+    "lossless_normalization": {
+      "bidPxN": "bid_N_px",
+      "bidSzN": "bid_N_qty",
+      "bidCntN": "bid_N_ordCnt",
+      "askPxN": "ask_N_px",
+      "askSzN": "ask_N_qty",
+      "askCntN": "ask_N_ordCnt",
+      "values_synthesized": false
+    },
+    "archive_query_boundary_behavior": {
+      "observation": "A daily query using begin=target UTC day 00:00 and end=next UTC day 00:00 returned two same-named archive entries in each probed case; the first sampled archive row was from the next UTC day.",
+      "verified_examples": [
+        {"query_day": "2024-07-01", "symbol": "BAT-USDT", "sample_exchTimeMs": 1719878400544, "sample_utc_day": "2024-07-02"},
+        {"query_day": "2024-11-01", "symbol": "ZRX-USDT", "sample_exchTimeMs": 1730505600867, "sample_utc_day": "2024-11-02"},
+        {"query_day": "2025-03-01", "symbol": "ATOM-USDT", "sample_exchTimeMs": 1740873600027, "sample_utc_day": "2025-03-02"},
+        {"query_day": "2026-03-15", "symbol": "BAT-USDT", "sample_exchTimeMs": 1773619200573, "sample_utc_day": "2026-03-16"}
+      ],
+      "required_filter": "target_begin_ms <= exchTimeMs < target_end_ms",
+      "reason": "Prevents accidental adjacent-day contamination and makes every historical experience row date-exact."
+    }
+  },
+  "governance": [
+    "Schema normalization is a mechanical representation change only; economic values are not changed or synthesized.",
+    "Every future TBT experience-bank build must filter by exact exchange timestamp, not archive filename or query response position.",
+    "This evidence contains no trading outcome and cannot itself support a profitability claim."
+  ]
+}
