@@ -1,6 +1,6 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "updated_at": "2026-09-08T02:28:00Z",
+  "updated_at": "2026-09-08T03:05:00Z",
   "invariants": {
     "fixed_strategy_expert_authority": false,
     "paper_only": true,
@@ -57,16 +57,43 @@
     }
   ],
   "challenger": {
-    "generation": "GEN3F",
-    "status": "DATA_BUILDING",
-    "concept": "Gen3C-style autonomous temporal policy augmented with genuine causal leverage-state features from verified historical OKX funding archives and, if depth verification passes, historical open interest.",
-    "funding_archive": {
-      "verified": true,
-      "module": 3,
-      "dateAggrType": "daily",
-      "schema": ["instrument_name", "funding_rate", "funding_time"],
-      "sample_file": "allswap-fundingrates-2025-01-05.csv"
+    "generation": "GEN3F_V2",
+    "version": "R1F-GEN3F-V2-LEVERAGE-STATE",
+    "status": "TRAINING_FROZEN",
+    "workflow_run_id": 34181440753,
+    "workflow_job_id": 101921185668,
+    "source_commit": "2a6799d37c8c30df522364c06c1aab0641fe879a",
+    "concept": "Same autonomous Gen3C action-value authority augmented only with genuine causal funding/crowding and availability-aware historical open-interest state. No named trading strategy or learned post-hoc gate chooses actions.",
+    "data_integrity": {
+      "funding_parser": "13-digit epoch-ms direct path plus safe UTC-text fallback",
+      "funding_min_rows": 50000,
+      "funding_min_symbols": 40,
+      "verified_prior_download_rows": 305151,
+      "verified_prior_universe_symbols": 72,
+      "verified_prior_archive_days": 1308,
+      "verified_prior_archive_misses": 0,
+      "oi_missing_history_policy": "availability flag; never fabricate"
     },
-    "promotion_rule": "Freeze before training; must improve robustness and worst-regime behavior without reducing broad coin/time coverage or using 2026-08-01+ for enhancement selection."
+    "frozen_economic_configuration": {
+      "timeframe": "4h",
+      "max_symbols": 72,
+      "roundtrip_cost_bps": 30,
+      "capacity": 2.0,
+      "q_floor_bps": 60.0,
+      "risk_penalty": 0.28,
+      "enhancement_end_exclusive": "2026-08-01T00:00:00Z"
+    },
+    "promotion_gate_frozen_before_result": {
+      "walk_forward_robust_pass": true,
+      "minimum_trades_each_fold": 80,
+      "minimum_total_trades": 400,
+      "worst_fold_avg_net_bps_must_exceed": -84.1294575172906,
+      "worst_fold_profit_factor_must_exceed": 0.7215288019729019,
+      "worst_fold_max_drawdown_bps_must_be_below": 6595.604675176961,
+      "median_fold_avg_net_bps_must_exceed_gen3c": true,
+      "all_gates_required": true,
+      "post_result_threshold_tuning_forbidden": true
+    },
+    "separation": "Historical order-book/microstructure research is isolated and cannot enter this run."
   }
 }
