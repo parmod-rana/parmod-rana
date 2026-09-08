@@ -1,7 +1,7 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
   "checkpoint": "MICROSTRUCTURE_STAGE_AUTHORITY_V1",
-  "updated_at": "2026-09-08T04:53:00Z",
+  "updated_at": "2026-09-08T05:00:00Z",
   "active_shadow": {
     "generation": "GEN3C",
     "authority": "SHADOW_PAPER_ONLY",
@@ -21,6 +21,7 @@
     "trade_authority": false
   },
   "accepted_knowledge_file": "crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json",
+  "knowledge_semantics_file": "crypto_survival_training/MICROSTRUCTURE_KNOWLEDGE_SEMANTICS_V1.json",
   "next_authorized_stage": {
     "study": "MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1",
     "authority": "CONFIRMATORY_RESEARCH_ONLY_NO_TRADE_AUTHORITY",
@@ -28,14 +29,38 @@
     "frozen_symbol_count": 20,
     "frozen_date_count": 8,
     "required_pair_count": 160,
+    "required_states_per_pair": 96,
+    "required_total_states": 15360,
     "data_status": "BUILDING_FAIL_CLOSED",
+    "exact_grid_audit": {
+      "required_before_evaluation": true,
+      "validation_run_id": 34188910425,
+      "validation_status": "PASS",
+      "audit_source_commit": "4662c1782e4b420b8d46be280ec067b143a746de",
+      "audit_blob": "03c9a2b55e3a462230ecbce5da47d5d6947e34a8",
+      "execution": "DORMANT_UNTIL_MERGED_BANK_ARTIFACT_ID_AND_STATES_SHA256_ARE_LOCKED"
+    },
     "evaluator_validation_run_id": 34188424674,
     "evaluator_validation_status": "PASS",
     "evaluator_source_commit": "b54ea322c35ebef8638c501bb0798900e37a3146",
     "evaluator_blob": "5c2dcc179f377c4dd7af86ad05cfb334153cdc86",
-    "evaluation_execution": "DORMANT_UNTIL_160_PAIR_BANK_MERGE_PASSES_AND_EXACT_HASH_IS_LOCKED"
+    "evaluation_execution": "FORBIDDEN_UNTIL_160_PAIR_MERGE_AND_EXACT_GRID_AUDIT_BOTH_PASS"
+  },
+  "fresh_forward": {
+    "capture_protocol_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1.json",
+    "frozen_holdout_file": "crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json",
+    "status": "PRE_REGISTERED_BEFORE_HISTORICAL_TRANSFER_RESULT",
+    "eligible_only_after_historical_breadth_confirmation": true
   },
   "integration_rule": "No Gen3H or other trading challenger may be defined from these microstructure results until the pre-registered 20-symbol transfer confirmation is complete. Any surviving knowledge may only inform a separately pre-registered future generation whose economic evaluation occurs after its architecture is frozen.",
+  "mandatory_sequence": [
+    "160_PAIR_DATA_BUILD",
+    "FAIL_CLOSED_MERGE",
+    "EXACT_96_STATE_PER_PAIR_GRID_AUDIT",
+    "FROZEN_20_SYMBOL_CONFIRMATION",
+    "IMMUTABLE_RESULT_PRESERVATION",
+    "FRESH_FORWARD_HOLDOUT_QUALIFICATION_BEFORE_ANY_FUTURE_INTEGRATION_AUTHORITY"
+  ],
   "fresh_forward_shadow_required": true,
   "post_result_retuning_forbidden": true,
   "real_money_authority": false
