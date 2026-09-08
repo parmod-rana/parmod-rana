@@ -36,7 +36,8 @@ jobs:
           for k,v in required.items():
               assert x.get(k)==v, (k,x.get(k),v)
           assert x.get('artifact_id')
-          assert x.get('manifest_sha256')
+          hashes=x.get('full_bank_data_sha256') or {}
+          assert set(hashes)=={'all','teacher','historical_evaluation'} and all(hashes.values()),hashes
           PY
           ARTIFACT_JSON=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${FULL_BANK_RUN_ID}/artifacts?per_page=100")
           ARTIFACT_ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ARTIFACT_JSON")
@@ -47,17 +48,21 @@ jobs:
           unzip -q frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip -d _bank_check
           MANIFEST=$(find _bank_check -path '*/microstructure_experience_bank_full/manifest.json' -print -quit)
           test -n "$MANIFEST"
-          EXPECTED=$(python -c 'import json; print(json.load(open("crypto_survival_training/MICROSTRUCTURE_FULL_BANK_PRESERVE.json"))["manifest_sha256"])')
-          ACTUAL=$(sha256sum "$MANIFEST" | awk '{print $1}')
-          test "$ACTUAL" = "$EXPECTED"
-          python - "$MANIFEST" <<'PY'
-          import json,sys
-          x=json.load(open(sys.argv[1])); c=x['checks']
+          python - "$MANIFEST" "$LOCK" <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          mp=Path(sys.argv[1]); x=json.load(open(mp)); lock=json.load(open(sys.argv[2])); c=x['checks']
           assert x['version']=='MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1'
           assert x['shard_count']==16 and x['symbol_date_pairs']==128
           for k in ['all_16_frozen_shards_present','all_128_frozen_symbol_date_pairs_present','unique_symbol_state_time','teacher_evaluation_dates_disjoint','no_forward_returns_used','no_model_fit','no_trade_authority']:
               assert c[k] is True,(k,c.get(k))
           assert float(c['finite_mid_fraction_all'])>=0.999999
+          names={'all':'all_states_15m.csv.gz','teacher':'teacher_states_15m.csv.gz','historical_evaluation':'historical_evaluation_states_15m.csv.gz'}
+          for key,name in names.items():
+              actual=hashlib.sha256((mp.parent/name).read_bytes()).hexdigest()
+              expected=lock['full_bank_data_sha256'][key]
+              assert actual==expected,(key,actual,expected)
+              assert x['sha256'][key]==expected,(key,x['sha256'][key],expected)
           print('PRESERVATION_INTEGRITY_PASS',x['rows'],x['sha256'])
           PY
           ART_SHA=$(sha256sum frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip | awk '{print $1}')
