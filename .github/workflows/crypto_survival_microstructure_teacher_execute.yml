@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      FROZEN_SOURCE_COMMIT: 8867743ba783a15e157d9d034b26da17b5a9e14d
-      EXPECTED_TEACHER_BLOB: 628cba4acdf065c97668b88f7ad74c0952026490
-      EXPECTED_PROTOCOL_BLOB: a65380309e25feda0c85b9abcab4d800e72f3657
+      FROZEN_SOURCE_COMMIT: a76b6234478f406b7d3bb80bec0e9795489d035c
+      EXPECTED_TEACHER_BLOB: 69188ed4c1d3932907ca7d0e249c5a1f581c8659
+      EXPECTED_PROTOCOL_BLOB: 59e6286b03f7a3e1bd663382be1c3b1c0ca05aed
       FULL_BANK_RUN_ID: '34185837887'
       FULL_BANK_ARTIFACT_NAME: crypto-survival-microstructure-experience-bank-full
     steps:
@@ -32,8 +32,9 @@ jobs:
           required={
             'status':'AUTHORIZED_AFTER_FULL_BANK_PASS',
             'full_bank_run_id':34185837887,
-            'frozen_source_commit':'8867743ba783a15e157d9d034b26da17b5a9e14d',
-            'validation_run_id':34186426391,
+            'frozen_source_commit':'a76b6234478f406b7d3bb80bec0e9795489d035c',
+            'validation_run_id':34186770762,
+            'teacher_version':'MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1',
             'authority':'RESEARCH_ONLY_NO_TRADE_AUTHORITY',
           }
           for k,v in required.items():
@@ -94,7 +95,7 @@ jobs:
           print('FULL_BANK_INTEGRITY_PASS', x['rows'], x['sha256'])
           PY
           dirname "$MANIFEST" > bank_dir.txt
-      - name: Execute frozen research-only teacher
+      - name: Execute frozen research-only teacher V1.1
         working-directory: frozen_source
         run: |
           set -o pipefail
@@ -107,7 +108,7 @@ jobs:
       - name: Upload immutable teacher evidence
         uses: actions/upload-artifact@v4
         with:
-          name: crypto-survival-microstructure-teacher-v1-result
+          name: crypto-survival-microstructure-teacher-v1-1-result
           path: |
             microstructure_teacher.log
             microstructure_teacher_result/
