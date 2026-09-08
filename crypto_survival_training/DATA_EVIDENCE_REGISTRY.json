@@ -1,0 +1,116 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "updated_at": "2026-09-08T03:00:00Z",
+  "policy": {
+    "genuine_data_only": true,
+    "no_fabricated_missing_history": true,
+    "causal_information_only": true,
+    "availability_flags_required_when_history_is_partial": true,
+    "already_inspected_enhancement_cutoff": "2026-08-01T00:00:00Z",
+    "fresh_forward_evidence_required_for_real_money_qualification": true
+  },
+  "sources": {
+    "ohlcv_4h": {
+      "provider": "OKX public REST history-candles",
+      "status": "VERIFIED_AND_USED",
+      "research_start": "2023-01-01T00:00:00Z",
+      "enhancement_end_exclusive": "2026-08-01T00:00:00Z",
+      "notes": "Current autonomous Gen3 lineage uses causal 4h market history across a dynamically discovered multi-coin swap universe."
+    },
+    "funding": {
+      "provider": "OKX historical market-data archive",
+      "market_data_history_module": 3,
+      "status": "VERIFIED_FOR_TRAINING",
+      "documented_history_start": "2022-03",
+      "verified_archive_schema": ["instrument_name", "funding_rate", "funding_time"],
+      "verified_timestamp_representation": "13-digit Unix epoch milliseconds; parser also safely accepts genuine UTC datetime text",
+      "verified_gen3f_download": {
+        "rows": 305151,
+        "universe_symbols": 72,
+        "archive_days": 1308,
+        "archive_misses": 0
+      },
+      "integrity_requirements": {
+        "min_rows": 50000,
+        "min_universe_symbols": 40,
+        "epoch_ms_min": 1600000000000,
+        "epoch_ms_max": 2000000000000
+      }
+    },
+    "open_interest_daily": {
+      "provider": "OKX Rubik contracts open-interest-history",
+      "status": "VERIFIED_PARTIAL_HISTORY",
+      "endpoint": "/api/v5/rubik/stat/contracts/open-interest-history",
+      "required_selector": "instId",
+      "verified_probe": {
+        "instruments": ["BTC-USDT-SWAP", "ETH-USDT-SWAP", "SOL-USDT-SWAP", "XRP-USDT-SWAP"],
+        "unique_daily_records_each": 793,
+        "verified_first": "2024-07-07T16:00:00Z",
+        "verified_last": "2026-09-07T16:00:00Z",
+        "pages_checked": 8,
+        "page_8_was_full": true
+      },
+      "training_policy": "Use only where actually available. Missing earlier OI must remain explicitly unavailable, never imputed as historical truth."
+    },
+    "orderbook_l2_400": {
+      "provider": "OKX historical market-data archive",
+      "market_data_history_module": 4,
+      "status": "VERIFIED_SCHEMA_PREPARED_NOT_YET_MODEL_INPUT",
+      "documented_history_start": "2023-03",
+      "verified_market_type": "SPOT",
+      "verified_schema": {
+        "format": "tar.gz containing JSON-lines .data",
+        "fields": ["instId", "action", "ts", "asks", "bids"],
+        "level_tuple": ["price", "quantity", "order_count"],
+        "depth_levels": 400
+      },
+      "verified_sample": {
+        "instrument": "BAT-USDT",
+        "date": "2025-01-01",
+        "compressed_size_mb": 13.81
+      }
+    },
+    "orderbook_tbt_50": {
+      "provider": "OKX historical market-data archive",
+      "market_data_history_module": 6,
+      "status": "VERIFIED_SCHEMA_FEATURE_LAYER_PREPARED_NOT_YET_MODEL_INPUT",
+      "verified_market_type": "SPOT",
+      "verified_schema": {
+        "format": "csv.gz",
+        "time_fields": ["timeMs", "exchTimeMs"],
+        "per_level_fields": ["bid_N_px", "bid_N_qty", "bid_N_ordCnt", "ask_N_px", "ask_N_qty", "ask_N_ordCnt"],
+        "levels": 50,
+        "symbol_field": "symbol"
+      },
+      "verified_sample": {
+        "instrument": "BAT-USDT",
+        "date": "2025-01-01",
+        "compressed_size_mb": 20.97
+      },
+      "prepared_causal_features": [
+        "spread_bps",
+        "microprice_deviation_bps",
+        "quantity_imbalance_1_5_10_20_50",
+        "order_count_imbalance_1_5_10_20_50",
+        "notional_imbalance_1_5_10_20_50",
+        "depth_notional",
+        "top1_depth_concentration",
+        "normalized_top_of_book_ofi",
+        "capture_latency_ms",
+        "update_interval_ms",
+        "within_completed_bucket_mean_std_last_extremes_and_update_count"
+      ],
+      "chronology_rule": "Aggregate by exchange timestamp and key features to completed observation-bucket END before joining a decision state."
+    },
+    "liquidations": {
+      "provider": "OKX",
+      "status": "NO_TRUSTWORTHY_RETROSPECTIVE_HISTORY_APPROVED",
+      "reason": "Public historical liquidation-orders REST was discontinued in 2023; real-time liquidation data is available via WebSocket.",
+      "policy": "Capture prospectively and use only after genuine observations accumulate. Never fabricate retrospective liquidation history."
+    }
+  },
+  "model_separation": {
+    "gen3f_v2": "Funding and OI only; no order-book data can contaminate its frozen evaluation.",
+    "microstructure": "Feature/extraction research only until Gen3F V2 result is finalized and a future experiment is frozen before results."
+  }
+}
