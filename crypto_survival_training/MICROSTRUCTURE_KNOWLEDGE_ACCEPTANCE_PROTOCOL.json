@@ -1,0 +1,46 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "stage": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1",
+  "status": "FROZEN_BEFORE_TEACHER_RESULT",
+  "authority": "KNOWLEDGE_ACCEPTANCE_ONLY_NO_TRADE_AUTHORITY",
+  "purpose": "Define before evaluation what counts as transferable market intelligence so the future profitable-mind research cannot cherry-pick attractive post-hoc microstructure findings.",
+  "accepted_knowledge_classes": {
+    "direction_or_magnitude_information": {
+      "requirement": "Must satisfy the already frozen teacher model stability rule across at least three of four historical evaluation regimes.",
+      "allowed_future_role": "candidate contextual information in a separately pre-registered future generation",
+      "direct_trade_authority": false
+    },
+    "stable_feature_relationship": {
+      "requirement": "Teacher absolute Spearman >= 0.02, same sign in at least three of four evaluation folds, and median absolute evaluation Spearman >= 0.02.",
+      "allowed_future_role": "candidate compact state variable or family",
+      "direct_trade_authority": false
+    },
+    "ofi_incremental_information": {
+      "requirement": "Full model must beat the otherwise identical no-OFI model on both MAE and log loss in at least three of four folds under a fixed model family.",
+      "allowed_future_role": "OFI may be retained as distinct causal information rather than redundant imbalance",
+      "direct_trade_authority": false
+    },
+    "trust_or_uncertainty_information": {
+      "requirement": "Teacher-defined bad-state quintile must have at least 1.10x forecast error versus good-state quintile in at least three of four folds.",
+      "allowed_future_role": "candidate confidence/risk-context input; cannot become a hard trade gate from this study",
+      "direct_trade_authority": false
+    }
+  },
+  "rejected_as_nontransferable": [
+    "relationship seen only in one or two historical regimes",
+    "relationship whose sign flips across most regimes",
+    "result found only by one coin and unsupported across the four-coin panel",
+    "metric improvement requiring post-result threshold or hyperparameter changes",
+    "isolated high win rate or return without frozen cross-regime stability",
+    "any conclusion requiring fabricated or interpolated missing order-book history"
+  ],
+  "future_generation_rule": {
+    "teacher_result_may_identify_what_information_is_stable": true,
+    "teacher_result_may_not_define_a_trade_rule": true,
+    "future_architecture_must_be_written_after_knowledge_acceptance_but_before_its_own_economic_evaluation": true,
+    "gen3c_remains_unchanged_until_a_future_generation_passes_its_own_frozen_gate": true,
+    "avoid_hard_gate_by_default": "GEN3D/GEN3E experience shows hard filtering can overfit or collapse opportunity coverage; any future gate requires independent preregistration and justification.",
+    "fresh_forward_shadow_required": true,
+    "real_money_authority": false
+  }
+}
