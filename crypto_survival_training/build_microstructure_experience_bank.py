@@ -95,6 +95,38 @@ def download_stream(session: requests.Session, url: str, destination: Path) -> t
     return h.hexdigest(), n
 
 
+def normalize_archive_schema(raw: pd.DataFrame) -> tuple[pd.DataFrame, str]:
+    """Losslessly rename the verified legacy OKX TBT header to canonical names.
+
+    The 2024-07 archive schema uses bidPx1/bidSz1/bidCnt1 and askPx1/...;
+    later archives use bid_1_px/bid_1_qty/bid_1_ordCnt. Both contain the same
+    genuine 50-level fields. No value is synthesized here.
+    """
+    if "bid_1_px" in raw.columns and "ask_1_px" in raw.columns:
+        return raw, "canonical_underscore"
+    if "bidPx1" not in raw.columns or "askPx1" not in raw.columns:
+        raise RuntimeError(f"unsupported genuine TBT schema columns={list(raw.columns)[:40]}")
+    rename = {}
+    for i in range(1, 51):
+        mapping = {
+            f"bidPx{i}": f"bid_{i}_px",
+            f"bidSz{i}": f"bid_{i}_qty",
+            f"bidCnt{i}": f"bid_{i}_ordCnt",
+            f"askPx{i}": f"ask_{i}_px",
+            f"askSz{i}": f"ask_{i}_qty",
+            f"askCnt{i}": f"ask_{i}_ordCnt",
+        }
+        for old, new in mapping.items():
+            if old in raw.columns:
+                rename[old] = new
+    normalized = raw.rename(columns=rename)
+    required = ["timeMs", "exchTimeMs", "bid_1_px", "bid_1_qty", "ask_1_px", "ask_1_qty"]
+    missing = [c for c in required if c not in normalized.columns]
+    if missing:
+        raise RuntimeError(f"legacy schema normalization missing required={missing}")
+    return normalized, "legacy_compact_names"
+
+
 def accumulate_chunk(acc: dict, mid_last: dict[int, float], features: pd.DataFrame) -> None:
     if features.empty:
         return
@@ -110,9 +142,12 @@ def accumulate_chunk(acc: dict, mid_last: dict[int, float], features: pd.DataFra
 
 
 def process_one_gz(path: Path, acc: dict, mid_last: dict[int, float], previous_raw: pd.DataFrame | None):
+    schema_names = set()
     for raw in pd.read_csv(path, compression="gzip", chunksize=CHUNKSIZE):
         if raw.empty:
             continue
+        raw, schema_name = normalize_archive_schema(raw)
+        schema_names.add(schema_name)
         if previous_raw is not None:
             joined = pd.concat([previous_raw, raw], ignore_index=True)
             features = mf.snapshot_features(joined).iloc[1:].copy()
@@ -120,7 +155,7 @@ def process_one_gz(path: Path, acc: dict, mid_last: dict[int, float], previous_r
             features = mf.snapshot_features(raw)
         accumulate_chunk(acc, mid_last, features)
         previous_raw = raw.iloc[[-1]].copy()
-    return previous_raw
+    return previous_raw, sorted(schema_names)
 
 
 def process_symbol_day(session: requests.Session, symbol: str, day: str, tmpdir: Path):
@@ -134,12 +169,13 @@ def process_symbol_day(session: requests.Session, symbol: str, day: str, tmpdir:
     for i, f in enumerate(files):
         local = tmpdir / f"{symbol.replace('-', '_')}_{day}_{i}.csv.gz"
         sha, nbytes = download_stream(session, f["url"], local)
-        previous_raw = process_one_gz(local, acc, mid_last, previous_raw)
+        previous_raw, schema_names = process_one_gz(local, acc, mid_last, previous_raw)
         provenance.append({
             "filename": f["filename"],
             "reported_size_mb": f.get("sizeMB"),
             "download_bytes": nbytes,
             "sha256": sha,
+            "schema_names": schema_names,
         })
         local.unlink(missing_ok=True)
     states = mf._finalize_accumulator(acc)
@@ -197,7 +233,6 @@ def main() -> None:
                 print("BUILT", symbol, day, "states", len(states), "archives", len(provenance), flush=True)
 
     bank = pd.concat(frames, ignore_index=True).sort_values(["symbol", "state_time_ms"]).reset_index(drop=True)
-    # Compact durable representation. Raw archives have already been deleted.
     bank.to_csv(out / "states_15m.csv.gz", index=False, compression="gzip")
     bank_hash = hashlib.sha256((out / "states_15m.csv.gz").read_bytes()).hexdigest()
     manifest = {
@@ -217,6 +252,11 @@ def main() -> None:
         "states_sha256": bank_hash,
         "raw_archives_retained": False,
         "cross_file_ofi_continuity": True,
+        "historical_schema_normalization": {
+            "legacy": "bidPxN/bidSzN/bidCntN and askPxN/askSzN/askCntN are renamed losslessly",
+            "canonical": "bid_N_px/bid_N_qty/bid_N_ordCnt and ask_N_px/ask_N_qty/ask_N_ordCnt",
+            "values_synthesized": False
+        },
         "provenance": all_provenance,
         "checks": {
             "unique_symbol_state_time": bool(not bank.duplicated(["symbol", "state_time_ms"]).any()),
