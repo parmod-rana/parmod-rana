@@ -1,0 +1,50 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "evidence": "OKX_MODULE6_TBT50_BREADTH_V1",
+  "verified_at": "2026-09-08T03:46:58Z",
+  "workflow_run_id": 34184578729,
+  "workflow_job_id": 101930230724,
+  "actions_artifact_id": 10040089889,
+  "actions_artifact_sha256": "b5534e3be8e319a4ce7bf7028fd0c74f871d5c9f8108bf00abe964ee2ebc385c",
+  "provider": "OKX historical market-data archive",
+  "module": 6,
+  "market_type": "SPOT",
+  "data_type": "50-level tick-by-tick full order-book snapshots",
+  "probe_design": {
+    "economic_outcomes_used": false,
+    "symbols_tested": 24,
+    "dates_tested": 8,
+    "total_symbol_date_pairs": 192,
+    "dates": [
+      "2025-07-15", "2025-08-15",
+      "2025-11-15", "2025-12-15",
+      "2026-03-15", "2026-04-15",
+      "2026-06-15", "2026-07-15"
+    ],
+    "symbols": [
+      "BTC-USDT", "ETH-USDT", "SOL-USDT", "XRP-USDT", "ADA-USDT", "DOGE-USDT",
+      "LINK-USDT", "AVAX-USDT", "DOT-USDT", "LTC-USDT", "BCH-USDT", "TRX-USDT",
+      "UNI-USDT", "AAVE-USDT", "NEAR-USDT", "ETC-USDT", "FIL-USDT", "ATOM-USDT",
+      "CRV-USDT", "SUSHI-USDT", "ALGO-USDT", "XLM-USDT", "BAT-USDT", "ZRX-USDT"
+    ]
+  },
+  "frozen_breadth_gate": {
+    "minimum_dates_per_symbol": 6,
+    "minimum_symbols_passing": 12,
+    "minimum_available_pairs": 60
+  },
+  "result": {
+    "breadth_pass": true,
+    "available_pairs": 192,
+    "availability_fraction": 1.0,
+    "passing_symbol_count": 24,
+    "all_symbols_available_on_all_dates": true,
+    "median_available_daily_total_file_size_mb": 132.08
+  },
+  "interpretation": [
+    "Historical TBT order-book availability is broad across the representative crypto panel and across all four frozen Gen3C historical regimes.",
+    "The breadth result is data-availability evidence only; it is not evidence that microstructure features are predictive or profitable.",
+    "Major-coin raw archives can be hundreds of megabytes per day, so future learning must stream, hash, causally aggregate and discard raw files rather than retain exhaustive raw history on hosted runners.",
+    "Any economic use requires a separately frozen learning experiment and cannot retrospectively alter Gen3C or Gen3G."
+  ]
+}
