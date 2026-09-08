@@ -1,18 +1,20 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "updated_at": "2026-09-08T03:49:00Z",
+  "updated_at": "2026-09-08T04:11:00Z",
   "invariants": {
     "fixed_strategy_expert_authority": false,
     "paper_only": true,
     "real_money_authority": false,
     "already_inspected_period_for_enhancement": "2026-08-01 onward",
-    "fresh_forward_evidence_required_for_qualification": true
+    "fresh_forward_evidence_required_for_qualification": true,
+    "post_result_threshold_tuning_forbidden": true
   },
   "active_shadow": {
     "generation": "GEN3C",
     "version": "R1F-GEN3C-TEMPORAL-ENSEMBLE",
     "artifact_sha256": "e2d919009109f5ee286b47fcc090616a59229d926f2bbc8f0290e9865487a2d3",
     "authority": "SHADOW_PAPER_ONLY",
+    "durable_artifact_path": "frozen_brains/GEN3C_R1F_TEMPORAL_ENSEMBLE_ACTIONS_ARTIFACT.zip",
     "reason": "First Generation-3 enhancement to pass frozen historical walk-forward robustness; no fresh untouched qualification period remains after prior Aug-Sep inspection.",
     "selected_calibration": {
       "capacity": 2.0,
@@ -60,7 +62,7 @@
       "version": "R1F-GEN3F-LEVERAGE-STATE",
       "artifact_sha256": "7d1544b8001322d7e81dd9ae99e7aff979c68eb33d1b3260753afc888ce5230c",
       "workflow_run_id": 34181440753,
-      "reason": "Genuine funding/OI state improved Gen3C's worst-fold average loss but direct augmentation destabilized the profitable regimes, failed robust promotion, worsened worst profit factor and increased worst drawdown.",
+      "reason": "Genuine funding/OI state improved Gen3C's worst-fold average loss but direct augmentation destabilized profitable regimes, failed robust promotion, worsened worst profit factor and increased worst drawdown.",
       "walk_forward": {
         "F1": {"trades": 133, "avg_net_bps": -55.826282801047235, "profit_factor": 0.8054032052802457, "max_drawdown_bps": 8726.659769793729},
         "F2": {"trades": 128, "avg_net_bps": -21.5606223035969, "profit_factor": 0.9166373277579327, "max_drawdown_bps": 5959.066140275626},
@@ -73,48 +75,42 @@
         "worst_max_drawdown_bps": 8726.659769793729,
         "robust_pass": false
       },
-      "lesson": "Funding/crowding and open-interest state contain useful information, but they should not be allowed to indiscriminately rewrite the core policy. Future use should be contextual, reliability-aware or specialist-separated and must be tested in a new frozen generation.",
+      "lesson": "Funding/crowding and open-interest state contain useful information, but should not indiscriminately rewrite the core policy. Future use should be contextual or specialist-separated.",
+      "promotion_forbidden": true
+    },
+    {
+      "generation": "GEN3G",
+      "version": "R1F-GEN3G-CAUSAL-RELIABILITY-MEMORY",
+      "workflow_run_id": 34184755928,
+      "artifact_id": 10040478205,
+      "artifact_zip_sha256": "7c47cca29ef33ebc641cccb76d9cf0ce2ad5a114f689e309a1b040fae78cc460",
+      "result_file": "crypto_survival_training/GEN3G_FROZEN_RESULT.json",
+      "reason": "Causal recent-outcome reliability reweighting materially improved F2 but was not stable across regimes and worsened F4 beyond Gen3C; every frozen promotion-improvement gate failed except coverage.",
+      "walk_forward": {
+        "F1": {"trades": 134, "avg_net_bps": -27.966672648375912, "profit_factor": 0.8942443092599791, "max_drawdown_bps": 4829.049789617834},
+        "F2": {"trades": 130, "avg_net_bps": -12.90580776273304, "profit_factor": 0.9561077467838112, "max_drawdown_bps": 5698.125998713444},
+        "F3": {"trades": 126, "avg_net_bps": 32.66013267478466, "profit_factor": 1.1982167259721663, "max_drawdown_bps": 1548.2828121356345},
+        "F4": {"trades": 134, "avg_net_bps": -85.72194948504993, "profit_factor": 0.6736060016687174, "max_drawdown_bps": 7262.532798735062},
+        "total_trades": 524,
+        "positive_fold_count": 1,
+        "median_avg_net_bps": -20.436240205554476,
+        "worst_avg_net_bps": -85.72194948504993,
+        "worst_profit_factor": 0.6736060016687174,
+        "worst_max_drawdown_bps": 7262.532798735062,
+        "robust_pass": false
+      },
+      "lesson": "Do not retune the same reliability mechanism after seeing the result. Add genuinely new causal market-state experience, especially order-flow/liquidity context, and test any integration only as a separately frozen generation.",
       "promotion_forbidden": true
     }
   ],
-  "challenger": {
-    "generation": "GEN3G",
-    "version": "R1F-GEN3G-CAUSAL-RELIABILITY-MEMORY",
-    "status": "TRAINING_FROZEN",
-    "workflow_run_id": 34184755928,
-    "source_commit": "dd13b64823115e6455157454f4e4aa3f20537681",
-    "frozen_protocol_file": "crypto_survival_training/GEN3G_FROZEN_PROTOCOL.json",
-    "concept": "Gen3C temporal action-value memories remain the only action source. Their influence adapts moderately from genuinely realized outcomes of their own recent proposals, revealed only after each proposal horizon completes. No separate meta-gate, post-hoc quality filter or named strategy chooses trades.",
-    "frozen_economic_configuration": {
-      "timeframe": "4h",
-      "max_symbols": 72,
-      "roundtrip_cost_bps": 30,
-      "capacity": 2.0,
-      "q_floor_bps": 60.0,
-      "risk_penalty": 0.28
-    },
-    "frozen_reliability_configuration": {
-      "experience_days": 180,
-      "reliability_alpha": 0.12,
-      "reliability_net_scale_bps": 150.0,
-      "reliability_temperature": 0.35,
-      "adaptive_weight_strength": 0.45,
-      "equal_weight_anchor_fraction": 0.55,
-      "proposals_per_memory_per_epoch": 2
-    },
-    "promotion_gate_frozen_before_result": {
-      "walk_forward_robust_pass": true,
-      "positive_fold_count_min": 3,
-      "minimum_trades_each_fold": 80,
-      "minimum_total_trades": 400,
-      "median_fold_avg_net_bps_must_exceed": 24.995931677133225,
-      "worst_fold_avg_net_bps_must_exceed": -84.1294575172906,
-      "worst_fold_profit_factor_must_exceed": 0.7215288019729019,
-      "worst_fold_max_drawdown_bps_must_be_below": 6595.604675176961,
-      "all_gates_required": true,
-      "post_result_threshold_tuning_forbidden": true
-    },
-    "separation": "Gen3G contains no funding, OI, historical order-book or liquidation inputs. Parallel microstructure research cannot change this frozen result."
+  "challenger": null,
+  "next_frozen_stage": {
+    "name": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1",
+    "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
+    "protocol_file": "crypto_survival_training/MICROSTRUCTURE_EXPERIENCE_PROTOCOL.json",
+    "status": "FULL_EXPERIENCE_BANK_BUILDING",
+    "full_bank_run_id": 34185837887,
+    "integration_rule": "No Gen3H or other trading challenger may be defined from evaluation outcomes post hoc. First complete the frozen teacher study, identify only cross-symbol/cross-regime stable information, then pre-register any future integration generation before its economic evaluation."
   },
   "research_layers": {
     "microstructure_experience_teacher_v1": {
@@ -122,7 +118,22 @@
       "protocol_file": "crypto_survival_training/MICROSTRUCTURE_EXPERIENCE_PROTOCOL.json",
       "breadth_audit_run_id": 34184578729,
       "breadth_result": "PASS_192_OF_192_PAIRS_AVAILABLE",
-      "separation": "Cannot alter Gen3C or Gen3G authority; any integration requires a separately pre-registered future generation."
+      "date_exact_pilot_run_id": 34185447355,
+      "date_exact_pilot_result": {
+        "status": "PASS",
+        "pairs": 8,
+        "raw_tbt_updates": 5632075,
+        "completed_15m_states": 768,
+        "states_per_pair": 96,
+        "finite_mid_fraction": 1.0,
+        "unique_symbol_state_time": true,
+        "no_forward_returns_used": true,
+        "no_model_fit": true,
+        "no_trade_authority": true
+      },
+      "full_bank_run_id": 34185837887,
+      "full_bank_plan": "16 deterministic shards, max 4 parallel, 4 frozen symbols x 32 frozen dates = 128 symbol-days; training and evaluation states remain physically separated.",
+      "separation": "Cannot alter Gen3C authority; any integration requires a separately pre-registered future generation."
     }
   }
 }
