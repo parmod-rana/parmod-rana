@@ -1,0 +1,43 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "knowledge_set": "MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1",
+  "status": "FROZEN_FROM_V1_1_TEACHER_RESULT_BEFORE_20_SYMBOL_CONFIRMATION",
+  "authority": "KNOWLEDGE_CANDIDATES_ONLY_NO_TRADE_AUTHORITY",
+  "teacher_evidence": {
+    "workflow_run_id": 34187582373,
+    "artifact_id": 10041050467,
+    "artifact_zip_sha256": "741e33409ab47e7e9a04203813fed34f6842af504a2855647cc2165df4a07530",
+    "teacher_result_json_sha256": "3248e9801bcef7df954a557f3081cd99f5b70e5f71ee38f9de1edb297a1b945b",
+    "stable_relationships_csv_sha256": "ab3aee2065485f783db46c283976696153c30c18a01269e64b1e830b1c5d5478",
+    "teacher_source_commit": "a76b6234478f406b7d3bb80bec0e9795489d035c",
+    "input_bank_data_sha256": {
+      "teacher": "74d76d3250186ec3b20a0ff578297994cafd4ab9b07b82806b1a1f1559c732c2",
+      "historical_evaluation": "d6467309c6312f4a7481bba5117762e9b323ba1237ac30771921decee1230a55"
+    }
+  },
+  "eligible_stable_feature_relationships": [
+    {"horizon_minutes": 60, "feature": "depth_notional_10_last", "teacher_spearman": -0.0258867339832603, "teacher_sign": "NEGATIVE", "same_sign_eval_folds": 4, "median_abs_eval_spearman": 0.0255905736110673, "same_sign_teacher_symbols": 4, "median_abs_teacher_symbol_spearman": 0.0404563868132724},
+    {"horizon_minutes": 60, "feature": "top_ofi_norm_mean", "teacher_spearman": -0.020065438108059, "teacher_sign": "NEGATIVE", "same_sign_eval_folds": 4, "median_abs_eval_spearman": 0.0249731014186405, "same_sign_teacher_symbols": 4, "median_abs_teacher_symbol_spearman": 0.025250852920169},
+    {"horizon_minutes": 240, "feature": "top_ofi_norm_std", "teacher_spearman": 0.1071572014053548, "teacher_sign": "POSITIVE", "same_sign_eval_folds": 3, "median_abs_eval_spearman": 0.0407102840106136, "same_sign_teacher_symbols": 4, "median_abs_teacher_symbol_spearman": 0.1207942594751367},
+    {"horizon_minutes": 240, "feature": "qty_imb_50_std", "teacher_spearman": 0.0828862991291694, "teacher_sign": "POSITIVE", "same_sign_eval_folds": 3, "median_abs_eval_spearman": 0.0514639549284514, "same_sign_teacher_symbols": 4, "median_abs_teacher_symbol_spearman": 0.0642667572068471},
+    {"horizon_minutes": 240, "feature": "top_ofi_abs_max", "teacher_spearman": 0.0638374039832877, "teacher_sign": "POSITIVE", "same_sign_eval_folds": 3, "median_abs_eval_spearman": 0.0640567453709154, "same_sign_teacher_symbols": 3, "median_abs_teacher_symbol_spearman": 0.0825361834649758},
+    {"horizon_minutes": 240, "feature": "depth_notional_10_last", "teacher_spearman": -0.0308919452155739, "teacher_sign": "NEGATIVE", "same_sign_eval_folds": 3, "median_abs_eval_spearman": 0.1047230936555089, "same_sign_teacher_symbols": 4, "median_abs_teacher_symbol_spearman": 0.0535732430535429},
+    {"horizon_minutes": 240, "feature": "qty_imb_20_mean", "teacher_spearman": -0.0202242226732517, "teacher_sign": "NEGATIVE", "same_sign_eval_folds": 3, "median_abs_eval_spearman": 0.1314701376100347, "same_sign_teacher_symbols": 3, "median_abs_teacher_symbol_spearman": 0.0366674029832674}
+  ],
+  "eligible_trust_information": [
+    {"horizon_minutes": 15, "feature": "spread_bps_mean", "bad_state_definition": "HIGH_IS_BAD", "teacher_q20": 3.0761764455236245, "teacher_q80": 8.286382114438634, "material_bad_state_error_folds": 4},
+    {"horizon_minutes": 15, "feature": "depth_notional_50_mean", "bad_state_definition": "LOW_IS_BAD", "teacher_q20": 44722.29827358828, "teacher_q80": 488592.6110723566, "material_bad_state_error_folds": 3},
+    {"horizon_minutes": 15, "feature": "capture_latency_ms_mean", "bad_state_definition": "HIGH_IS_BAD", "teacher_q20": 1.715749271966576, "teacher_q80": 3.1275212901313925, "material_bad_state_error_folds": 3},
+    {"horizon_minutes": 60, "feature": "spread_bps_mean", "bad_state_definition": "HIGH_IS_BAD", "teacher_q20": 3.076344549148967, "teacher_q80": 8.27218649518701, "material_bad_state_error_folds": 4},
+    {"horizon_minutes": 240, "feature": "depth_notional_50_mean", "bad_state_definition": "LOW_IS_BAD", "teacher_q20": 44712.732272031004, "teacher_q80": 492084.3214694264, "material_bad_state_error_folds": 3}
+  ],
+  "ineligible_classes": {
+    "magnitude_models": "NO_V1_1_MODEL_FAMILY_PASSED_STABILITY_GATE",
+    "direction_models": "NO_V1_1_MODEL_FAMILY_PASSED_STABILITY_GATE",
+    "ofi_incremental": "NO_V1_1_MODEL_FAMILY_PASSED_STABLE_INCREMENTAL_INFORMATION_GATE"
+  },
+  "confirmation_rule": "Only the pre-registered MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1 protocol may determine whether these candidates transfer to the 20 frozen non-teacher symbols. No feature, sign, horizon, threshold, model or symbol reselection is allowed.",
+  "gen3c_change": false,
+  "trade_authority": false,
+  "real_money_authority": false
+}
