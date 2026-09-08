@@ -1,0 +1,50 @@
+name: Crypto Survival Microstructure Bank Shard
+on:
+  workflow_dispatch:
+    inputs:
+      symbol:
+        description: Frozen protocol symbol
+        required: true
+        type: choice
+        options: [BAT-USDT, ZRX-USDT, ATOM-USDT, BCH-USDT]
+      block:
+        description: Frozen protocol date block
+        required: true
+        type: choice
+        options: [B0, B1, B2, EVAL]
+permissions:
+  contents: read
+  actions: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas
+      - name: Build exact frozen shard
+        env:
+          PYTHONPATH: .
+          MICRO_CHUNKSIZE: '40000'
+        run: |
+          set -o pipefail
+          python crypto_survival_training/build_microstructure_experience_shard.py \
+            --symbol '${{ inputs.symbol }}' \
+            --block '${{ inputs.block }}' \
+            --out-root microstructure_experience_shards \
+            | tee microstructure_shard.log
+      - name: Upload compact shard and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microbank-${{ inputs.symbol }}-${{ inputs.block }}
+          path: |
+            microstructure_shard.log
+            microstructure_experience_shards/
+          retention-days: 14
