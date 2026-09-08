@@ -1,0 +1,175 @@
+name: Crypto Survival Microstructure Transfer Bank V1
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_BREADTH_START.json'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: crypto-survival-microstructure-transfer-bank-v1
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    outputs:
+      source_commit: ${{ steps.lock.outputs.source_commit }}
+      builder_blob: ${{ steps.lock.outputs.builder_blob }}
+      merger_blob: ${{ steps.lock.outputs.merger_blob }}
+      protocol_blob: ${{ steps.lock.outputs.protocol_blob }}
+      knowledge_blob: ${{ steps.lock.outputs.knowledge_blob }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+      - id: lock
+        name: Validate exact breadth authorization lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' > /tmp/lock_outputs
+          import json
+          p='crypto_survival_training/MICROSTRUCTURE_BREADTH_START.json'
+          x=json.load(open(p))
+          required={
+            'status':'AUTHORIZED_AFTER_V1_1_ACCEPTED_KNOWLEDGE',
+            'protocol':'MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1',
+            'teacher_workflow_run_id':34187582373,
+            'teacher_artifact_id':10041050467,
+            'teacher_artifact_zip_sha256':'741e33409ab47e7e9a04203813fed34f6842af504a2855647cc2165df4a07530',
+            'authority':'CONFIRMATORY_DATA_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v,(k,x.get(k),v)
+          assert x.get('frozen_source_commit')
+          blobs=x.get('expected_blobs') or {}
+          assert set(blobs)=={'builder','merger','protocol','accepted_knowledge'},blobs
+          assert all(blobs.values())
+          assert x.get('pair_count')==160
+          assert x.get('symbol_count')==20 and x.get('date_count')==8
+          assert x.get('real_money_authority') is False
+          print(f"source_commit={x['frozen_source_commit']}")
+          print(f"builder_blob={blobs['builder']}")
+          print(f"merger_blob={blobs['merger']}")
+          print(f"protocol_blob={blobs['protocol']}")
+          print(f"knowledge_blob={blobs['accepted_knowledge']}")
+          PY
+          cat /tmp/lock_outputs >> "$GITHUB_OUTPUT"
+          echo "BREADTH_LOCK_PASS"
+
+  build:
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        symbol:
+          - BTC-USDT
+          - ETH-USDT
+          - SOL-USDT
+          - XRP-USDT
+          - ADA-USDT
+          - DOGE-USDT
+          - LINK-USDT
+          - AVAX-USDT
+          - DOT-USDT
+          - LTC-USDT
+          - TRX-USDT
+          - UNI-USDT
+          - AAVE-USDT
+          - NEAR-USDT
+          - ETC-USDT
+          - FIL-USDT
+          - CRV-USDT
+          - SUSHI-USDT
+          - ALGO-USDT
+          - XLM-USDT
+        date:
+          - '2025-07-15'
+          - '2025-08-15'
+          - '2025-11-15'
+          - '2025-12-15'
+          - '2026-03-15'
+          - '2026-04-15'
+          - '2026-06-15'
+          - '2026-07-15'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.preflight.outputs.source_commit }}
+      - name: Verify frozen source blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object crypto_survival_training/build_microstructure_transfer_pair.py)" = "${{ needs.preflight.outputs.builder_blob }}"
+          test "$(git hash-object crypto_survival_training/merge_microstructure_transfer_pairs.py)" = "${{ needs.preflight.outputs.merger_blob }}"
+          test "$(git hash-object crypto_survival_training/MICROSTRUCTURE_BREADTH_CONFIRMATION_PROTOCOL.json)" = "${{ needs.preflight.outputs.protocol_blob }}"
+          test "$(git hash-object crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json)" = "${{ needs.preflight.outputs.knowledge_blob }}"
+          echo "FROZEN_TRANSFER_SOURCE_PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data-only dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas
+      - name: Build exact frozen symbol-day pair
+        env:
+          PYTHONPATH: '.'
+        run: |
+          python crypto_survival_training/build_microstructure_transfer_pair.py \
+            --symbol '${{ matrix.symbol }}' \
+            --date '${{ matrix.date }}' \
+            --out-root microstructure_transfer_pairs
+      - name: Upload compact pair and provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: microtransfer-${{ matrix.symbol }}-${{ matrix.date }}
+          path: microstructure_transfer_pairs/
+          retention-days: 14
+
+  merge:
+    needs: [preflight, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.preflight.outputs.source_commit }}
+      - name: Verify frozen merger source
+        run: |
+          set -euo pipefail
+          test "$(git hash-object crypto_survival_training/merge_microstructure_transfer_pairs.py)" = "${{ needs.preflight.outputs.merger_blob }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install merge dependencies
+        run: pip install --disable-pip-version-check numpy pandas
+      - name: Download all exact transfer pairs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: microtransfer-*
+          path: downloaded_transfer_pairs
+          merge-multiple: false
+      - name: Fail-closed merge of all 160 frozen pairs
+        env:
+          PYTHONPATH: '.'
+        run: |
+          set -o pipefail
+          python crypto_survival_training/merge_microstructure_transfer_pairs.py \
+            --root downloaded_transfer_pairs \
+            --out microstructure_transfer_bank_v1 \
+            | tee microstructure_transfer_merge.log
+      - name: Upload full compact transfer bank
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-transfer-bank-v1
+          path: |
+            microstructure_transfer_merge.log
+            microstructure_transfer_bank_v1/
+          retention-days: 14
