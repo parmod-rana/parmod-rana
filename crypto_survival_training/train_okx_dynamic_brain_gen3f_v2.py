@@ -1,6 +1,5 @@
 from __future__ import annotations
 import io, hashlib, time, zipfile
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import requests
@@ -10,13 +9,23 @@ from crypto_survival_training import train_okx_dynamic_brain_gen3f as base
 # GEN3F V2 DATA-INTEGRITY PATCH ONLY.
 # Trading architecture, neural model, folds, costs, q-floor, capacity and all
 # frozen promotion gates remain exactly those defined in Gen3F.
-# This patch fixes the verified OKX archive schema where funding_time is a UTC
+# This patch handles the verified OKX archive schema where funding_time is a UTC
 # datetime string (for example 2025-01-05 00:00:00), not an integer epoch.
+# Pandas 3.x may preserve microsecond datetime resolution, so never infer the
+# integer unit from astype('int64'); convert explicitly through Unix seconds.
 
 MIN_FUNDING_ROWS = 50_000
 MIN_FUNDING_SYMBOLS = 40
 EARLY_COVERAGE_MS = int(pd.Timestamp('2024-01-01', tz='UTC').timestamp() * 1000)
 LATE_COVERAGE_MS = int(pd.Timestamp('2026-06-01', tz='UTC').timestamp() * 1000)
+MIN_VALID_EPOCH_MS = 1_600_000_000_000
+MAX_VALID_EPOCH_MS = 2_000_000_000_000
+
+
+def _utc_series_to_epoch_ms(parsed: pd.Series) -> pd.Series:
+    """Convert tz-aware timestamps to epoch milliseconds independent of pandas dtype resolution."""
+    out = parsed.map(lambda ts: int(ts.timestamp() * 1000) if pd.notna(ts) else pd.NA)
+    return out.astype('Int64')
 
 
 def fetch_funding_day_fixed(day):
@@ -42,10 +51,16 @@ def fetch_funding_day_fixed(day):
 
             df = df[['instrument_name', 'funding_rate', 'funding_time']].copy()
             parsed = pd.to_datetime(df['funding_time'], utc=True, errors='coerce')
-            df['funding_time'] = (parsed.astype('int64') // 1_000_000).where(parsed.notna())
+            df['funding_time'] = _utc_series_to_epoch_ms(parsed)
             df['funding_rate'] = pd.to_numeric(df['funding_rate'], errors='coerce')
             df = df.dropna(subset=['instrument_name', 'funding_rate', 'funding_time'])
             df['funding_time'] = df['funding_time'].astype('int64')
+
+            if len(df):
+                lo = int(df['funding_time'].min())
+                hi = int(df['funding_time'].max())
+                if lo < MIN_VALID_EPOCH_MS or hi > MAX_VALID_EPOCH_MS:
+                    raise RuntimeError(f'funding timestamp unit/range invalid: {lo}..{hi}')
             return day, df, url, hashlib.sha256(raw).hexdigest()
         except Exception:
             if attempt == 2:
@@ -73,6 +88,10 @@ def load_funding_verified(symbols):
         raise RuntimeError(f'funding integrity failed: only {rows} real parsed rows')
     if n_symbols < MIN_FUNDING_SYMBOLS:
         raise RuntimeError(f'funding integrity failed: only {n_symbols} universe symbols')
+    if not (MIN_VALID_EPOCH_MS <= first_ts <= MAX_VALID_EPOCH_MS):
+        raise RuntimeError(f'funding integrity failed: first timestamp unit/range invalid {first_ts}')
+    if not (MIN_VALID_EPOCH_MS <= last_ts <= MAX_VALID_EPOCH_MS):
+        raise RuntimeError(f'funding integrity failed: last timestamp unit/range invalid {last_ts}')
     if first_ts > EARLY_COVERAGE_MS:
         raise RuntimeError(f'funding integrity failed: history starts too late at {first_ts}')
     if last_ts < LATE_COVERAGE_MS:
