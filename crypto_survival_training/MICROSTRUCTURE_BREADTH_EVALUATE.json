@@ -1,0 +1,21 @@
+{
+  "status": "AUTHORIZED_AFTER_160_PAIR_TRANSFER_BANK_PASS",
+  "authorized_at_utc": "2026-09-08T06:28:00Z",
+  "study": "MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1",
+  "transfer_bank_run_id": 34188108465,
+  "transfer_bank_artifact_id": 10042015533,
+  "transfer_bank_artifact_name": "crypto-survival-microstructure-transfer-bank-v1",
+  "transfer_bank_states_sha256": "5f27360d20ed4c30ce3fe016c902b82c99f418b4fe7a38f87361400bf90dc9c2",
+  "transfer_bank_pair_count": 160,
+  "transfer_bank_rows": 15360,
+  "exact_grid_audit_run_id": 34194738405,
+  "exact_grid_audit_artifact_id": 10043459258,
+  "exact_grid_audit_status": "PASS",
+  "evaluator_source_commit": "b54ea322c35ebef8638c501bb0798900e37a3146",
+  "evaluator_validation_run_id": 34188424674,
+  "teacher_bank_run_id": 34187443705,
+  "authority": "CONFIRMATORY_RESEARCH_ONLY_NO_TRADE_AUTHORITY",
+  "real_money_authority": false,
+  "gen3c_change": false,
+  "note": "Execute the frozen breadth confirmation exactly once against the verified 160-pair bank. No feature, relationship, sign, threshold, cost, date, gate, or Gen3C change is authorized."
+}
