@@ -1,23 +1,27 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "stage": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1",
-  "status": "FROZEN_BEFORE_TEACHER_RESULT",
+  "stage": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1",
+  "status": "REFROZEN_BEFORE_ANY_TEACHER_RESULT",
   "authority": "KNOWLEDGE_ACCEPTANCE_ONLY_NO_TRADE_AUTHORITY",
-  "purpose": "Define before evaluation what counts as transferable market intelligence so the future profitable-mind research cannot cherry-pick attractive post-hoc microstructure findings.",
+  "purpose": "Define before evaluation what counts as transferable market intelligence so future profitable-mind research cannot cherry-pick attractive post-hoc microstructure findings.",
+  "design_audit": {
+    "full_bank_evaluation_seen": false,
+    "change": "Added explicit cross-symbol evidence and broader non-teacher confirmation requirements before any teacher result was exposed."
+  },
   "accepted_knowledge_classes": {
     "direction_or_magnitude_information": {
-      "requirement": "Must satisfy the already frozen teacher model stability rule across at least three of four historical evaluation regimes.",
-      "allowed_future_role": "candidate contextual information in a separately pre-registered future generation",
+      "requirement": "Must satisfy every frozen V1.1 model stability condition: cross-regime baseline improvement plus cross-symbol baseline improvement and directional consistency on at least three of four representative symbols.",
+      "allowed_future_role": "candidate contextual information in a separately pre-registered future generation after non-teacher-symbol confirmation",
       "direct_trade_authority": false
     },
     "stable_feature_relationship": {
-      "requirement": "Teacher absolute Spearman >= 0.02, same sign in at least three of four evaluation folds, and median absolute evaluation Spearman >= 0.02.",
-      "allowed_future_role": "candidate compact state variable or family",
+      "requirement": "Teacher absolute Spearman >= 0.02; same sign in at least three of four evaluation folds; median absolute evaluation Spearman >= 0.02; same sign in at least three of four teacher-panel symbols; median absolute per-symbol teacher Spearman >= 0.02.",
+      "allowed_future_role": "candidate compact state variable or feature family after broader confirmation",
       "direct_trade_authority": false
     },
     "ofi_incremental_information": {
       "requirement": "Full model must beat the otherwise identical no-OFI model on both MAE and log loss in at least three of four folds under a fixed model family.",
-      "allowed_future_role": "OFI may be retained as distinct causal information rather than redundant imbalance",
+      "allowed_future_role": "OFI may be retained as distinct causal information rather than redundant imbalance, but must still undergo broader non-teacher-symbol confirmation before integration",
       "direct_trade_authority": false
     },
     "trust_or_uncertainty_information": {
@@ -29,15 +33,26 @@
   "rejected_as_nontransferable": [
     "relationship seen only in one or two historical regimes",
     "relationship whose sign flips across most regimes",
-    "result found only by one coin and unsupported across the four-coin panel",
+    "result driven by one or two representative coins",
+    "pooled result that fails the frozen cross-symbol criteria",
     "metric improvement requiring post-result threshold or hyperparameter changes",
-    "isolated high win rate or return without frozen cross-regime stability",
+    "isolated high win rate or return without frozen cross-regime and cross-symbol stability",
     "any conclusion requiring fabricated or interpolated missing order-book history"
   ],
+  "broader_confirmation_before_future_integration": {
+    "required": true,
+    "source": "non-teacher symbols from the already verified 24-symbol historical TBT breadth panel",
+    "teacher_symbols_excluded": ["BAT-USDT", "ZRX-USDT", "ATOM-USDT", "BCH-USDT"],
+    "feature_reselection_forbidden": true,
+    "sign_reselection_forbidden": true,
+    "threshold_retuning_forbidden": true,
+    "purpose": "Confirm transfer beyond the four economical teacher symbols; this remains historical research and is not fresh forward qualification."
+  },
   "future_generation_rule": {
     "teacher_result_may_identify_what_information_is_stable": true,
     "teacher_result_may_not_define_a_trade_rule": true,
-    "future_architecture_must_be_written_after_knowledge_acceptance_but_before_its_own_economic_evaluation": true,
+    "broader_confirmation_must_precede_microstructure_trade_integration": true,
+    "future_architecture_must_be written_after_knowledge_acceptance_and_confirmation_but_before_its_own_economic_evaluation": true,
     "gen3c_remains_unchanged_until_a_future_generation_passes_its_own_frozen_gate": true,
     "avoid_hard_gate_by_default": "GEN3D/GEN3E experience shows hard filtering can overfit or collapse opportunity coverage; any future gate requires independent preregistration and justification.",
     "fresh_forward_shadow_required": true,
