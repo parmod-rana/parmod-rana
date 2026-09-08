@@ -1,0 +1,29 @@
+name: VARDHANI R3E source probe
+
+on:
+  push:
+    branches: [r3e-economic-router-freeze]
+    paths:
+      - '.github/workflows/r3e-source-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe exact frozen source URLs without auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/r3e_probe
+          curl -L --fail --silent --show-error 'https://api.upstox.com/v3/historical-candle/NSE_INDEX%7CNifty%2050/minutes/1/2023-06-30/2023-06-01' -o /tmp/r3e_probe/nifty.json
+          curl -L --fail --silent --show-error 'https://api.upstox.com/v3/historical-candle/BSE_INDEX%7CSENSEX/minutes/1/2023-06-30/2023-06-01' -o /tmp/r3e_probe/sensex.json
+          curl -L --fail --silent --show-error 'https://api.upstox.com/v3/historical-candle/NSE_INDEX%7CIndia%20VIX/minutes/1/2023-06-30/2023-06-01' -o /tmp/r3e_probe/vix.json
+          echo 'f16922be41d71e48a4c2c2c25044b8268f3084b4c51c6752acf3394f5beb73c5  /tmp/r3e_probe/nifty.json' | sha256sum -c -
+          echo 'f49fa9be27d16b1b7842e1495a335e951b6483b035df01c3b716b83693e4c45a  /tmp/r3e_probe/sensex.json' | sha256sum -c -
+          echo '5210eeae3180054cefc8aa7841256289889473cbfcd86f895b35574f1f613219  /tmp/r3e_probe/vix.json' | sha256sum -c -
+          wc -c /tmp/r3e_probe/*.json
+          echo R3E_EXACT_SOURCE_PROBE_PASS
