@@ -15,7 +15,7 @@ jobs:
       FROZEN_SOURCE_COMMIT: a76b6234478f406b7d3bb80bec0e9795489d035c
       EXPECTED_TEACHER_BLOB: 69188ed4c1d3932907ca7d0e249c5a1f581c8659
       EXPECTED_PROTOCOL_BLOB: 59e6286b03f7a3e1bd663382be1c3b1c0ca05aed
-      FULL_BANK_RUN_ID: '34185837887'
+      FULL_BANK_RUN_ID: '34187443705'
       FULL_BANK_ARTIFACT_NAME: crypto-survival-microstructure-experience-bank-full
     steps:
       - name: Read one-time execution lock
@@ -31,7 +31,7 @@ jobs:
           x=json.load(open(p))
           required={
             'status':'AUTHORIZED_AFTER_FULL_BANK_PASS',
-            'full_bank_run_id':34185837887,
+            'full_bank_run_id':34187443705,
             'frozen_source_commit':'a76b6234478f406b7d3bb80bec0e9795489d035c',
             'validation_run_id':34186770762,
             'teacher_version':'MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1',
