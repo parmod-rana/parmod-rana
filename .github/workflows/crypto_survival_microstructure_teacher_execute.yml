@@ -42,8 +42,9 @@ jobs:
                   raise SystemExit(f'lock mismatch {k}: {x.get(k)!r} != {v!r}')
           if not x.get('full_bank_artifact_id'):
               raise SystemExit('full_bank_artifact_id missing')
-          if not x.get('full_bank_manifest_sha256'):
-              raise SystemExit('full_bank_manifest_sha256 missing')
+          hashes=x.get('full_bank_data_sha256') or {}
+          if set(hashes) != {'all','teacher','historical_evaluation'} or not all(hashes.values()):
+              raise SystemExit(f'full_bank_data_sha256 incomplete: {hashes}')
           print('EXECUTION_LOCK_PASS', x)
           PY
       - name: Checkout exact validated teacher source
@@ -76,23 +77,28 @@ jobs:
           gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > bank_download/bank.zip
           unzip -q bank_download/bank.zip -d bank_download/unpacked
           echo "FULL_BANK_ARTIFACT_ID=$ARTIFACT_ID"
-      - name: Verify exact bank manifest hash and integrity
+      - name: Verify exact causal bank hashes and integrity
         run: |
           set -euo pipefail
           MANIFEST=$(find bank_download/unpacked -path '*/microstructure_experience_bank_full/manifest.json' -print -quit)
           test -n "$MANIFEST"
-          EXPECTED=$(python -c 'import json; print(json.load(open("trigger_repo/crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json"))["full_bank_manifest_sha256"])')
-          ACTUAL=$(sha256sum "$MANIFEST" | awk '{print $1}')
-          test "$ACTUAL" = "$EXPECTED"
-          python - "$MANIFEST" <<'PY'
-          import json,sys
-          x=json.load(open(sys.argv[1]))
+          python - "$MANIFEST" trigger_repo/crypto_survival_training/MICROSTRUCTURE_TEACHER_EXECUTE.json <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          mp=Path(sys.argv[1]); lock=json.load(open(sys.argv[2])); x=json.load(open(mp)); c=x['checks']
           assert x['version']=='MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1'
-          c=x['checks']
+          assert x['shard_count']==16 and x['symbol_date_pairs']==128
           for k in ['all_16_frozen_shards_present','all_128_frozen_symbol_date_pairs_present','unique_symbol_state_time','teacher_evaluation_dates_disjoint','no_forward_returns_used','no_model_fit','no_trade_authority']:
-              assert c[k] is True, (k,c.get(k))
+              assert c[k] is True,(k,c.get(k))
           assert float(c['finite_mid_fraction_all']) >= 0.999999
-          print('FULL_BANK_INTEGRITY_PASS', x['rows'], x['sha256'])
+          names={'all':'all_states_15m.csv.gz','teacher':'teacher_states_15m.csv.gz','historical_evaluation':'historical_evaluation_states_15m.csv.gz'}
+          for key,name in names.items():
+              p=mp.parent/name
+              actual=hashlib.sha256(p.read_bytes()).hexdigest()
+              expected=lock['full_bank_data_sha256'][key]
+              assert actual==expected,(key,actual,expected)
+              assert x['sha256'][key]==expected,(key,x['sha256'][key],expected)
+          print('FULL_BANK_INTEGRITY_PASS',x['rows'],x['sha256'])
           PY
           dirname "$MANIFEST" > bank_dir.txt
       - name: Execute frozen research-only teacher V1.1
