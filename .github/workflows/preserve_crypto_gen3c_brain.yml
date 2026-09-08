@@ -1,0 +1,52 @@
+name: Preserve Frozen Crypto Gen3C Brain
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/preserve_crypto_gen3c_brain.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA256: e2d919009109f5ee286b47fcc090616a59229d926f2bbc8f0290e9865487a2d3
+      ARTIFACT_ID: '10032126860'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          fetch-depth: 0
+      - name: Download exact registered Actions artifact ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p frozen_brains
+          curl --fail --location \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            --output frozen_brains/GEN3C_R1F_TEMPORAL_ENSEMBLE_ACTIONS_ARTIFACT.zip
+          ACTUAL=$(sha256sum frozen_brains/GEN3C_R1F_TEMPORAL_ENSEMBLE_ACTIONS_ARTIFACT.zip | awk '{print $1}')
+          echo "expected=${EXPECTED_SHA256}"
+          echo "actual=${ACTUAL}"
+          test "${ACTUAL}" = "${EXPECTED_SHA256}"
+          printf '%s  %s\n' "${ACTUAL}" "GEN3C_R1F_TEMPORAL_ENSEMBLE_ACTIONS_ARTIFACT.zip" > frozen_brains/GEN3C_R1F_SHA256.txt
+          unzip -tq frozen_brains/GEN3C_R1F_TEMPORAL_ENSEMBLE_ACTIONS_ARTIFACT.zip
+      - name: Commit immutable frozen artifact copy
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frozen_brains/GEN3C_R1F_TEMPORAL_ENSEMBLE_ACTIONS_ARTIFACT.zip frozen_brains/GEN3C_R1F_SHA256.txt
+          if git diff --cached --quiet; then
+            echo "Frozen Gen3C artifact already preserved."
+            exit 0
+          fi
+          git commit -m "Preserve exact frozen Gen3C brain artifact"
+          git push origin HEAD:crypto-survival-r1d-training
