@@ -1,0 +1,57 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "updated_at": "2026-09-08T02:18:00Z",
+  "invariants": {
+    "fixed_strategy_expert_authority": false,
+    "paper_only": true,
+    "real_money_authority": false,
+    "already_inspected_period_for_enhancement": "2026-08-01 onward",
+    "fresh_forward_evidence_required_for_qualification": true
+  },
+  "active_shadow": {
+    "generation": "GEN3C",
+    "version": "R1F-GEN3C-TEMPORAL-ENSEMBLE",
+    "artifact_sha256": "e2d919009109f5ee286b47fcc090616a59229d926f2bbc8f0290e9865487a2d3",
+    "authority": "SHADOW_PAPER_ONLY",
+    "reason": "First Generation-3 enhancement to pass frozen historical walk-forward robustness; no fresh untouched qualification period remains after prior Aug-Sep inspection.",
+    "selected_calibration": {
+      "capacity": 2.0,
+      "q_floor_bps": 60.0,
+      "consensus_penalty": 0.0
+    },
+    "known_weakness": {
+      "worst_fold_avg_net_bps": -84.1294575172906,
+      "worst_fold_profit_factor": 0.7215288019729019,
+      "worst_fold_max_drawdown_bps": 6595.604675176961
+    }
+  },
+  "rejected": [
+    {
+      "generation": "GEN3D",
+      "version": "R1F-GEN3D-LEARNED-TEMPORAL-GATE",
+      "artifact_sha256": "b3ec1836360ac1ed085d4eb7671a400e931268167fb3a818e7bbb1c9fd632737",
+      "reason": "Meta-gate overfit: excellent calibration but all four frozen walk-forward folds negative.",
+      "walk_forward": {
+        "F1_avg_net_bps": -7.528960168432012,
+        "F2_avg_net_bps": -54.57913961148874,
+        "F3_avg_net_bps": -9.351707572268618,
+        "F4_avg_net_bps": -12.21824772207982,
+        "robust_pass": false
+      },
+      "promotion_forbidden": true
+    }
+  ],
+  "challenger": {
+    "generation": "GEN3E",
+    "version": "R1F-GEN3E-CONSERVATIVE-EXPERIENCE",
+    "status": "TRAINING",
+    "concept": "Temporal neural action-value policy plus causal learned conservative trade-quality model; learned q25 net <= 0 means WAIT.",
+    "promotion_gate_frozen_before_result": {
+      "walk_forward_robust_pass": true,
+      "worst_fold_avg_net_bps_must_exceed": -84.1294575172906,
+      "worst_fold_profit_factor_must_exceed": 0.7215288019729019,
+      "max_drawdown_bps_must_be_below": 6595.604675176961,
+      "all_three_improvements_required": true
+    }
+  }
+}
