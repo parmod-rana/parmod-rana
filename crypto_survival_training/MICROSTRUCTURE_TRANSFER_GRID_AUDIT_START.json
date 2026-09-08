@@ -1,0 +1,17 @@
+{
+  "status": "AUTHORIZED_AFTER_160_PAIR_MERGE_PASS",
+  "authorized_at_utc": "2026-09-08T06:25:00Z",
+  "transfer_bank_run_id": 34188108465,
+  "transfer_bank_artifact_id": 10042015533,
+  "transfer_bank_artifact_name": "crypto-survival-microstructure-transfer-bank-v1",
+  "transfer_bank_artifact_digest": "sha256:498c6907804ea24bb683a5a1c6f56289691e59a8e52138bc7e14d1dbd1a1aae4",
+  "transfer_bank_states_sha256": "5f27360d20ed4c30ce3fe016c902b82c99f418b4fe7a38f87361400bf90dc9c2",
+  "transfer_bank_pair_count": 160,
+  "transfer_bank_rows": 15360,
+  "audit_source_commit": "4662c1782e4b420b8d46be280ec067b143a746de",
+  "audit_validation_run_id": 34188910425,
+  "authority": "DATA_INTEGRITY_ONLY_NO_TRADE_AUTHORITY",
+  "real_money_authority": false,
+  "frozen_protocol": "MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1",
+  "note": "Run only the already-validated exact-grid data-integrity audit. No relationship, sign, threshold, date, cost, gate, or authority change is authorized."
+}
