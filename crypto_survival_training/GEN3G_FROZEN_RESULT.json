@@ -1,0 +1,69 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "generation": "GEN3G",
+  "version": "R1F-GEN3G-CAUSAL-RELIABILITY-MEMORY",
+  "status": "REJECTED_FROZEN_RESULT",
+  "workflow_run_id": 34184755928,
+  "workflow_job_id": 101930740980,
+  "source_commit": "dd13b64823115e6455157454f4e4aa3f20537681",
+  "artifact_id": 10040478205,
+  "artifact_zip_sha256": "7c47cca29ef33ebc641cccb76d9cf0ce2ad5a114f689e309a1b040fae78cc460",
+  "trained_on_real_history": true,
+  "research_rows": 561600,
+  "symbol_count": 72,
+  "roundtrip_cost_bps": 30.0,
+  "walk_forward": {
+    "F1": {
+      "trades": 134,
+      "avg_net_bps": -27.966672648375912,
+      "profit_factor": 0.8942443092599791,
+      "win_rate": 0.4552238805970149,
+      "max_drawdown_bps": 4829.049789617834,
+      "portfolio_return_bps": -1873.767067441186
+    },
+    "F2": {
+      "trades": 130,
+      "avg_net_bps": -12.90580776273304,
+      "profit_factor": 0.9561077467838112,
+      "win_rate": 0.49230769230769234,
+      "max_drawdown_bps": 5698.125998713444,
+      "portfolio_return_bps": -838.8775045776478
+    },
+    "F3": {
+      "trades": 126,
+      "avg_net_bps": 32.66013267478466,
+      "profit_factor": 1.1982167259721663,
+      "win_rate": 0.5396825396825397,
+      "max_drawdown_bps": 1548.2828121356345,
+      "portfolio_return_bps": 2057.588358511434
+    },
+    "F4": {
+      "trades": 134,
+      "avg_net_bps": -85.72194948504993,
+      "profit_factor": 0.6736060016687174,
+      "win_rate": 0.4253731343283582,
+      "max_drawdown_bps": 7262.532798735062,
+      "portfolio_return_bps": -5743.370615498348
+    },
+    "total_trades": 524,
+    "minimum_trades_each_fold": 126,
+    "positive_fold_count": 1,
+    "median_avg_net_bps": -20.436240205554476,
+    "worst_avg_net_bps": -85.72194948504993,
+    "worst_profit_factor": 0.6736060016687174,
+    "worst_max_drawdown_bps": 7262.532798735062,
+    "robust_pass": false
+  },
+  "promotion_vs_gen3c": {
+    "coverage_pass": true,
+    "improves_median_avg": false,
+    "improves_worst_avg": false,
+    "improves_worst_profit_factor": false,
+    "improves_worst_drawdown": false,
+    "promote_to_active_shadow": false
+  },
+  "lesson": "Causal recent-outcome reliability memory contains regime information and materially improved F2, but moderate reweighting of the three temporal memories was not stable across all regimes and worsened F4 beyond Gen3C. Do not promote and do not post-hoc retune. Future intelligence should learn additional genuine market-state information, especially order-flow/liquidity context, rather than trying another parameter variant of the same temporal reweighting mechanism.",
+  "authority_after_result": "GEN3C_REMAINS_ACTIVE_SHADOW",
+  "post_result_threshold_tuning_forbidden": true,
+  "real_money_authority": false
+}
