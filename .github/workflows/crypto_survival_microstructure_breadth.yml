@@ -1,0 +1,37 @@
+name: Crypto Survival Gen3G Microstructure Breadth
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_microstructure_breadth.yml'
+      - 'crypto_survival_training/probe_okx_microstructure_breadth.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install probe dependency
+        run: pip install --disable-pip-version-check requests
+      - name: Audit real TBT archive breadth across frozen regimes
+        env:
+          PYTHONPATH: .
+        run: |
+          set -o pipefail
+          python crypto_survival_training/probe_okx_microstructure_breadth.py | tee microstructure_breadth.log
+      - name: Upload breadth evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-gen3g-microstructure-breadth
+          path: |
+            microstructure_breadth.log
+            microstructure_breadth_probe/
+          retention-days: 7
