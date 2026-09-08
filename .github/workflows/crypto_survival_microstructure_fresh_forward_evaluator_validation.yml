@@ -1,0 +1,56 @@
+name: Crypto Survival Microstructure Fresh Forward Evaluator Validation
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/run_microstructure_fresh_forward_evaluator.py'
+      - 'crypto_survival_training/test_microstructure_fresh_forward_evaluator.py'
+      - 'crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_ELIGIBLE_KNOWLEDGE_V1.json'
+      - 'crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1.json'
+      - 'crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json'
+      - '.github/workflows/crypto_survival_microstructure_fresh_forward_evaluator_validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify frozen pre-outcome blobs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:crypto_survival_training/run_microstructure_fresh_forward_evaluator.py)" = "01607bd4ef37834b8ee5deba7fd854200c9f2e74"
+          test "$(git rev-parse HEAD:crypto_survival_training/test_microstructure_fresh_forward_evaluator.py)" = "15c96c50b11ea76c3992156bf482500ab5364979"
+          test "$(git rev-parse HEAD:crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_ELIGIBLE_KNOWLEDGE_V1.json)" = "bff32c3d7969bfa33081991ed1873e91d879490f"
+          test "$(git rev-parse HEAD:crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_PROTOCOL_V1.json)" = "de391d370d21d1b2459c85a7e041058f60d41d43"
+          test "$(git rev-parse HEAD:crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_HOLDOUT_V1.json)" = "5584d2eabee725d722eac2384ca18fb59c878c78"
+          test "$(git rev-parse HEAD:crypto_survival_training/run_microstructure_experience_teacher.py)" = "69188ed4c1d3932907ca7d0e249c5a1f581c8659"
+          echo FRESH_FORWARD_PRE_OUTCOME_BLOB_LOCK_PASS
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas scipy pytest
+      - name: Compile frozen evaluator
+        run: python -m py_compile crypto_survival_training/run_microstructure_fresh_forward_evaluator.py
+      - name: Run fail-closed evaluator tests only
+        run: python -m pytest -q crypto_survival_training/test_microstructure_fresh_forward_evaluator.py
+      - name: Verify authority remains off
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('crypto_survival_training/MICROSTRUCTURE_FRESH_FORWARD_ELIGIBLE_KNOWLEDGE_V1.json'))
+          assert len(x['eligible_relationships']) == 1
+          r=x['eligible_relationships'][0]
+          assert (r['horizon_minutes'],r['feature'],r['teacher_sign']) == (60,'top_ofi_norm_mean','NEGATIVE')
+          assert x['eligible_trust_candidates'] == []
+          assert x['eligible_model_families'] == []
+          assert x['ofi_incremental_eligible'] is False
+          assert x['gen3c_change'] is False
+          assert x['real_money_authority'] is False
+          print('FRESH_FORWARD_AUTHORITY_LOCK_PASS')
+          PY
