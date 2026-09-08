@@ -6,6 +6,8 @@ on:
       - '.github/workflows/crypto_survival_microstructure_test.yml'
       - 'crypto_survival_training/microstructure_features.py'
       - 'crypto_survival_training/test_microstructure_features.py'
+      - 'crypto_survival_training/causal_state_merge.py'
+      - 'crypto_survival_training/test_causal_state_merge.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,6 +29,7 @@ jobs:
         run: |
           set -o pipefail
           python crypto_survival_training/test_microstructure_features.py | tee microstructure_test.log
+          python crypto_survival_training/test_causal_state_merge.py | tee -a microstructure_test.log
       - name: Upload test evidence
         if: always()
         uses: actions/upload-artifact@v4
