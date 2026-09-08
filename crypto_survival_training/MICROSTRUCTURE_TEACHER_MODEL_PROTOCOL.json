@@ -1,8 +1,13 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "study": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_FIXED_MODELS",
-  "status": "FROZEN_BEFORE_FULL_BANK_EVALUATION",
+  "study": "MICROSTRUCTURE_EXPERIENCE_TEACHER_V1_1_FIXED_MODELS",
+  "status": "REFROZEN_BEFORE_ANY_FULL_BANK_EVALUATION",
   "authority": "RESEARCH_ONLY_NO_TRADE_AUTHORITY",
+  "design_audit": {
+    "reason_for_v1_1": "Before any full-bank evaluation was exposed, the evidence audit found that pooled cross-regime metrics did not explicitly enforce the already-stated requirement that transferable knowledge not be driven by one representative coin. V1.1 adds cross-symbol diagnostics and acceptance gates only; model families, hyperparameters, labels, horizons and economic authority are unchanged.",
+    "full_bank_evaluation_seen_before_change": false,
+    "post_result_change": false
+  },
   "input_bank_version": "MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1",
   "teacher_input": "teacher_states_15m.csv.gz",
   "historical_evaluation_input": "historical_evaluation_states_15m.csv.gz",
@@ -31,10 +36,7 @@
     }
   },
   "fixed_models": {
-    "magnitude_linear": {
-      "type": "Ridge",
-      "alpha": 10.0
-    },
+    "magnitude_linear": {"type": "Ridge", "alpha": 10.0},
     "direction_linear": {
       "type": "LogisticRegression",
       "C": 0.25,
@@ -75,21 +77,31 @@
     "magnitude": ["MAE", "RMSE", "Spearman correlation"],
     "direction": ["ROC_AUC", "balanced_accuracy_at_0.5", "log_loss", "Brier_score"],
     "feature_relationship": "Spearman correlation to future return",
-    "ofi_incremental": "full-feature model versus otherwise identical model with all top_ofi features removed"
+    "ofi_incremental": "full-feature model versus otherwise identical model with all top_ofi features removed",
+    "cross_symbol": "the same fixed models and features are scored separately on each of the four representative symbols without refitting"
   },
   "stability_rules_frozen": {
     "feature_relationship": {
       "teacher_abs_spearman_min": 0.02,
       "same_sign_eval_folds_min": 3,
-      "eval_median_abs_spearman_min": 0.02
+      "eval_median_abs_spearman_min": 0.02,
+      "same_sign_teacher_symbols_min": 3,
+      "teacher_symbol_median_abs_spearman_min": 0.02,
+      "all_conditions_required": true
     },
     "magnitude_model": {
       "folds_beating_constant_baseline_on_MAE_min": 3,
-      "median_eval_spearman_must_be_positive": true
+      "median_eval_spearman_must_be_positive": true,
+      "symbols_beating_constant_baseline_on_MAE_min": 3,
+      "symbols_with_positive_eval_spearman_min": 3,
+      "all_conditions_required": true
     },
     "direction_model": {
       "folds_beating_constant_baseline_on_log_loss_min": 3,
-      "median_eval_ROC_AUC_must_exceed": 0.5
+      "median_eval_ROC_AUC_must_exceed": 0.5,
+      "symbols_beating_constant_baseline_on_log_loss_min": 3,
+      "symbols_with_eval_ROC_AUC_above_0_5_min": 3,
+      "all_conditions_required": true
     },
     "ofi_incremental": {
       "folds_full_beats_no_ofi_MAE_min": 3,
@@ -101,6 +113,12 @@
       "material_error_ratio": 1.10,
       "same_direction_eval_folds_min": 3
     }
+  },
+  "transfer_breadth_requirement": {
+    "teacher_panel_is_sufficient_for_discovery": true,
+    "teacher_panel_is_not_sufficient_for_trading_integration": true,
+    "before_any_future_microstructure_trade_integration": "Accepted feature families must undergo a separately frozen confirmatory breadth study on non-teacher symbols drawn from the already verified wider 24-symbol TBT panel; no feature or sign may be reselected in that confirmation.",
+    "fresh_forward_shadow_still_required_after_historical_confirmation": true
   },
   "governance": {
     "no_hyperparameter_search": true,
