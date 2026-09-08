@@ -1,0 +1,72 @@
+name: Preserve Frozen Microstructure Teacher V1.1 Evidence
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_TEACHER_V1_1_PRESERVE.json'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      TEACHER_RUN_ID: '34187582373'
+      ARTIFACT_NAME: crypto-survival-microstructure-teacher-v1-1-result
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          fetch-depth: 0
+      - name: Validate exact teacher preservation lock
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          x=json.load(open('crypto_survival_training/MICROSTRUCTURE_TEACHER_V1_1_PRESERVE.json'))
+          required={
+            'status':'PRESERVE_EXACT_TEACHER_V1_1_RESULT',
+            'teacher_run_id':34187582373,
+            'artifact_id':10041050467,
+            'artifact_zip_sha256':'741e33409ab47e7e9a04203813fed34f6842af504a2855647cc2165df4a07530',
+            'authority':'RESEARCH_EVIDENCE_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v,(k,x.get(k),v)
+          assert x.get('real_money_authority') is False
+          print('TEACHER_PRESERVE_LOCK_PASS')
+          PY
+      - name: Download and verify exact teacher artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ARTIFACT_JSON=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${TEACHER_RUN_ID}/artifacts?per_page=100")
+          ARTIFACT_ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ARTIFACT_JSON")
+          test "$ARTIFACT_ID" = '10041050467'
+          mkdir -p frozen_experience
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > frozen_experience/MICROSTRUCTURE_TEACHER_V1_1_RESULT_ACTIONS_ARTIFACT.zip
+          ACTUAL=$(sha256sum frozen_experience/MICROSTRUCTURE_TEACHER_V1_1_RESULT_ACTIONS_ARTIFACT.zip | awk '{print $1}')
+          test "$ACTUAL" = '741e33409ab47e7e9a04203813fed34f6842af504a2855647cc2165df4a07530'
+          unzip -q frozen_experience/MICROSTRUCTURE_TEACHER_V1_1_RESULT_ACTIONS_ARTIFACT.zip -d /tmp/teacher_result
+          test -f /tmp/teacher_result/microstructure_teacher_result/teacher_result.json
+          test "$(sha256sum /tmp/teacher_result/microstructure_teacher_result/teacher_result.json | awk '{print $1}')" = '3248e9801bcef7df954a557f3081cd99f5b70e5f71ee38f9de1edb297a1b945b'
+          test "$(sha256sum /tmp/teacher_result/microstructure_teacher_result/stable_feature_relationships.csv | awk '{print $1}')" = 'ab3aee2065485f783db46c283976696153c30c18a01269e64b1e830b1c5d5478'
+          printf '%s  %s\n' "$ACTUAL" 'MICROSTRUCTURE_TEACHER_V1_1_RESULT_ACTIONS_ARTIFACT.zip' > frozen_experience/MICROSTRUCTURE_TEACHER_V1_1_SHA256.txt
+          echo 'TEACHER_ARTIFACT_INTEGRITY_PASS'
+      - name: Commit immutable teacher evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add frozen_experience/MICROSTRUCTURE_TEACHER_V1_1_RESULT_ACTIONS_ARTIFACT.zip frozen_experience/MICROSTRUCTURE_TEACHER_V1_1_SHA256.txt
+          if git diff --cached --quiet; then
+            echo 'Teacher evidence already preserved.'
+            exit 0
+          fi
+          git commit -m 'Preserve exact frozen microstructure teacher V1.1 evidence'
+          git push origin HEAD:crypto-survival-r1d-training
