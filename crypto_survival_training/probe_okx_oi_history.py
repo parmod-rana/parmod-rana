@@ -1,27 +1,34 @@
 from __future__ import annotations
 import json, requests, time
 from pathlib import Path
+from datetime import datetime, timezone
 
 BASE='https://www.okx.com'
 OUT=Path('oi_history_probe'); OUT.mkdir(exist_ok=True)
 URL=BASE+'/api/v5/rubik/stat/contracts/open-interest-history'
-CASES=[
-    {'instId':'BTC-USDT-SWAP','period':'1D'},
-    {'instId':'ETH-USDT-SWAP','period':'1D'},
-    {'instId':'SOL-USDT-SWAP','period':'1D'},
-    {'instId':'XRP-USDT-SWAP','period':'1D'},
-]
+
+def iso(ms): return datetime.fromtimestamp(ms/1000,timezone.utc).isoformat()
+
+def fetch_pages(inst):
+    rows={}; end=1788825600000; pages=[]
+    for i in range(8):
+        q={'instId':inst,'period':'1D','begin':'1672531200000','end':str(end),'limit':'100'}
+        r=requests.get(URL,params=q,timeout=30)
+        body=r.json(); data=body.get('data',[]) if isinstance(body,dict) else []
+        if body.get('code')!='0' or not data:
+            pages.append({'page':i+1,'http':r.status_code,'code':body.get('code'),'msg':body.get('msg'),'records':len(data)}); break
+        ts=[int(x[0]) for x in data]
+        for x in data: rows[int(x[0])]=x
+        oldest=min(ts); newest=max(ts)
+        pages.append({'page':i+1,'records':len(data),'oldest':oldest,'oldest_iso':iso(oldest),'newest':newest,'newest_iso':iso(newest)})
+        next_end=oldest-1
+        if next_end>=end: break
+        end=next_end; time.sleep(.8)
+    keys=sorted(rows)
+    return {'instrument':inst,'unique_records':len(keys),'first_ts':keys[0] if keys else None,'first_iso':iso(keys[0]) if keys else None,'last_ts':keys[-1] if keys else None,'last_iso':iso(keys[-1]) if keys else None,'pages':pages,'first_row':rows[keys[0]] if keys else None,'last_row':rows[keys[-1]] if keys else None}
 
 def main():
-    out=[]
-    for p in CASES:
-        q=dict(p); q['begin']='1672531200000'; q['end']='1788825600000'; q['limit']='100'
-        r=requests.get(URL,params=q,timeout=30)
-        try: body=r.json()
-        except Exception: body={'raw':r.text[:1200]}
-        data=body.get('data') if isinstance(body,dict) else None
-        rec={'params':q,'http':r.status_code,'code':body.get('code') if isinstance(body,dict) else None,'msg':body.get('msg') if isinstance(body,dict) else None,'records':len(data) if isinstance(data,list) else None,'first':data[-1] if isinstance(data,list) and data else None,'last':data[0] if isinstance(data,list) and data else None}
-        out.append(rec); print(json.dumps(rec,default=str),flush=True); time.sleep(.8)
-    (OUT/'probe_v2.json').write_text(json.dumps(out,indent=2,default=str))
+    report=[fetch_pages(x) for x in ['BTC-USDT-SWAP','ETH-USDT-SWAP','SOL-USDT-SWAP','XRP-USDT-SWAP']]
+    print(json.dumps(report,indent=2)); (OUT/'probe_v3_pagination.json').write_text(json.dumps(report,indent=2))
 
 if __name__=='__main__': main()
