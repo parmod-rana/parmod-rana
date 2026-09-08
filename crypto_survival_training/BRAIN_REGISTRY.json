@@ -1,6 +1,6 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "updated_at": "2026-09-08T02:18:00Z",
+  "updated_at": "2026-09-08T02:28:00Z",
   "invariants": {
     "fixed_strategy_expert_authority": false,
     "paper_only": true,
@@ -39,19 +39,34 @@
         "robust_pass": false
       },
       "promotion_forbidden": true
+    },
+    {
+      "generation": "GEN3E",
+      "version": "R1F-GEN3E-CONSERVATIVE-EXPERIENCE",
+      "artifact_sha256": "0534fdf31194ace77acf91ee68c44ec8a644e76ee4fe559986178207b4262f39",
+      "reason": "Causal trade-quality learner became excessively conservative: >99.9% WAIT in tested folds, insufficient trade support, and robust gate failed despite sharply lower drawdown.",
+      "walk_forward": {
+        "F1": {"trades": 11, "avg_net_bps": -9.624976598206684, "profit_factor": 0.8190069074066444, "max_drawdown_bps": 292.4828264527931, "wait_fraction": 0.9995066788099575},
+        "F2": {"trades": 10, "avg_net_bps": 115.34904783894163, "profit_factor": 6.830969536081998, "max_drawdown_bps": 29.47348278997117, "wait_fraction": 0.9990354938271605},
+        "F3": {"trades": 0, "avg_net_bps": 0.0, "profit_factor": 0.0, "max_drawdown_bps": 0.0, "wait_fraction": 1.0},
+        "F4": {"trades": 5, "avg_net_bps": -19.2557396816858, "profit_factor": 0.13473005825332598, "max_drawdown_bps": 48.1393492042145, "wait_fraction": 0.9997685185185186},
+        "robust_pass": false
+      },
+      "lesson": "Do not solve temporal inconsistency by filtering almost every opportunity; add genuinely informative market-state variables and preserve opportunity coverage.",
+      "promotion_forbidden": true
     }
   ],
   "challenger": {
-    "generation": "GEN3E",
-    "version": "R1F-GEN3E-CONSERVATIVE-EXPERIENCE",
-    "status": "TRAINING",
-    "concept": "Temporal neural action-value policy plus causal learned conservative trade-quality model; learned q25 net <= 0 means WAIT.",
-    "promotion_gate_frozen_before_result": {
-      "walk_forward_robust_pass": true,
-      "worst_fold_avg_net_bps_must_exceed": -84.1294575172906,
-      "worst_fold_profit_factor_must_exceed": 0.7215288019729019,
-      "max_drawdown_bps_must_be_below": 6595.604675176961,
-      "all_three_improvements_required": true
-    }
+    "generation": "GEN3F",
+    "status": "DATA_BUILDING",
+    "concept": "Gen3C-style autonomous temporal policy augmented with genuine causal leverage-state features from verified historical OKX funding archives and, if depth verification passes, historical open interest.",
+    "funding_archive": {
+      "verified": true,
+      "module": 3,
+      "dateAggrType": "daily",
+      "schema": ["instrument_name", "funding_rate", "funding_time"],
+      "sample_file": "allswap-fundingrates-2025-01-05.csv"
+    },
+    "promotion_rule": "Freeze before training; must improve robustness and worst-regime behavior without reducing broad coin/time coverage or using 2026-08-01+ for enhancement selection."
   }
 }
