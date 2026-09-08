@@ -1,0 +1,52 @@
+name: Crypto Survival Microstructure Merge Recovery
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_microstructure_merge_recovery.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      FROZEN_SHARD_RUN_ID: '34185837887'
+      FROZEN_SOURCE_COMMIT: '0233df870b2ad9a5aaee0c3588d11da72586bf07'
+    steps:
+      - name: Checkout exact original full-bank source commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.FROZEN_SOURCE_COMMIT }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original merge dependencies plus mechanically missing requests
+        run: pip install --disable-pip-version-check numpy pandas requests
+      - name: Download all 16 exact successful shard artifacts from original frozen run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: microbank-*
+          path: downloaded_shards
+          merge-multiple: false
+          repository: parmod-rana/parmod-rana
+          run-id: ${{ env.FROZEN_SHARD_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Run exact frozen fail-closed merger
+        env:
+          PYTHONPATH: .
+        run: |
+          set -o pipefail
+          python crypto_survival_training/merge_microstructure_experience_shards.py \
+            --root downloaded_shards \
+            --out microstructure_experience_bank_full \
+            | tee microstructure_full_merge.log
+      - name: Upload recovered full compact causal experience bank
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-experience-bank-full
+          path: |
+            microstructure_full_merge.log
+            microstructure_experience_bank_full/
+          retention-days: 14
