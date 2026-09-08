@@ -1,6 +1,6 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "updated_at": "2026-09-08T03:00:00Z",
+  "updated_at": "2026-09-08T03:01:00Z",
   "policy": {
     "genuine_data_only": true,
     "no_fabricated_missing_history": true,
@@ -73,7 +73,7 @@
     "orderbook_tbt_50": {
       "provider": "OKX historical market-data archive",
       "market_data_history_module": 6,
-      "status": "VERIFIED_SCHEMA_FEATURE_LAYER_PREPARED_NOT_YET_MODEL_INPUT",
+      "status": "VERIFIED_REAL_DATA_EXTRACTION_PASS_NOT_YET_MODEL_INPUT",
       "verified_market_type": "SPOT",
       "verified_schema": {
         "format": "csv.gz",
@@ -85,7 +85,34 @@
       "verified_sample": {
         "instrument": "BAT-USDT",
         "date": "2025-01-01",
-        "compressed_size_mb": 20.97
+        "compressed_size_mb": 20.97,
+        "archive_bytes": 21993219,
+        "archive_sha256": "da8235e4b3e47787659a1f3a287b688da3a84576caa7401f19a0020cf60ad729"
+      },
+      "validation": {
+        "synthetic_streaming_equivalence": {
+          "status": "PASS",
+          "raw_snapshots": 137,
+          "completed_4h_buckets": 2,
+          "verified_feature_columns": 40,
+          "purpose": "Tiny-chunk streaming must numerically match full in-memory extraction and preserve cross-chunk OFI chronology."
+        },
+        "genuine_archive_smoke": {
+          "status": "PASS",
+          "parsed_book_updates": 547025,
+          "completed_4h_states": 6,
+          "first_state_time_ms": 1735704000000,
+          "last_state_time_ms": 1735776000000,
+          "checks": [
+            "monotonic completed-state timestamps",
+            "no duplicate completed-state timestamps",
+            "bucket-end chronology",
+            "non-negative spread",
+            "finite capture latency",
+            "quantity/order/notional imbalance bounded in [-1,1]",
+            "required microstructure feature columns present"
+          ]
+        }
       },
       "prepared_causal_features": [
         "spread_bps",
@@ -111,6 +138,6 @@
   },
   "model_separation": {
     "gen3f_v2": "Funding and OI only; no order-book data can contaminate its frozen evaluation.",
-    "microstructure": "Feature/extraction research only until Gen3F V2 result is finalized and a future experiment is frozen before results."
+    "microstructure": "Real-data extraction is verified, but it remains a feature/data layer only until Gen3F V2 result is finalized and a future experiment is frozen before results."
   }
 }
