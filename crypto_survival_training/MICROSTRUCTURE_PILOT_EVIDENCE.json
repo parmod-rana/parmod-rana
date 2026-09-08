@@ -1,0 +1,45 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "evidence": "MICROSTRUCTURE_EXPERIENCE_BANK_DATE_EXACT_PILOT_V1",
+  "workflow_run_id": 34185447355,
+  "workflow_job_id": 101932754799,
+  "head_sha": "a07b93ff3ae474e094ae89965cec211b15e4fb9d",
+  "conclusion": "success",
+  "economic_role": "NONE_DATA_ENGINEERING_ONLY",
+  "pairs": [
+    {"symbol": "BAT-USDT", "date": "2024-07-01", "genuine_target_day_updates": 774964, "completed_15m_states": 96},
+    {"symbol": "ZRX-USDT", "date": "2024-07-01", "genuine_target_day_updates": 1345721, "completed_15m_states": 96},
+    {"symbol": "BAT-USDT", "date": "2024-11-01", "genuine_target_day_updates": 630939, "completed_15m_states": 96},
+    {"symbol": "ZRX-USDT", "date": "2024-11-01", "genuine_target_day_updates": 1005610, "completed_15m_states": 96},
+    {"symbol": "BAT-USDT", "date": "2025-03-01", "genuine_target_day_updates": 375290, "completed_15m_states": 96},
+    {"symbol": "ZRX-USDT", "date": "2025-03-01", "genuine_target_day_updates": 1094176, "completed_15m_states": 96},
+    {"symbol": "BAT-USDT", "date": "2026-03-15", "genuine_target_day_updates": 260375, "completed_15m_states": 96},
+    {"symbol": "ZRX-USDT", "date": "2026-03-15", "genuine_target_day_updates": 145000, "completed_15m_states": 96}
+  ],
+  "totals": {
+    "symbol_date_pairs": 8,
+    "genuine_target_day_updates": 5632075,
+    "completed_15m_states": 768,
+    "states_per_pair": 96,
+    "finite_mid_fraction": 1.0
+  },
+  "checks": {
+    "exact_utc_day_filter": "target_begin_ms <= exchTimeMs < target_end_ms",
+    "unique_symbol_state_time": true,
+    "finite_mid_fraction": 1.0,
+    "no_forward_returns_used": true,
+    "no_model_fit": true,
+    "no_trade_authority": true,
+    "raw_archives_retained": false
+  },
+  "compact_output": {
+    "states_sha256": "d66cb276d9cdb9d5285f5f6b9707391b106bf9281019f5b9be5e699b4aa80d27",
+    "actions_artifact_id": 10040411818,
+    "actions_artifact_sha256": "2a5f67d892e90d3e67aa78cae9a593a2783867a2a855046e978fdd571e3a8d36"
+  },
+  "interpretation": [
+    "Historical order-flow states can be built causally and date-exactly across both the verified legacy and canonical OKX TBT schemas.",
+    "Every sampled UTC day produced the expected 96 completed 15-minute states with a finite final midprice.",
+    "The pilot authorizes scaling the pre-registered experience bank only. It does not establish predictive or economic edge."
+  ]
+}
