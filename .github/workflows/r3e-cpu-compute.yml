@@ -1,0 +1,65 @@
+name: VARDHANI R3E CPU compute
+
+on:
+  push:
+    branches: [r3e-economic-router-freeze]
+    paths:
+      - '.github/workflows/r3e-cpu-compute.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Confirm CPU-only frozen boundaries
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E
+        run: |
+          python - <<'PY'
+          import json
+          from r3e_authorized_source_manifest import ROWS
+          a=json.load(open('R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json'))
+          assert len(ROWS)==108 and {r[1] for r in ROWS}=={2022,2023,2024}
+          assert a['status']=='FROZEN_BEFORE_ANY_R3E_MODEL_OUTPUT'
+          assert a['boundary']['student_optimizer_steps']==0
+          assert a['boundary']['2025_used'] is False and a['boundary']['2026_used'] is False
+          assert a['boundary']['gpu_allowed'] is False
+          print('R3E_COMPUTE_BOUNDARY_PASS')
+          PY
+      - name: Execute frozen R3E on CPU
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          NUMEXPR_NUM_THREADS: '1'
+        run: |
+          python r3e_exact_member_cpu.py --work "$RUNNER_TEMP/r3e_exact_cpu_work" | tee "$RUNNER_TEMP/r3e_compute.log"
+      - name: Publish result summary
+        if: always()
+        run: |
+          echo '--- R3E RESULT FILE ---'
+          if [ -f "$RUNNER_TEMP/r3e_exact_cpu_work/TEACHER_ECONOMIC_R3E_DEVELOPMENT_RESULT_V1.json" ]; then
+            cat "$RUNNER_TEMP/r3e_exact_cpu_work/TEACHER_ECONOMIC_R3E_DEVELOPMENT_RESULT_V1.json"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vardhani-r3e-cpu-result
+          path: |
+            ${{ runner.temp }}/r3e_exact_cpu_work/TEACHER_ECONOMIC_R3E_DEVELOPMENT_RESULT_V1.json
+            ${{ runner.temp }}/r3e_exact_cpu_work/R3E_EXACT_MEMBER_RECONSTRUCTION_AUDIT_V1.json
+            ${{ runner.temp }}/r3e_exact_cpu_work/R3E_2023_SELECTED_TRADES.csv
+            ${{ runner.temp }}/r3e_exact_cpu_work/R3E_2024_AUDIT_TRADES.csv
+            ${{ runner.temp }}/r3e_compute.log
+          if-no-files-found: warn
+          retention-days: 7
