@@ -1,0 +1,34 @@
+{
+  "authorization": "FULL_MICROSTRUCTURE_EXPERIENCE_BANK_V1",
+  "authorized_at": "2026-09-08T04:05:00Z",
+  "economic_role": "NONE_DATA_ENGINEERING_ONLY",
+  "pilot_gate": {
+    "workflow_run_id": 34185447355,
+    "workflow_job_id": 101932754799,
+    "head_sha": "a07b93ff3ae474e094ae89965cec211b15e4fb9d",
+    "conclusion": "success",
+    "pairs": 8,
+    "completed_15m_states": 768,
+    "states_each_pair": 96,
+    "finite_mid_fraction": 1.0,
+    "unique_symbol_state_time": true,
+    "no_forward_returns_used": true,
+    "no_model_fit": true,
+    "no_trade_authority": true,
+    "compact_states_sha256": "d66cb276d9cdb9d5285f5f6b9707391b106bf9281019f5b9be5e699b4aa80d27",
+    "actions_artifact_id": 10040411818,
+    "actions_artifact_sha256": "2a5f67d892e90d3e67aa78cae9a593a2783867a2a855046e978fdd571e3a8d36"
+  },
+  "authorized_protocol": "crypto_survival_training/MICROSTRUCTURE_BANK_SHARD_PROTOCOL.json",
+  "full_bank_workflow": ".github/workflows/crypto_survival_microstructure_bank_full.yml",
+  "requirements": [
+    "exact target UTC day filter remains mandatory",
+    "lossless historical schema normalization remains mandatory",
+    "all 16 predetermined shards must succeed",
+    "all 128 predetermined symbol-date pairs must be present",
+    "missing history must fail closed and must never be imputed",
+    "teacher and historical-evaluation dates must remain physically separated in merged outputs",
+    "raw archives are hashed and deleted after compact causal aggregation",
+    "no economic label/model/trade authority is permitted in this build"
+  ]
+}
