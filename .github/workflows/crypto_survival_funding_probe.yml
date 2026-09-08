@@ -18,11 +18,13 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install dependencies
-        run: pip install --disable-pip-version-check requests pandas numpy
+        run: pip install --disable-pip-version-check requests pandas numpy joblib scikit-learn==1.9.0
       - name: Probe genuine OKX funding history
         env:
           PYTHONPATH: .
-        run: python crypto_survival_training/probe_okx_funding_history.py | tee funding_probe.log
+        run: |
+          set -o pipefail
+          python crypto_survival_training/probe_okx_funding_history.py | tee funding_probe.log
       - name: Upload funding probe
         if: always()
         uses: actions/upload-artifact@v4
