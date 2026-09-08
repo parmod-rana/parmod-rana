@@ -1,0 +1,38 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3E_EXECUTION_MANIFEST_V1",
+  "status": "READY_TO_EXECUTE__NO_R3E_MODEL_OUTPUT_RECORDED",
+  "project_identity": "VARDHANI HIGH-SPECIALIST R3 — GPT-5.6 SOL TEACHER V2",
+  "parent_prereg": "TEACHER_ECONOMIC_R3E_ROLLING_ADAPTIVE_LONG_HORIZON_ROUTER_PREREG_V1.json",
+  "genuine_raw_archive": {
+    "name": "aiml-upstox-history-1785255358705.zip",
+    "sha256": "bd7df469f6e7d95bee62a7c51d794a9119478cbc3c95b1e68debcafb4adc5b20",
+    "authorized_read_years": [2022, 2023, 2024],
+    "forbidden_market_content_years": [2025, 2026]
+  },
+  "teacher_v2_changed": false,
+  "student_optimizer_steps": 0,
+  "real_orders": false,
+  "economic_edge_claimed": false,
+  "execution_contract": {
+    "calibration_year": 2023,
+    "audit_year": 2024,
+    "audit_2024_may_open_only_after_2023_selectivity_gate_pass": true,
+    "training_window_calendar_days": 252,
+    "minimum_training_dates": 60,
+    "horizons_minutes": [15, 30, 60],
+    "q_grid": [0.99, 0.995, 0.9975],
+    "costs_bps": [3, 5],
+    "one_position_non_overlap": true,
+    "future_outcomes_in_features": false,
+    "option_data_in_direction_fit": false
+  },
+  "fail_closed": [
+    "archive hash mismatch",
+    "any requested evaluation year outside 2023/2024",
+    "feature schema not exactly 42 columns",
+    "fewer than 60 distinct training dates for a month",
+    "attempt to read 2025 or 2026 market-content members",
+    "2024 audit requested before a 2023 Q passes every frozen gate"
+  ],
+  "note": "This file freezes execution mechanics only. It does not claim that R3E was executed or profitable."
+}
