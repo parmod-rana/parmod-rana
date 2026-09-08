@@ -1,0 +1,39 @@
+name: Crypto Survival Microstructure Experience Bank Pilot
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - '.github/workflows/crypto_survival_microstructure_bank_pilot.yml'
+      - 'crypto_survival_training/build_microstructure_experience_bank.py'
+      - 'crypto_survival_training/microstructure_features.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data dependencies
+        run: pip install --disable-pip-version-check requests numpy pandas
+      - name: Build causal TBT experience-bank pilot without labels
+        env:
+          PYTHONPATH: .
+          MICRO_CHUNKSIZE: '40000'
+        run: |
+          set -o pipefail
+          python crypto_survival_training/build_microstructure_experience_bank.py --mode pilot --out microstructure_experience_bank | tee microstructure_bank_pilot.log
+      - name: Upload compact pilot and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-survival-microstructure-bank-pilot
+          path: |
+            microstructure_bank_pilot.log
+            microstructure_experience_bank/
+          retention-days: 7
