@@ -4,6 +4,7 @@ on:
     branches: [crypto-survival-r1d-training]
     paths:
       - '.github/workflows/crypto_survival_oi_history_probe.yml'
+      - 'crypto_survival_training/probe_okx_oi_history.py'
   workflow_dispatch:
 permissions:
   contents: read
