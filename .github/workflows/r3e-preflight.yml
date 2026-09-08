@@ -26,18 +26,17 @@ jobs:
       - name: Freeze consistency checks
         run: |
           python - <<'PY'
-          import importlib.util, json, pathlib
+          import json, pathlib, runpy
           base=pathlib.Path('VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E')
-          spec=importlib.util.spec_from_file_location('r3e', base/'r3e_runner.py')
-          m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          ns=runpy.run_path(str(base/'r3e_runner.py'), run_name='r3e_preflight')
           schema=json.loads((base/'R3E_42_FEATURE_SCHEMA_FREEZE_V1.json').read_text())
           manifest=json.loads((base/'R3E_EXECUTION_MANIFEST_V1.json').read_text())
-          assert len(m.FEATURES)==42
-          assert m.FEATURES==[x['name'] for x in schema['columns']]
-          assert m.ARCHIVE_SHA256==manifest['genuine_raw_archive']['sha256']
-          assert m.ALLOWED_CONTENT_YEARS=={2022,2023,2024}
-          assert set(m.HORIZONS)=={15,30,60}
-          assert tuple(m.Q_GRID)==(0.99,0.995,0.9975)
+          assert len(ns['FEATURES'])==42
+          assert ns['FEATURES']==[x['name'] for x in schema['columns']]
+          assert ns['ARCHIVE_SHA256']==manifest['genuine_raw_archive']['sha256']
+          assert ns['ALLOWED_CONTENT_YEARS']=={2022,2023,2024}
+          assert set(ns['HORIZONS'])=={15,30,60}
+          assert tuple(ns['Q_GRID'])==(0.99,0.995,0.9975)
           assert manifest['student_optimizer_steps']==0
           assert manifest['economic_edge_claimed'] is False
           print('R3E PREFLIGHT PASS')
