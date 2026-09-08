@@ -1,0 +1,38 @@
+{
+  "format": "VARDHANI_R3_R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1",
+  "status": "FROZEN_BEFORE_ANY_R3E_MODEL_OUTPUT",
+  "purpose": "Permit CPU execution when the original 58,999,099-byte container archive is not transportable to the CPU runner, by reconstructing only the authorized 2022-2024 underlying members from their original Upstox URLs and requiring byte-for-byte equality to the hashes and byte lengths recorded in the locked genuine-source manifest.",
+  "research_semantics_changed": false,
+  "source_values_changed": false,
+  "feature_logic_changed": false,
+  "target_logic_changed": false,
+  "model_params_changed": false,
+  "gate_logic_changed": false,
+  "q_grid_changed": false,
+  "cost_logic_changed": false,
+  "chronology_changed": false,
+  "authorized_members": {
+    "markets": ["NIFTY", "SENSEX", "VIX"],
+    "years": [2022, 2023, 2024],
+    "frequency": "1-minute",
+    "count": 108,
+    "authority_file": "r3e_authorized_source_manifest.py",
+    "verification": "Every downloaded member must match its locked expected byte length and SHA256 exactly. A single missing/mismatched member fails closed. Current Upstox transport omits the historical trailing LF; appending exactly one LF is permitted only when that operation produces the exact locked byte length and SHA256."
+  },
+  "forbidden": [
+    "reading or reconstructing 2025 market content",
+    "reading or reconstructing 2026 market content",
+    "accepting semantically similar but hash-different candle data",
+    "using alternate market-data providers",
+    "relaxing any R3E threshold or gate"
+  ],
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "economic_edge_claimed": false,
+    "gpu_allowed": false
+  }
+}
