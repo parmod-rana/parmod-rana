@@ -1,0 +1,82 @@
+{
+  "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
+  "document": "MICROSTRUCTURE_KNOWLEDGE_SEMANTICS_V1",
+  "status": "FROZEN_BEFORE_20_SYMBOL_TRANSFER_RESULT",
+  "authority": "INTERPRETATION_AND_FUTURE_INTEGRATION_CONSTRAINTS_ONLY",
+  "purpose": "Separate genuine market-state information from execution/liquidity context and provider measurement-quality variables before breadth results are known, preventing future profitable-mind integration from treating every statistically stable feature as directional alpha.",
+  "source_feature_definition_blob": "cd624a934beca47ef3d6864e4eb996b0d412b65c",
+  "accepted_knowledge_file": "crypto_survival_training/MICROSTRUCTURE_ACCEPTED_KNOWLEDGE_V1.json",
+  "classes": {
+    "directional_or_state_candidates": {
+      "top_ofi_norm_mean": {
+        "semantic": "Normalized top-of-book order-flow pressure averaged through the completed state bucket.",
+        "portability": "DIMENSIONLESS_NORMALIZED",
+        "teacher_relationship": "NEGATIVE_AT_60M",
+        "interpretation_constraint": "If breadth-confirmed, treat as evidence of a potentially contrarian/exhaustion relationship, not automatically as trend-following pressure. No direct trade rule is authorized."
+      },
+      "top_ofi_norm_std": {
+        "semantic": "Within-bucket variability of normalized top-of-book order-flow pressure.",
+        "portability": "DIMENSIONLESS_NORMALIZED",
+        "teacher_relationship": "POSITIVE_AT_240M",
+        "interpretation_constraint": "If breadth-confirmed, treat as order-flow instability/turbulence context whose directional asymmetry requires a separately frozen integration study."
+      },
+      "top_ofi_abs_max": {
+        "semantic": "Maximum absolute normalized top-of-book order-flow shock in the completed bucket.",
+        "portability": "DIMENSIONLESS_NORMALIZED",
+        "teacher_relationship": "POSITIVE_AT_240M",
+        "interpretation_constraint": "If breadth-confirmed, retain as extreme order-flow-event context; never infer that every positive or negative shock has the same subsequent direction."
+      },
+      "qty_imb_50_std": {
+        "semantic": "Within-bucket variability of bid-versus-ask displayed quantity imbalance across 50 levels.",
+        "portability": "DIMENSIONLESS_NORMALIZED",
+        "teacher_relationship": "POSITIVE_AT_240M",
+        "interpretation_constraint": "If breadth-confirmed, treat as deep-book instability state, not a standalone entry signal."
+      },
+      "qty_imb_20_mean": {
+        "semantic": "Average normalized displayed bid-versus-ask quantity imbalance across 20 levels.",
+        "portability": "DIMENSIONLESS_NORMALIZED",
+        "teacher_relationship": "NEGATIVE_AT_240M",
+        "interpretation_constraint": "If breadth-confirmed, the negative sign is compatible with adverse-selection/contrarian displayed-liquidity behavior; do not reinterpret it post hoc as conventional bullish bid imbalance."
+      },
+      "depth_notional_10_last": {
+        "semantic": "Absolute bid-plus-ask displayed notional depth across the nearest 10 levels at bucket end.",
+        "portability": "ABSOLUTE_SCALE_SENSITIVE",
+        "teacher_relationships": ["NEGATIVE_AT_60M", "NEGATIVE_AT_240M"],
+        "interpretation_constraint": "Per-symbol Spearman confirmation is invariant to simple scale changes, so the frozen breadth test remains valid. Any future cross-symbol model using raw absolute values must separately preregister normalization or relative-depth representation; no normalization may be retrofitted into the current confirmation."
+      }
+    },
+    "execution_or_trust_context": {
+      "spread_bps_mean": {
+        "semantic": "Average quoted bid-ask spread in basis points.",
+        "role": "EXECUTION_LIQUIDITY_AND_FORECAST_TRUST_CONTEXT",
+        "directional_alpha_by_current_teacher": false,
+        "interpretation_constraint": "Even if trust breadth-confirmed, may inform uncertainty/execution quality only unless a separate directional study is preregistered."
+      },
+      "depth_notional_50_mean": {
+        "semantic": "Average absolute displayed notional depth across 50 bid and ask levels.",
+        "role": "LIQUIDITY_AND_FORECAST_TRUST_CONTEXT",
+        "portability": "ABSOLUTE_SCALE_SENSITIVE",
+        "interpretation_constraint": "The frozen teacher quintiles must remain unchanged for the current breadth confirmation. Because absolute depth differs greatly by coin, failure from sparse threshold occupancy is evidence against universal raw thresholds, not permission to retune them. A future normalized-depth study would be a new preregistered experiment."
+      }
+    },
+    "measurement_quality_only": {
+      "capture_latency_ms_mean": {
+        "definition": "timeMs minus exchTimeMs from the historical archive snapshot",
+        "role": "DATA_CAPTURE_QUALITY_OR_PIPELINE_TIMING_ONLY",
+        "directional_alpha_authorized": false,
+        "future_allowed_use": "Data-quality confidence, stale/capture anomaly diagnostics, or sample-quality weighting only after separate preregistration.",
+        "forbidden_use": "Never count breadth confirmation of capture latency as evidence of an economically causal market direction signal."
+      }
+    }
+  },
+  "global_constraints": {
+    "breadth_confirmation_protocol_unchanged": true,
+    "current_teacher_result_reinterpreted_or_retuned": false,
+    "no_post_result_feature_reselection": true,
+    "no_direct_trade_rule": true,
+    "no_gen3c_change": true,
+    "future_integration_must_distinguish_market_state_execution_context_and_measurement_quality": true,
+    "fresh_forward_shadow_required": true,
+    "real_money_authority": false
+  }
+}
