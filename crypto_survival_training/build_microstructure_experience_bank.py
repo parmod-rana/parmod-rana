@@ -153,7 +153,8 @@ def process_symbol_day(session: requests.Session, symbol: str, day: str, tmpdir:
         raise RuntimeError(f"duplicate completed states {symbol} {day}")
     if not states.state_time_ms.is_monotonic_increasing:
         raise RuntimeError(f"nonmonotonic completed states {symbol} {day}")
-    if (pd.to_numeric(states.get("spread_bps_last"), errors="coerce").dropna() < 0).any():
+    spread = pd.to_numeric(states["spread_bps_last"], errors="coerce").dropna()
+    if (spread < 0).any():
         raise RuntimeError(f"negative spread {symbol} {day}")
     return states, provenance
 
@@ -214,15 +215,15 @@ def main() -> None:
         "rows": int(len(bank)),
         "feature_columns": [c for c in bank.columns if c not in {"symbol", "date", "state_time_ms", "mid_last"}],
         "states_sha256": bank_hash,
-        "raw_archives_retained": false,
-        "cross_file_ofi_continuity": true,
+        "raw_archives_retained": False,
+        "cross_file_ofi_continuity": True,
         "provenance": all_provenance,
         "checks": {
             "unique_symbol_state_time": bool(not bank.duplicated(["symbol", "state_time_ms"]).any()),
             "finite_mid_fraction": float(np.isfinite(pd.to_numeric(bank.mid_last, errors="coerce")).mean()),
-            "no_forward_returns_used": true,
-            "no_model_fit": true,
-            "no_trade_authority": true
+            "no_forward_returns_used": True,
+            "no_model_fit": True,
+            "no_trade_authority": True
         }
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2))
