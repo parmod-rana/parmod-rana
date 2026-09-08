@@ -1,0 +1,30 @@
+name: Crypto Survival Microstructure Transfer Evaluator Validation
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/run_microstructure_transfer_confirmation.py'
+      - 'crypto_survival_training/test_microstructure_transfer_confirmation.py'
+      - '.github/workflows/crypto_survival_microstructure_transfer_evaluator_test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact evaluator dependencies
+        run: pip install --disable-pip-version-check numpy pandas scipy scikit-learn==1.9.0
+      - name: Compile evaluator and tests
+        run: python -m py_compile crypto_survival_training/run_microstructure_transfer_confirmation.py crypto_survival_training/test_microstructure_transfer_confirmation.py
+      - name: Run synthetic frozen-gate tests
+        env:
+          PYTHONPATH: '.'
+        run: python -m unittest -v crypto_survival_training.test_microstructure_transfer_confirmation
