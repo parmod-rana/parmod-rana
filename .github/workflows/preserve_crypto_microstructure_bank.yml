@@ -1,0 +1,76 @@
+name: Preserve Frozen Crypto Microstructure Experience Bank
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_FULL_BANK_PRESERVE.json'
+permissions:
+  contents: write
+  actions: read
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      FULL_BANK_RUN_ID: '34185837887'
+      ARTIFACT_NAME: crypto-survival-microstructure-experience-bank-full
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          fetch-depth: 0
+      - name: Validate preservation lock and download exact artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          LOCK=crypto_survival_training/MICROSTRUCTURE_FULL_BANK_PRESERVE.json
+          python - "$LOCK" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          required={
+            'status':'PRESERVE_AFTER_FAIL_CLOSED_MERGE_PASS',
+            'full_bank_run_id':34185837887,
+            'authority':'DATA_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v, (k,x.get(k),v)
+          assert x.get('artifact_id')
+          assert x.get('manifest_sha256')
+          PY
+          ARTIFACT_JSON=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${FULL_BANK_RUN_ID}/artifacts?per_page=100")
+          ARTIFACT_ID=$(python -c 'import json,sys,os; d=json.load(sys.stdin); n=os.environ["ARTIFACT_NAME"]; a=[x for x in d.get("artifacts",[]) if x.get("name")==n and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ARTIFACT_JSON")
+          LOCK_ID=$(python -c 'import json; print(json.load(open("crypto_survival_training/MICROSTRUCTURE_FULL_BANK_PRESERVE.json"))["artifact_id"])')
+          test "$ARTIFACT_ID" = "$LOCK_ID"
+          mkdir -p frozen_experience _bank_check
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip
+          unzip -q frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip -d _bank_check
+          MANIFEST=$(find _bank_check -path '*/microstructure_experience_bank_full/manifest.json' -print -quit)
+          test -n "$MANIFEST"
+          EXPECTED=$(python -c 'import json; print(json.load(open("crypto_survival_training/MICROSTRUCTURE_FULL_BANK_PRESERVE.json"))["manifest_sha256"])')
+          ACTUAL=$(sha256sum "$MANIFEST" | awk '{print $1}')
+          test "$ACTUAL" = "$EXPECTED"
+          python - "$MANIFEST" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1])); c=x['checks']
+          assert x['version']=='MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1'
+          assert x['shard_count']==16 and x['symbol_date_pairs']==128
+          for k in ['all_16_frozen_shards_present','all_128_frozen_symbol_date_pairs_present','unique_symbol_state_time','teacher_evaluation_dates_disjoint','no_forward_returns_used','no_model_fit','no_trade_authority']:
+              assert c[k] is True,(k,c.get(k))
+          assert float(c['finite_mid_fraction_all'])>=0.999999
+          print('PRESERVATION_INTEGRITY_PASS',x['rows'],x['sha256'])
+          PY
+          ART_SHA=$(sha256sum frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip | awk '{print $1}')
+          printf '%s  %s\n' "$ART_SHA" "MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip" > frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_SHA256.txt
+      - name: Commit immutable compact experience bank
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_ACTIONS_ARTIFACT.zip frozen_experience/MICROSTRUCTURE_EXPERIENCE_BANK_FULL_V1_SHA256.txt
+          if git diff --cached --quiet; then
+            echo "Frozen experience bank already preserved."
+            exit 0
+          fi
+          git commit -m "Preserve exact frozen microstructure experience bank"
+          git push origin HEAD:crypto-survival-r1d-training
