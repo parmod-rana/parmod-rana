@@ -5,7 +5,9 @@ import numpy as np
 import pandas as pd
 
 from crypto_survival_training.run_microstructure_experience_teacher import (
+    FOLDS,
     STATE_MS,
+    feature_relationships,
     label_horizon,
     transform_features,
 )
@@ -68,6 +70,36 @@ class MicrostructureTeacherCausalityTest(unittest.TestCase):
         self.assertEqual(list(x.columns), cols)
         self.assertTrue(np.isfinite(x.to_numpy(float)).all())
         self.assertTrue((x["depth_notional_50_mean"] > 0).all())
+
+    def test_stable_feature_requires_cross_symbol_evidence(self):
+        symbols = ["BAT-USDT", "ZRX-USDT", "ATOM-USDT", "BCH-USDT"]
+        teacher_parts = []
+        for symbol in symbols:
+            signal = np.linspace(-2.0, 2.0, 40)
+            teacher_parts.append(pd.DataFrame({
+                "symbol": symbol,
+                "date": "2025-01-15",
+                "signal": signal,
+                "target_return_bps": signal * 20.0,
+            }))
+        teacher = pd.concat(teacher_parts, ignore_index=True)
+
+        eval_parts = []
+        for fold, dates in FOLDS.items():
+            for symbol in symbols:
+                signal = np.linspace(-1.5, 1.5, 24)
+                eval_parts.append(pd.DataFrame({
+                    "symbol": symbol,
+                    "date": dates[0],
+                    "signal": signal,
+                    "target_return_bps": signal * 10.0,
+                }))
+        evaluation = pd.concat(eval_parts, ignore_index=True)
+        row = feature_relationships(teacher, evaluation, ["signal"])[0]
+        self.assertTrue(row["stable_relationship"])
+        self.assertEqual(row["same_sign_teacher_symbols"], 4)
+        self.assertEqual(row["same_sign_eval_folds"], 4)
+        self.assertEqual(set(row["teacher_symbol_spearman"]), set(symbols))
 
 
 if __name__ == "__main__":
