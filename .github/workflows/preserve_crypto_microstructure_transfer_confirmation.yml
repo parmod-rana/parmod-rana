@@ -1,0 +1,85 @@
+name: Preserve Frozen Microstructure Transfer Confirmation Result
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/MICROSTRUCTURE_TRANSFER_CONFIRMATION_PRESERVE.json'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: crypto-survival-r1d-training
+          fetch-depth: 0
+      - name: Validate exact result preservation lock
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          x=json.load(open('crypto_survival_training/MICROSTRUCTURE_TRANSFER_CONFIRMATION_PRESERVE.json'))
+          required={
+            'status':'PRESERVE_EXACT_TRANSFER_CONFIRMATION_RESULT',
+            'authority':'CONFIRMATORY_RESEARCH_EVIDENCE_ONLY_NO_TRADE_AUTHORITY',
+          }
+          for k,v in required.items():
+              assert x.get(k)==v,(k,x.get(k),v)
+          assert x.get('workflow_run_id')
+          assert x.get('artifact_id')
+          assert x.get('artifact_zip_sha256')
+          assert x.get('result_json_sha256')
+          assert x.get('real_money_authority') is False
+          print('TRANSFER_RESULT_PRESERVE_LOCK_PASS')
+          PY
+      - name: Download and verify exact result artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          LOCK=crypto_survival_training/MICROSTRUCTURE_TRANSFER_CONFIRMATION_PRESERVE.json
+          RUN=$(python -c 'import json; print(json.load(open("'$LOCK'"))["workflow_run_id"])')
+          EXPECTED_ID=$(python -c 'import json; print(json.load(open("'$LOCK'"))["artifact_id"])')
+          EXPECTED_ZIP=$(python -c 'import json; print(json.load(open("'$LOCK'"))["artifact_zip_sha256"])')
+          EXPECTED_RESULT=$(python -c 'import json; print(json.load(open("'$LOCK'"))["result_json_sha256"])')
+          ART=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN}/artifacts?per_page=100")
+          ID=$(python -c 'import json,sys; d=json.load(sys.stdin); a=[x for x in d.get("artifacts",[]) if x.get("name")=="crypto-survival-microstructure-transfer-confirmation-v1-result" and not x.get("expired")]; assert len(a)==1,a; print(a[0]["id"])' <<< "$ART")
+          test "$ID" = "$EXPECTED_ID"
+          mkdir -p frozen_experience /tmp/transfer_confirmation
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ID}/zip" > frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_RESULT_ACTIONS_ARTIFACT.zip
+          ACTUAL_ZIP=$(sha256sum frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_RESULT_ACTIONS_ARTIFACT.zip | awk '{print $1}')
+          test "$ACTUAL_ZIP" = "$EXPECTED_ZIP"
+          unzip -q frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_RESULT_ACTIONS_ARTIFACT.zip -d /tmp/transfer_confirmation
+          R=$(find /tmp/transfer_confirmation -path '*/microstructure_transfer_confirmation_result/transfer_confirmation_result.json' -print -quit)
+          test -n "$R"
+          test "$(sha256sum "$R" | awk '{print $1}')" = "$EXPECTED_RESULT"
+          python - "$R" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['version']=='MICROSTRUCTURE_TRANSFER_BREADTH_CONFIRMATION_V1_RESULT'
+          assert x['authority']=='CONFIRMATORY_RESEARCH_ONLY_NO_TRADE_AUTHORITY'
+          assert x['summary']['economic_edge_claim'] is False
+          assert x['summary']['trade_authority'] is False
+          assert x['governance']['gen3c_change'] is False
+          assert x['governance']['real_money_authority'] is False
+          print('TRANSFER_CONFIRMATION_RESULT_INTEGRITY_PASS',x['summary'])
+          PY
+          printf '%s  %s\n' "$ACTUAL_ZIP" 'MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_RESULT_ACTIONS_ARTIFACT.zip' > frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_SHA256.txt
+      - name: Commit immutable confirmation evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_RESULT_ACTIONS_ARTIFACT.zip frozen_experience/MICROSTRUCTURE_TRANSFER_CONFIRMATION_V1_SHA256.txt
+          if git diff --cached --quiet; then
+            echo 'Transfer confirmation result already preserved.'
+            exit 0
+          fi
+          git commit -m 'Preserve exact frozen microstructure transfer confirmation result'
+          git push origin HEAD:crypto-survival-r1d-training
