@@ -1,6 +1,6 @@
 {
   "project": "GLOBAL_CRYPTO_HUNTER_DYNAMIC_SURVIVAL_BRAIN",
-  "updated_at": "2026-09-08T03:01:00Z",
+  "updated_at": "2026-09-08T04:02:00Z",
   "policy": {
     "genuine_data_only": true,
     "no_fabricated_missing_history": true,
@@ -73,14 +73,18 @@
     "orderbook_tbt_50": {
       "provider": "OKX historical market-data archive",
       "market_data_history_module": 6,
-      "status": "VERIFIED_REAL_DATA_EXTRACTION_PASS_NOT_YET_MODEL_INPUT",
+      "status": "VERIFIED_REAL_DATA_EXTRACTION_AND_BREADTH_PASS_NOT_YET_MODEL_INPUT",
       "verified_market_type": "SPOT",
       "verified_schema": {
         "format": "csv.gz",
         "time_fields": ["timeMs", "exchTimeMs"],
-        "per_level_fields": ["bid_N_px", "bid_N_qty", "bid_N_ordCnt", "ask_N_px", "ask_N_qty", "ask_N_ordCnt"],
+        "canonical_per_level_fields": ["bid_N_px", "bid_N_qty", "bid_N_ordCnt", "ask_N_px", "ask_N_qty", "ask_N_ordCnt"],
+        "legacy_per_level_fields": ["bidPxN", "bidSzN", "bidCntN", "askPxN", "askSzN", "askCntN"],
         "levels": 50,
-        "symbol_field": "symbol"
+        "symbol_field_when_present": "symbol",
+        "legacy_schema_verified_on": "BAT-USDT 2024-07-01",
+        "canonical_schema_verified_on": ["ZRX-USDT 2024-11-01", "ATOM-USDT 2025-03-01", "BAT-USDT 2026-03-15"],
+        "normalization_policy": "Lossless column-name normalization only; no book value may be synthesized."
       },
       "verified_sample": {
         "instrument": "BAT-USDT",
@@ -88,6 +92,24 @@
         "compressed_size_mb": 20.97,
         "archive_bytes": 21993219,
         "archive_sha256": "da8235e4b3e47787659a1f3a287b688da3a84576caa7401f19a0020cf60ad729"
+      },
+      "breadth_audit": {
+        "workflow_run_id": 34184578729,
+        "symbols_tested": 24,
+        "dates_tested": 8,
+        "total_pairs": 192,
+        "available_pairs": 192,
+        "availability_fraction": 1.0,
+        "passing_symbol_count": 24,
+        "breadth_gate_pass": true,
+        "economic_outcomes_used": false,
+        "durable_evidence_file": "crypto_survival_training/MICROSTRUCTURE_BREADTH_EVIDENCE.json"
+      },
+      "historical_archive_boundary": {
+        "verified_behavior": "A target-day query may return more than one adjacent daily archive; sampled first files contained rows from the next UTC day.",
+        "required_row_filter": "target_begin_ms <= exchTimeMs < target_end_ms",
+        "durable_evidence_file": "crypto_survival_training/TBT_SCHEMA_EVIDENCE.json",
+        "reason": "Archive filenames/response position are insufficient for date-exact causal research; exchange timestamp is authoritative."
       },
       "validation": {
         "synthetic_streaming_equivalence": {
@@ -127,7 +149,7 @@
         "update_interval_ms",
         "within_completed_bucket_mean_std_last_extremes_and_update_count"
       ],
-      "chronology_rule": "Aggregate by exchange timestamp and key features to completed observation-bucket END before joining a decision state."
+      "chronology_rule": "Filter each raw row to the exact predeclared UTC day by exchTimeMs, aggregate by exchange timestamp, and key features to completed observation-bucket END before joining a decision state."
     },
     "liquidations": {
       "provider": "OKX",
@@ -137,7 +159,9 @@
     }
   },
   "model_separation": {
-    "gen3f_v2": "Funding and OI only; no order-book data can contaminate its frozen evaluation.",
-    "microstructure": "Real-data extraction is verified, but it remains a feature/data layer only until Gen3F V2 result is finalized and a future experiment is frozen before results."
+    "gen3c": "Active shadow authority remains unchanged and its exact artifact is durably preserved on the research branch.",
+    "gen3f_v2": "Rejected after frozen evaluation; funding/OI research remains useful experience but cannot alter Gen3C authority.",
+    "gen3g": "Frozen causal reliability-memory challenger; contains no funding, OI, order-book or liquidation input.",
+    "microstructure": "Real TBT extraction, schema history and 24x8 breadth are verified. Microstructure remains RESEARCH_ONLY until a separate future generation is pre-registered before any economic evaluation."
   }
 }
