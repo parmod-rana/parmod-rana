@@ -5,7 +5,8 @@ on:
     branches:
       - crypto-survival-r1d-training
     paths:
-      - 'crypto_survival_training/**'
+      - 'crypto_survival_training/train_verified_macro.py'
+      - 'crypto_survival_training/train_real.py'
       - '.github/workflows/crypto_survival_train.yml'
   workflow_dispatch:
 
