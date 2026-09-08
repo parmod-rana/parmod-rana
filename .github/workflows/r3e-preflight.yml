@@ -26,15 +26,20 @@ jobs:
           python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runner.py
           python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_cpu_resume.py
           python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_runtime_smoke.py
+          python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_authorized_source_manifest.py
+          python -m py_compile VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/r3e_exact_member_cpu.py
       - name: Freeze consistency checks
         run: |
           python - <<'PY'
-          import json, pathlib, runpy
+          import json, pathlib, runpy, sys
           base=pathlib.Path('VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E')
+          sys.path.insert(0,str(base))
           ns=runpy.run_path(str(base/'r3e_runner.py'), run_name='r3e_preflight')
+          src=runpy.run_path(str(base/'r3e_authorized_source_manifest.py'), run_name='r3e_source_preflight')
           schema=json.loads((base/'R3E_42_FEATURE_SCHEMA_FREEZE_V1.json').read_text())
           manifest=json.loads((base/'R3E_EXECUTION_MANIFEST_V1.json').read_text())
           cpu=json.loads((base/'R3E_CPU_ONLY_EXECUTION_AUTHORITY_V1.json').read_text())
+          recon=json.loads((base/'R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json').read_text())
           assert len(ns['FEATURES'])==42
           assert ns['FEATURES']==[x['name'] for x in schema['columns']]
           assert ns['ARCHIVE_SHA256']==manifest['genuine_raw_archive']['sha256']
@@ -44,12 +49,23 @@ jobs:
           assert ns['MODEL_PARAMS']['n_jobs']==1
           assert manifest['student_optimizer_steps']==0
           assert manifest['economic_edge_claimed'] is False
-          assert cpu['compute']['device']=='CPU_ONLY'
-          assert cpu['compute']['gpu_allowed'] is False
+          assert cpu['compute']['device']=='CPU_ONLY' and cpu['compute']['gpu_allowed'] is False
           assert cpu['immutable_research_contract']['model_params_changed'] is False
           assert cpu['immutable_research_contract']['gate_logic_changed'] is False
           assert cpu['immutable_research_contract']['feature_logic_changed'] is False
-          print('R3E CPU-ONLY PREFLIGHT PASS')
+          rows=src['ROWS']; assert len(rows)==108
+          assert {r[0] for r in rows}=={'NIFTY','SENSEX','VIX'}
+          assert {r[1] for r in rows}=={2022,2023,2024}
+          assert all(1<=r[2]<=12 and r[3]>0 and len(r[4])==64 for r in rows)
+          assert recon['status']=='FROZEN_BEFORE_ANY_R3E_MODEL_OUTPUT'
+          assert recon['authorized_members']['count']==108
+          assert recon['source_values_changed'] is False
+          assert recon['feature_logic_changed'] is False
+          assert recon['model_params_changed'] is False
+          assert recon['gate_logic_changed'] is False
+          assert recon['boundary']['2025_used'] is False and recon['boundary']['2026_used'] is False
+          assert recon['boundary']['gpu_allowed'] is False
+          print('R3E CPU-ONLY EXACT-MEMBER PREFLIGHT PASS')
           PY
       - name: CPU runtime smoke
         working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E
