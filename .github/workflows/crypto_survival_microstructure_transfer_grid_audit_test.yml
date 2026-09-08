@@ -1,0 +1,30 @@
+name: Crypto Survival Transfer Bank Exact Grid Audit Validation
+
+on:
+  push:
+    branches: [crypto-survival-r1d-training]
+    paths:
+      - 'crypto_survival_training/audit_microstructure_transfer_bank_grid.py'
+      - 'crypto_survival_training/test_microstructure_transfer_bank_grid_audit.py'
+      - '.github/workflows/crypto_survival_microstructure_transfer_grid_audit_test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install audit dependencies
+        run: pip install --disable-pip-version-check numpy pandas
+      - name: Compile exact-grid auditor
+        run: python -m py_compile crypto_survival_training/audit_microstructure_transfer_bank_grid.py crypto_survival_training/test_microstructure_transfer_bank_grid_audit.py
+      - name: Run synthetic exact-grid tests
+        env:
+          PYTHONPATH: '.'
+        run: python -m unittest -v crypto_survival_training.test_microstructure_transfer_bank_grid_audit
