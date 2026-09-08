@@ -1,0 +1,28 @@
+{
+  "status": "PRESERVE_EXACT_TRANSFER_CONFIRMATION_RESULT",
+  "preserve_requested_at_utc": "2026-09-08T06:30:00Z",
+  "workflow_run_id": 34194815090,
+  "artifact_id": 10043512651,
+  "artifact_zip_sha256": "6744b789c9e1c7b8df088c6586c303416caeb1d62abf6a798a71977d677b7672",
+  "result_json_sha256": "757a6b11889878540c3b0312f21ec60a8e1edf5eca6fa6ad07e57d4ae372ef3d",
+  "authority": "CONFIRMATORY_RESEARCH_EVIDENCE_ONLY_NO_TRADE_AUTHORITY",
+  "summary": {
+    "any_transferable_knowledge_confirmed": true,
+    "breadth_confirmed_relationships": 1,
+    "breadth_confirmed_trust_candidates": 0,
+    "eligible_model_families_confirmed": 0,
+    "ofi_incremental_confirmed": false,
+    "economic_edge_claim": false,
+    "trade_authority": false
+  },
+  "confirmed_relationship": {
+    "horizon_minutes": 60,
+    "feature": "top_ofi_norm_mean",
+    "teacher_sign": "NEGATIVE",
+    "confirmation_symbols_same_sign_as_teacher": 13,
+    "confirmation_symbol_median_abs_spearman": 0.047443487283819974,
+    "confirmation_folds_same_sign_as_teacher": 3
+  },
+  "gen3c_change": false,
+  "real_money_authority": false
+}
