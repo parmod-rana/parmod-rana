@@ -1,0 +1,57 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3I_DEVELOPMENT_RESULT_V1",
+  "status": "RETIRED_NO_2023_GATE_PASS__2024_NOT_OPENED_FOR_R3I",
+  "preregistration": "TEACHER_ECONOMIC_R3I_INTRADAY_DISLOCATION_PROPAGATION_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "method": {
+    "checkpoints_ist": ["09:45","10:00","10:15","10:30","10:45","11:00","11:15","11:30","11:45","12:00","12:15","12:30","12:45","13:00"],
+    "adaptive_history_dates_same_checkpoint": 126,
+    "minimum_history_dates": 120,
+    "fixed_q": 0.70,
+    "horizons": [60,120],
+    "one_trade_at_a_time": true
+  },
+  "development_year": 2023,
+  "candidate_count_2023": 109,
+  "development_2023": {
+    "net3": {
+      "n": 55,
+      "mean": -1.702517966789297,
+      "pf": 0.8654284437050984,
+      "sum": -93.63848817341133,
+      "win": 0.4727272727272727,
+      "H1": {"n":19,"mean":-4.338529474509876,"pf":0.7831707134561413,"sum":-82.43206001568764,"win":0.5263157894736842},
+      "H2": {"n":36,"mean":-0.3112896710478796,"pf":0.9644980195362827,"sum":-11.206428157723664,"win":0.4444444444444444},
+      "active_months": 11,
+      "positive_month_frac": 0.5454545454545454,
+      "rm_top1": {"n":54,"mean":-3.0286175718786805,"pf":0.7649625431477381,"sum":-163.54534888144875,"win":0.46296296296296297}
+    },
+    "net5": {
+      "n": 55,
+      "mean": -3.7025179667892973,
+      "pf": 0.730561023430035,
+      "sum": -203.63848817341136,
+      "win": 0.43636363636363634,
+      "H1": {"n":19,"mean":-6.338529474509876,"pf":0.6989573696181821,"sum":-120.43206001568764,"win":0.47368421052631576},
+      "H2": {"n":36,"mean":-2.311289671047879,"pf":0.7661014091637,"sum":-83.20642815772365,"win":0.4166666666666667},
+      "active_months": 11,
+      "positive_month_frac": 0.45454545454545453,
+      "rm_top1": {"n":54,"mean":-5.028617571878682,"pf":0.6407118244138261,"sum":-271.54534888144883,"win":0.42592592592592593}
+    },
+    "pass": false
+  },
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "next_authorized_step": "Preregister a distinct R3J using only authorized pre-2025 development evidence before any R3J output; do not open R3I 2024."
+}
