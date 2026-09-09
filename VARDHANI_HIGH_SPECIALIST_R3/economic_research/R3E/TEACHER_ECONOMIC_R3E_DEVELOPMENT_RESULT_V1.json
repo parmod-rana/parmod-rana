@@ -1,0 +1,41 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3E_DEVELOPMENT_RESULT_V1",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "feature_count": 42,
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "calibration_year": 2023,
+  "calibration_grid": {
+    "0.99": {
+      "net3": {"n": 267, "mean": -1.253294101724726, "pf": 0.8170377479910403, "H1_mean": -0.5351704255801256, "H1_pf": 0.9263738306346796, "H2_mean": -2.1464227073499433, "H2_pf": 0.6608714850940768, "active_months": 12, "positive_month_frac": 0.5, "rm_top1_mean": -1.895247363472787, "rm_top1_pf": 0.7264308833772569},
+      "net5": {"n": 267, "mean": -3.2532941017247263, "pf": 0.5932015129774866},
+      "pass": false
+    },
+    "0.995": {
+      "net3": {"n": 171, "mean": -2.0656472496209, "pf": 0.7024128059463393, "H1_mean": -1.204647875497918, "H1_pf": 0.8347282784869055, "H2_mean": -3.1677264484983176, "H2_pf": 0.5123890133676117, "active_months": 12, "positive_month_frac": 0.3333333333333333, "rm_top1_mean": -2.8617942377615293, "rm_top1_pf": 0.5925380319722189},
+      "net5": {"n": 171, "mean": -4.0656472496209, "pf": 0.5022326316061698},
+      "pass": false
+    },
+    "0.9975": {
+      "net3": {"n": 86, "mean": -1.6536691121285287, "pf": 0.7775869468087527, "H1_mean": -0.0013782747620894042, "H1_pf": 0.9998102317801422, "H2_mean": -3.8418380589111107, "H2_pf": 0.49866134866706396, "active_months": 12, "positive_month_frac": 0.25, "rm_top1_mean": -2.507285879262878, "rm_top1_pf": 0.6666994835140252},
+      "net5": {"n": 86, "mean": -3.653669112128529, "pf": 0.575832582300775},
+      "pass": false
+    }
+  },
+  "selected_q": null,
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "status": "RETIRED_NO_2023_CALIBRATION_PASS__2024_NOT_OPENED_FOR_R3E",
+  "workflow_run_id": 34286823372,
+  "workflow_artifact_id": 10079903586,
+  "workflow_artifact_sha256": "7ae839c592f0574f76d4ff9984d3816597536c172d8e0c71fbf7b4d911c13237"
+}
