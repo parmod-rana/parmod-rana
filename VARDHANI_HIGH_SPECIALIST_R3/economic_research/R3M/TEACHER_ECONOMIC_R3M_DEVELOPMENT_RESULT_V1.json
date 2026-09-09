@@ -1,0 +1,59 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3M_DEVELOPMENT_RESULT_V1",
+  "status": "RETIRED_NO_2023_GATE_PASS__2024_NOT_OPENED_FOR_R3M",
+  "preregistration": "TEACHER_ECONOMIC_R3M_COMPRESSION_BREAKOUT_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "method": {
+    "checkpoints_ist": ["10:00","10:15","10:30","10:45","11:00","11:15","11:30","11:45","12:00","12:15","12:30","12:45","13:00","13:15","13:30","13:45","14:00"],
+    "adaptive_history_dates_same_checkpoint": 126,
+    "minimum_history_dates": 120,
+    "rv_quantile": 0.35,
+    "atr_quantile": 0.50,
+    "impulse_quantile": 0.75,
+    "max_trades_per_date": 2,
+    "horizons": [30,60]
+  },
+  "development_year": 2023,
+  "candidate_count_2023": 53,
+  "development_2023": {
+    "net3": {
+      "n": 50,
+      "mean": -2.3554713026506557,
+      "pf": 0.641119054592238,
+      "sum": -117.77356513253278,
+      "win": 0.36,
+      "H1": {"n":26,"mean":-1.7025874257116163,"pf":0.7343865412647583,"sum":-44.26727306850202,"win":0.4230769230769231},
+      "H2": {"n":24,"mean":-3.0627621693346145,"pf":0.5448763401155271,"sum":-73.50629206403075,"win":0.2916666666666667},
+      "active_months": 12,
+      "positive_month_frac": 0.4166666666666667,
+      "rm_top1": {"n":49,"mean":-3.0134512579607495,"pf":0.5500514778182347,"sum":-147.65911164007673,"win":0.3469387755102041}
+    },
+    "net5": {
+      "n": 50,
+      "mean": -4.355471302650655,
+      "pf": 0.44744403465215987,
+      "sum": -217.77356513253275,
+      "win": 0.34,
+      "H1": {"n":26,"mean":-3.702587425711616,"pf":0.5104900536528372,"sum":-96.26727306850202,"win":0.4230769230769231},
+      "H2": {"n":24,"mean":-5.062762169334615,"pf":0.3846532418186617,"sum":-121.50629206403076,"win":0.25},
+      "active_months": 12,
+      "positive_month_frac": 0.25,
+      "rm_top1": {"n":49,"mean":-5.0134512579607495,"pf":0.37669015292941344,"sum":-245.65911164007673,"win":0.32653061224489793}
+    },
+    "pass": false
+  },
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "next_authorized_step": "Preregister a structurally distinct R3N using only authorized pre-2025 development evidence before any R3N output; do not open R3M 2024."
+}
