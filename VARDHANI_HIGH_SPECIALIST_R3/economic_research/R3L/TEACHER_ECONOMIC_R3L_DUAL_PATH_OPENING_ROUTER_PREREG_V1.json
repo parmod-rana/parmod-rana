@@ -1,0 +1,119 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3L_DUAL_PATH_OPENING_ROUTER_PREREG_V1",
+  "status": "FROZEN_BEFORE_ANY_R3L_OUTPUT",
+  "project": "VARDHANI HIGH-SPECIALIST R3 — GPT-5.6 SOL TEACHER / STUDENT-250 V2",
+  "purpose": "Model opening dislocations as two causally distinguishable market behaviours instead of assuming every displacement should continue: an efficient cross-market continuation specialist and an explicit rejection/reversal specialist. Increase opportunity count through multiple behavioural specialists, not by relaxing the economic qualification gate.",
+  "predecessor_evidence": {
+    "R3H": "Very selective opening continuation Q0.70 showed strong but sparse 2023 economics.",
+    "R3I": "Extending continuation logic broadly into midday destroyed the signal.",
+    "R3J": "Dense opening continuation produced weak positive net3 but failed net5 and robustness.",
+    "R3K": "Waiting five minutes for generic persistence confirmation reduced count and produced negative economics.",
+    "design_inference": "Keep research localized to the opening regime, enter without generic delay, and explicitly distinguish efficient continuation from visible causal rejection rather than treating rejected moves as continuation candidates.",
+    "not_permitted": ["R3H/R3I/R3J/R3K 2024 outcomes", "2025 outcomes", "2026 historical backfill", "automatic inversion of losing historical trades", "economic gate relaxation"]
+  },
+  "source": {
+    "authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+    "archive_sha256": "bd7df469f6e7d95bee62a7c51d794a9119478cbc3c95b1e68debcafb4adc5b20",
+    "markets": ["NIFTY", "SENSEX", "India VIX"],
+    "authorized_years": [2022, 2023, 2024],
+    "authorized_monthly_members": 108,
+    "require_byte_identity_to_locked_manifest": true,
+    "2025_content_allowed": false,
+    "2026_content_allowed": false
+  },
+  "common_state": {
+    "checkpoints_ist": ["09:45","10:00","10:15","10:30","10:45","11:00"],
+    "adaptive_history": "previous 126 completed trading-date observations at the same clock checkpoint only",
+    "minimum_history_dates": 120,
+    "dislocation_quantile": 0.60,
+    "dislocation_condition": "abs opening gap >= same-checkpoint historical Q0.60 AND abs NIFTY causal 30-minute return >= same-checkpoint historical Q0.60",
+    "maximum_one_candidate_per_specialist_per_date": true,
+    "no_future_values_in_decision": true
+  },
+  "continuation_specialist": {
+    "name": "CONT",
+    "direction": "sign of NIFTY causal 30-minute return",
+    "conditions": [
+      "NIFTY causal 5-minute return has same sign as 30-minute direction",
+      "NIFTY causal 15-minute return has same sign as 30-minute direction",
+      "SENSEX causal 15-minute return has same sign as direction",
+      "India VIX causal 15-minute return has opposite sign to direction",
+      "NIFTY causal trend_eff_15 >= previous-126 same-checkpoint median",
+      "CE direction requires NIFTY session_pos>=0.65; PE direction requires session_pos<=0.35"
+    ],
+    "horizon_router": "120 minutes when trend_eff_30 >= previous-126 same-checkpoint median, otherwise 60 minutes"
+  },
+  "rejection_specialist": {
+    "name": "REJECT",
+    "direction": "opposite sign of the NIFTY causal 30-minute dislocation",
+    "conditions": [
+      "NIFTY causal 5-minute return has opposite sign to the 30-minute dislocation",
+      "current NIFTY candle body has opposite sign to the 30-minute dislocation",
+      "for an up-dislocation, upper_wick_frac >= previous-126 same-checkpoint Q0.60; for a down-dislocation, lower_wick_frac >= previous-126 same-checkpoint Q0.60",
+      "SENSEX causal 5-minute return is not confirming the dislocation: dislocation_sign*SENSEX_ret5 <= 0",
+      "India VIX causal 5-minute return conflicts with the dislocation: dislocation_sign*VIX_ret5 >= 0"
+    ],
+    "horizon_router": "60 minutes when trend_eff_15 >= previous-126 same-checkpoint median, otherwise 30 minutes"
+  },
+  "candidate_resolution": {
+    "per_specialist_first_event": "scan checkpoints chronologically and retain first qualifying event per specialist per date",
+    "same_timestamp_conflict": "if CONT and REJECT somehow qualify at the same timestamp, reject both and WAIT",
+    "portfolio_execution": "merge the two specialist streams chronologically and permit only one open trade at a time",
+    "entry": "next genuine same-session minute open after signal checkpoint",
+    "exit": "same-session NIFTY close at t+h",
+    "cross_session_targets": false
+  },
+  "execution": {
+    "fixed_costs_bps": [3.0, 5.0],
+    "one_trade_at_a_time": true,
+    "real_orders": false
+  },
+  "qualification": {
+    "development_gate_year": 2023,
+    "no_threshold_grid": true,
+    "if_2023_passes": "freeze R3L configuration and then and only then open 2024 audit",
+    "if_2023_fails": "retire R3L without opening 2024; preregister distinct R3M before any R3M output"
+  },
+  "year_gate": {
+    "minimum_trades": 60,
+    "minimum_H1_trades": 15,
+    "minimum_H2_trades": 15,
+    "net3_mean_gt": 0,
+    "net3_pf_gt": 1,
+    "net5_mean_gt": 0,
+    "net5_pf_gt": 1,
+    "H1_net3_mean_gt": 0,
+    "H1_net3_pf_gt": 1,
+    "H2_net3_mean_gt": 0,
+    "H2_net3_pf_gt": 1,
+    "remove_top_1_percent_net3_mean_gt": 0,
+    "remove_top_1_percent_net3_pf_gt": 1,
+    "minimum_active_months": 8,
+    "minimum_positive_month_fraction": 0.60
+  },
+  "audit_2024": {
+    "opened_only_if_2023_gate_passes": true,
+    "configuration_frozen_before_open": true,
+    "retune_after_open": false
+  },
+  "option_gate": {
+    "run_only_if_2023_and_2024_underlying_gates_pass": true,
+    "data": "genuine 2024 full-chain NIFTY option candles from authorized Sep-Oct expiry weeks",
+    "premium_cost_bps": 100,
+    "minimum_trades": 20,
+    "mean_net_gt": 0,
+    "pf_gt": 1,
+    "minimum_positive_weeks": 3,
+    "total_weeks": 5,
+    "remove_top_1_percent_still_positive": true
+  },
+  "hard_boundaries": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "gpu_allowed": false,
+    "real_orders": false,
+    "2025_used": false,
+    "2026_used": false,
+    "economic_edge_claimed": false
+  }
+}
