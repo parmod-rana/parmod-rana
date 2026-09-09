@@ -1,0 +1,59 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3K_DEVELOPMENT_RESULT_V1",
+  "status": "RETIRED_NO_2023_GATE_PASS__2024_NOT_OPENED_FOR_R3K",
+  "preregistration": "TEACHER_ECONOMIC_R3K_OPENING_PERSISTENCE_CONFIRM_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "method": {
+    "initial_checkpoints_ist": ["09:45","09:50","09:55","10:00","10:05","10:10","10:15","10:20","10:25"],
+    "adaptive_history_dates_same_checkpoint": 126,
+    "minimum_history_dates": 120,
+    "fixed_q": 0.70,
+    "confirmation_delay_minutes": 5,
+    "horizons": [60,120],
+    "maximum_confirmed_trades_per_date": 1,
+    "one_trade_at_a_time": true
+  },
+  "development_year": 2023,
+  "candidate_count_2023": 12,
+  "development_2023": {
+    "net3": {
+      "n": 12,
+      "mean": -3.437865244840667,
+      "pf": 0.73153093478494,
+      "sum": -41.254382938088,
+      "win": 0.5,
+      "H1": {"n":4,"mean":-0.054093640596329706,"pf":0.9962707794444873,"sum":-0.21637456238531882,"win":0.5},
+      "H2": {"n":8,"mean":-5.129751046962834,"pf":0.5709292620704636,"sum":-41.038008375702674,"win":0.5},
+      "active_months": 7,
+      "positive_month_frac": 0.42857142857142855,
+      "rm_top1": {"n":11,"mean":-7.457924625657691,"pf":0.4661308445045812,"sum":-82.0371708822346,"win":0.45454545454545453}
+    },
+    "net5": {
+      "n": 12,
+      "mean": -5.437865244840666,
+      "pf": 0.6061071460588544,
+      "sum": -65.254382938088,
+      "win": 0.5,
+      "H1": {"n":4,"mean":-2.0540936405963297,"pf":0.8675235352442298,"sum":-8.216374562385319,"win":0.5},
+      "H2": {"n":8,"mean":-7.129751046962834,"pf":0.44967339098937137,"sum":-57.038008375702674,"win":0.5},
+      "active_months": 7,
+      "positive_month_frac": 0.42857142857142855,
+      "rm_top1": {"n":11,"mean":-9.457924625657691,"pf":0.37200389752138907,"sum":-104.0371708822346,"win":0.45454545454545453}
+    },
+    "pass": false
+  },
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "next_authorized_step": "Preregister a distinct R3L using only authorized pre-2025 development evidence before any R3L output; do not open R3K 2024."
+}
