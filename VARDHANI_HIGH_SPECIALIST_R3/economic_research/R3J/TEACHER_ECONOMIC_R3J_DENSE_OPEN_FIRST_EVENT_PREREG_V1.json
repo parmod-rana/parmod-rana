@@ -1,0 +1,101 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3J_DENSE_OPEN_FIRST_EVENT_PREREG_V1",
+  "status": "FROZEN_BEFORE_ANY_R3J_OUTPUT",
+  "project": "VARDHANI HIGH-SPECIALIST R3 — GPT-5.6 SOL TEACHER / STUDENT-250 V2",
+  "purpose": "Test whether the positive R3H opening-dislocation pocket can be expanded causally by denser sampling inside the opening regime while preventing weaker later-session reentries. This is structurally distinct from failed R3I broad first-half propagation.",
+  "predecessor_evidence": {
+    "R3H": "Q0.70 opening checkpoints produced 15 executed 2023 trades with net3 +6.0012bps PF2.6153 and net5 +4.0012bps PF1.8877, but insufficient count/month robustness.",
+    "R3I": "Broadening identical Q0.70 logic through 13:00 produced 55 trades with net3 -1.7025bps PF0.8654; 2024 remained unopened.",
+    "inference_used_for_design": "Preserve the opening-localized hypothesis; do not propagate into midday. Increase temporal resolution only inside 09:45-10:30 and permit at most the first qualifying event per trading date.",
+    "not_permitted": ["R3I 2024 outcomes", "R3H 2024 outcomes", "2025 outcomes", "2026 historical backfill", "sign inversion of failed trades", "economic gate relaxation"]
+  },
+  "source": {
+    "authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+    "archive_sha256": "bd7df469f6e7d95bee62a7c51d794a9119478cbc3c95b1e68debcafb4adc5b20",
+    "markets": ["NIFTY", "SENSEX", "India VIX"],
+    "authorized_years": [2022, 2023, 2024],
+    "authorized_monthly_members": 108,
+    "require_byte_identity_to_locked_manifest": true,
+    "2025_content_allowed": false,
+    "2026_content_allowed": false
+  },
+  "signal": {
+    "checkpoints_ist": ["09:45","09:50","09:55","10:00","10:05","10:10","10:15","10:20","10:25","10:30"],
+    "candidate_direction": "sign of NIFTY causal 30-minute return at checkpoint; positive=CE, negative=PE",
+    "adaptive_history": "previous 126 completed trading-date observations at the same clock checkpoint only",
+    "minimum_history_dates": 120,
+    "fixed_extremity_quantile": 0.70,
+    "gap_condition": "abs NIFTY opening gap >= previous-history Q0.70",
+    "momentum_condition": "abs NIFTY causal 30-minute return >= previous-history Q0.70",
+    "sensex_confirmation": "SENSEX causal 15-minute return has same sign as candidate",
+    "vix_confirmation": "India VIX causal 15-minute return has opposite sign to candidate",
+    "session_location_confirmation": "CE requires NIFTY session_pos>=0.65; PE requires session_pos<=0.35",
+    "first_event_per_date": true,
+    "first_event_rule": "scan checkpoints chronologically and accept the first qualifying event only; later same-date events are ignored even if the trade would have exited",
+    "no_future_values_in_signal": true
+  },
+  "horizon_router": {
+    "trend_measure": "NIFTY causal trend_eff_30",
+    "trend_threshold": "median over previous 126 completed trading-date observations at same checkpoint",
+    "if_at_or_above_median": 120,
+    "if_below_median": 60,
+    "entry": "next genuine same-session minute open",
+    "exit": "same-session NIFTY close at t+h",
+    "cross_session_targets": false
+  },
+  "execution": {
+    "maximum_trades_per_date": 1,
+    "one_trade_at_a_time": true,
+    "fixed_costs_bps": [3.0, 5.0],
+    "real_orders": false
+  },
+  "qualification": {
+    "development_gate_year": 2023,
+    "no_q_selection": true,
+    "fixed_q": 0.70,
+    "if_2023_passes": "freeze configuration, then and only then open 2024 audit",
+    "if_2023_fails": "retire R3J and do not open 2024; preregister a distinct R3K before any R3K output"
+  },
+  "year_gate": {
+    "minimum_trades": 60,
+    "minimum_H1_trades": 15,
+    "minimum_H2_trades": 15,
+    "net3_mean_gt": 0,
+    "net3_pf_gt": 1,
+    "net5_mean_gt": 0,
+    "net5_pf_gt": 1,
+    "H1_net3_mean_gt": 0,
+    "H1_net3_pf_gt": 1,
+    "H2_net3_mean_gt": 0,
+    "H2_net3_pf_gt": 1,
+    "remove_top_1_percent_net3_mean_gt": 0,
+    "remove_top_1_percent_net3_pf_gt": 1,
+    "minimum_active_months": 8,
+    "minimum_positive_month_fraction": 0.60
+  },
+  "audit_2024": {
+    "opened_only_if_2023_gate_passes": true,
+    "configuration_frozen_before_open": true,
+    "retune_after_open": false
+  },
+  "option_gate": {
+    "run_only_if_2023_and_2024_underlying_gates_pass": true,
+    "data": "genuine 2024 full-chain NIFTY option candles from authorized Sep-Oct expiry weeks",
+    "premium_cost_bps": 100,
+    "minimum_trades": 20,
+    "mean_net_gt": 0,
+    "pf_gt": 1,
+    "minimum_positive_weeks": 3,
+    "total_weeks": 5,
+    "remove_top_1_percent_still_positive": true
+  },
+  "hard_boundaries": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "gpu_allowed": false,
+    "real_orders": false,
+    "2025_used": false,
+    "2026_used": false,
+    "economic_edge_claimed": false
+  }
+}
