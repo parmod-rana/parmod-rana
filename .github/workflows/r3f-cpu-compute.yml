@@ -1,0 +1,89 @@
+name: VARDHANI R3F CPU compute
+
+on:
+  push:
+    branches: [r3e-economic-router-freeze]
+    paths:
+      - '.github/workflows/r3f-cpu-compute.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Frozen R3F preflight
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3F
+        run: |
+          python -m py_compile r3f_runner.py r3f_exact_member_cpu.py
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          import r3f_runner as r
+          here=Path.cwd(); r3e=here.parent/'R3E'; sys.path.insert(0,str(r3e))
+          from r3e_authorized_source_manifest import ROWS
+          p=json.load(open('TEACHER_ECONOMIC_R3F_RECENCY_CONSENSUS_ROUTER_PREREG_V1.json'))
+          assert p['status']=='FROZEN_BEFORE_ANY_R3F_MODEL_OUTPUT'
+          assert len(ROWS)==108 and {x[1] for x in ROWS}=={2022,2023,2024}
+          assert len(r.FEATURES)==42
+          assert r.HORIZONS==(15,30,60)
+          assert r.Q_GRID==(0.95,0.975,0.99)
+          assert r.FAST_DATES==63 and r.SLOW_DATES==126
+          assert r.FAST_HALF_LIFE==21.0 and r.SLOW_HALF_LIFE==42.0
+          assert r.MODEL_PARAMS['n_jobs']==1
+          h=p['hard_boundaries']
+          assert h['teacher_v2_changed'] is False
+          assert h['student_optimizer_steps']==0
+          assert h['gpu_allowed'] is False
+          assert h['2025_used'] is False and h['2026_used'] is False
+          assert h['economic_edge_claimed'] is False
+          print('R3F_FROZEN_PREFLIGHT_PASS')
+          PY
+
+  compute:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Execute preregistered R3F on CPU
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3F
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          NUMEXPR_NUM_THREADS: '1'
+        run: |
+          python r3f_exact_member_cpu.py --work "$RUNNER_TEMP/r3f_exact_cpu_work" | tee "$RUNNER_TEMP/r3f_compute.log"
+      - name: Publish result summary
+        if: always()
+        run: |
+          echo '--- R3F RESULT FILE ---'
+          if [ -f "$RUNNER_TEMP/r3f_exact_cpu_work/TEACHER_ECONOMIC_R3F_DEVELOPMENT_RESULT_V1.json" ]; then
+            cat "$RUNNER_TEMP/r3f_exact_cpu_work/TEACHER_ECONOMIC_R3F_DEVELOPMENT_RESULT_V1.json"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vardhani-r3f-cpu-result
+          path: |
+            ${{ runner.temp }}/r3f_exact_cpu_work/TEACHER_ECONOMIC_R3F_DEVELOPMENT_RESULT_V1.json
+            ${{ runner.temp }}/r3f_exact_cpu_work/R3F_EXACT_MEMBER_RECONSTRUCTION_AUDIT_V1.json
+            ${{ runner.temp }}/r3f_exact_cpu_work/R3F_2023_SELECTED_TRADES.csv
+            ${{ runner.temp }}/r3f_exact_cpu_work/R3F_2024_AUDIT_TRADES.csv
+            ${{ runner.temp }}/r3f_compute.log
+          if-no-files-found: warn
+          retention-days: 7
