@@ -1,0 +1,62 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3L_DEVELOPMENT_RESULT_V1",
+  "status": "RETIRED_NO_2023_GATE_PASS__2024_NOT_OPENED_FOR_R3L",
+  "preregistration": "TEACHER_ECONOMIC_R3L_DUAL_PATH_OPENING_ROUTER_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "method": {
+    "checkpoints_ist": ["09:45","10:00","10:15","10:30","10:45","11:00"],
+    "adaptive_history_dates_same_checkpoint": 126,
+    "minimum_history_dates": 120,
+    "dislocation_quantile": 0.60,
+    "wick_quantile": 0.60,
+    "specialists": ["CONT","REJECT"],
+    "one_trade_at_a_time": true
+  },
+  "development_year": 2023,
+  "candidate_count_2023": 47,
+  "development_2023": {
+    "net3": {
+      "n": 44,
+      "mean": 0.6268096212864098,
+      "pf": 1.0723189961438089,
+      "sum": 27.579623336602033,
+      "win": 0.5454545454545454,
+      "H1": {"n":20,"mean":1.6295655434280263,"pf":1.181434108649056,"sum":32.59131086856053,"win":0.65},
+      "H2": {"n":24,"mean":-0.2088203138316047,"pf":0.9751563408188786,"sum":-5.011687531958513,"win":0.4583333333333333},
+      "active_months": 11,
+      "positive_month_frac": 0.5454545454545454,
+      "rm_top1": {"n":43,"mean":-0.5904388399540887,"pf":0.933425573737825,"sum":-25.388870118025814,"win":0.5348837209302325}
+    },
+    "net5": {
+      "n": 44,
+      "mean": -1.3731903787135904,
+      "pf": 0.8574491957999292,
+      "sum": -60.420376663397974,
+      "win": 0.5,
+      "H1": {"n":20,"mean":-0.3704344565719735,"pf":0.9622241737726005,"sum":-7.40868913143947,"win":0.55},
+      "H2": {"n":24,"mean":-2.208820313831605,"pf":0.7672159537099964,"sum":-53.011687531958515,"win":0.4583333333333333},
+      "active_months": 11,
+      "positive_month_frac": 0.45454545454545453,
+      "rm_top1": {"n":43,"mean":-2.5904388399540887,"pf":0.7371983775817657,"sum":-111.3888701180258,"win":0.4883720930232558}
+    },
+    "pass": false,
+    "specialists": {
+      "CONT": {"n":35,"net3":{"n":35,"mean":0.4168116352231473,"pf":1.041863094810379,"sum":14.588407232810155,"win":0.5142857142857142},"net5":{"n":35,"mean":-1.5831883647768528,"pf":0.8556420753938673,"sum":-55.411592767189845,"win":0.4857142857142857}},
+      "REJECT": {"n":9,"net3":{"n":9,"mean":1.4434684559768731,"pf":1.3950888675714717,"sum":12.991216103791858,"win":0.6666666666666666},"net5":{"n":9,"mean":-0.5565315440231269,"pf":0.8747894592284747,"sum":-5.008783896208142,"win":0.5555555555555556}}
+    }
+  },
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "next_authorized_step": "Preregister a structurally distinct R3M before any R3M output; do not open R3L 2024."
+}
