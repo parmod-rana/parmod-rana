@@ -1,0 +1,23 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3H_DEVELOPMENT_RESULT_V1",
+  "preregistration": "TEACHER_ECONOMIC_R3H_OPENING_DISLOCATION_ROUTER_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "boundary": {"teacher_v2_changed":false,"student_optimizer_steps":0,"2025_used":false,"2026_used":false,"real_orders":false,"gpu_used":false},
+  "calibration_year": 2023,
+  "calibration_grid": {
+    "0.5": {"candidates":65,"net3":{"n":47,"mean":-2.5361080794334683,"pf":0.7623764903519205,"H1_n":25,"H1_mean":-4.5676646611059395,"H1_pf":0.6366838117145278,"H2_n":22,"H2_mean":-0.2275210548056605,"H2_pf":0.9732782430866864,"active_months":12,"positive_month_frac":0.3333333333333333,"rm_top1_mean":-3.742729851913063,"rm_top1_pf":0.6567819628382067},"net5":{"mean":-4.536108079433468,"pf":0.616617829970277},"pass":false},
+    "0.6": {"candidates":44,"net3":{"n":33,"mean":0.9239399323965815,"pf":1.1093391643331767,"H1_n":17,"H1_mean":-1.545589721303414,"H1_pf":0.8582033587815481,"H2_n":16,"H2_mean":3.547815189452827,"H2_pf":1.6067462298560564,"active_months":12,"positive_month_frac":0.5,"rm_top1_mean":-0.7024523651731456,"rm_top1_pf":0.9193907407481897},"net5":{"mean":-1.0760600676034184,"pf":0.885490995340436},"pass":false},
+    "0.7": {"candidates":23,"net3":{"n":15,"mean":6.00117672787526,"pf":2.6152758434801706,"H1_n":5,"H1_mean":3.0549744551734443,"H1_pf":1.4686520299908647,"H2_n":10,"H2_mean":7.474277864226167,"H2_pf":4.230617138037754,"active_months":9,"positive_month_frac":0.5555555555555556,"rm_top1_mean":4.2351622165332605,"rm_top1_pf":2.063939928729217},"net5":{"n":15,"mean":4.00117672787526,"pf":1.8877235242030805,"H1_mean":1.0549744551734441,"H1_pf":1.1371067636072925,"H2_mean":5.474277864226166,"H2_pf":2.8788863251086996,"rm_top1_mean":2.2351622165332605,"rm_top1_pf":1.462845257943606},"pass":false,"failure_reasons":["trades_below_60","H1_trades_below_15","H2_trades_below_15","positive_month_fraction_below_0.60"]}
+  },
+  "selected_q": null,
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "status": "RETIRED_NO_2023_CALIBRATION_PASS__2024_NOT_OPENED_FOR_R3H",
+  "research_learning_for_next_distinct_candidate": "The preregistered Q0.70 structural opening-dislocation cell produced positive net3 and net5 in both halves and remained positive after top-1-percent removal, but evidence count and monthly-consistency gates were insufficient. This is a promising sparse pocket, not proof and not authorization to open 2024 or claim edge.",
+  "workflow_run_id": 34294801019,
+  "workflow_artifact_id": 10082730014,
+  "workflow_artifact_sha256": "b65ffc0cacbfcc7e1c38339446921864d0d4118d2e37fb7eb5029b53b6283394"
+}
