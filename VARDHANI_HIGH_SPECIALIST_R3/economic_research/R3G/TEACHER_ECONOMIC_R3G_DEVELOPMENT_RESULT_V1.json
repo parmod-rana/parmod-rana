@@ -1,0 +1,52 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3G_DEVELOPMENT_RESULT_V1",
+  "preregistration": "TEACHER_ECONOMIC_R3G_ONLINE_SPECIALIST_HEALTH_GATE_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "feature_count": 42,
+  "method": {
+    "training_window_trading_dates": 126,
+    "health_lookback_completed_candidates": 40,
+    "health_minimum_completed_candidates": 20,
+    "health_value": "gross_underlying_minus_3bps",
+    "health_activation": "mean>0 and PF>1",
+    "horizons": [15,30,60],
+    "q_grid": [0.90,0.95,0.975],
+    "sign_inversion": false
+  },
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "calibration_year": 2023,
+  "calibration_grid": {
+    "0.9": {
+      "net3": {"n":806,"mean":-3.050080343061787,"pf":0.5809364704787137,"H1_n":400,"H1_mean":-2.90928430987226,"H1_pf":0.6496837100919105,"H2_n":406,"H2_mean":-3.1887956466967893,"H2_pf":0.49118331899119394,"active_months":12,"positive_month_frac":0.0,"rm_top1_mean":-3.6171799494740813,"rm_top1_pf":0.5085696418953135},
+      "net5": {"n":806,"mean":-5.050080343061786,"pf":0.4081273739746154},
+      "pass": false
+    },
+    "0.95": {
+      "net3": {"n":508,"mean":-2.4668738884794927,"pf":0.6398394456688484,"H1_n":250,"H1_mean":-2.7681809029021816,"H1_pf":0.6403470149522126,"H2_n":258,"H2_mean":-2.174909727217198,"H2_pf":0.6392114770930643,"active_months":12,"positive_month_frac":0.16666666666666666,"rm_top1_mean":-3.167480973562603,"rm_top1_pf":0.5430136608640663},
+      "net5": {"n":508,"mean":-4.466873888479493,"pf":0.45027816337068427},
+      "pass": false
+    },
+    "0.975": {
+      "net3": {"n":303,"mean":-2.7282682057792993,"pf":0.6332360958630043,"H1_n":151,"H1_mean":-2.4279107078180946,"H1_pf":0.6974024716148511,"H2_n":152,"H2_mean":-3.026649667569707,"H2_pf":0.5586559300433656,"active_months":12,"positive_month_frac":0.5,"rm_top1_mean":-3.4151171114130547,"rm_top1_pf":0.5469629860847057},
+      "net5": {"n":303,"mean":-4.728268205779298,"pf":0.4495826948523103},
+      "pass": false
+    }
+  },
+  "selected_q": null,
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "status": "RETIRED_NO_2023_CALIBRATION_PASS__2024_NOT_OPENED_FOR_R3G",
+  "workflow_run_id": 34294304355,
+  "workflow_artifact_id": 10082592569,
+  "workflow_artifact_sha256": "7ae61ee40d9b0371d6a5dbbadde9b8dc6f0a5f7bb8a53e119d2a983bf587d346"
+}
