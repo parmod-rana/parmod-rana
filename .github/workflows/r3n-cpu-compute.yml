@@ -1,0 +1,87 @@
+name: VARDHANI R3N CPU compute
+
+on:
+  push:
+    branches: [r3e-economic-router-freeze]
+    paths:
+      - '.github/workflows/r3n-cpu-compute.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Frozen R3N preflight
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3N
+        run: |
+          python -m py_compile r3n_runner.py r3n_exact_member_cpu.py
+          python - <<'PY'
+          import json,sys
+          from pathlib import Path
+          import r3n_runner as r
+          here=Path.cwd(); sys.path.insert(0,str(here.parent/'R3E'))
+          from r3e_authorized_source_manifest import ROWS
+          p=json.load(open('TEACHER_ECONOMIC_R3N_FAILED_EXTREME_REVERSION_PREREG_V1.json'))
+          assert p['status']=='FROZEN_BEFORE_ANY_R3N_OUTPUT'
+          assert len(ROWS)==108 and {x[1] for x in ROWS}=={2022,2023,2024}
+          assert len(r.CHECKPOINTS)==55 and r.CHECKPOINTS[0]=='10:00' and r.CHECKPOINTS[-1]=='14:30'
+          assert r.LOOKBACK_DATES==126 and r.MIN_HISTORY==120 and r.WICK_Q==0.60
+          assert r.MAX_TRADES_PER_DATE==2 and r.HORIZONS==(15,30)
+          assert tuple(p['signal']['checkpoints_ist'])==r.CHECKPOINTS
+          assert p['signal']['same_timestamp_conflict']=='if both failed-high and failed-low conditions are true at one timestamp, emit WAIT'
+          assert p['horizon_router']['if_at_or_above_median']==30 and p['horizon_router']['if_below_median']==15
+          h=p['hard_boundaries']
+          assert h['teacher_v2_changed'] is False and h['student_optimizer_steps']==0
+          assert h['gpu_allowed'] is False and h['real_orders'] is False
+          assert h['2025_used'] is False and h['2026_used'] is False and h['economic_edge_claimed'] is False
+          print('R3N_FROZEN_PREFLIGHT_PASS')
+          PY
+
+  compute:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Execute preregistered R3N on CPU
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3N
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          NUMEXPR_NUM_THREADS: '1'
+        run: |
+          python r3n_exact_member_cpu.py --work "$RUNNER_TEMP/r3n_exact_cpu_work" | tee "$RUNNER_TEMP/r3n_compute.log"
+      - name: Publish result summary
+        if: always()
+        run: |
+          echo '--- R3N RESULT FILE ---'
+          if [ -f "$RUNNER_TEMP/r3n_exact_cpu_work/TEACHER_ECONOMIC_R3N_DEVELOPMENT_RESULT_V1.json" ]; then
+            cat "$RUNNER_TEMP/r3n_exact_cpu_work/TEACHER_ECONOMIC_R3N_DEVELOPMENT_RESULT_V1.json"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vardhani-r3n-cpu-result
+          path: |
+            ${{ runner.temp }}/r3n_exact_cpu_work/TEACHER_ECONOMIC_R3N_DEVELOPMENT_RESULT_V1.json
+            ${{ runner.temp }}/r3n_exact_cpu_work/R3N_EXACT_MEMBER_RECONSTRUCTION_AUDIT_V1.json
+            ${{ runner.temp }}/r3n_exact_cpu_work/R3N_2023_FROZEN_TRADES.csv
+            ${{ runner.temp }}/r3n_exact_cpu_work/R3N_2024_AUDIT_TRADES.csv
+            ${{ runner.temp }}/r3n_compute.log
+          if-no-files-found: warn
+          retention-days: 7
