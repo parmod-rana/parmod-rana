@@ -1,0 +1,61 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3N_DEVELOPMENT_RESULT_V1",
+  "preregistration": "TEACHER_ECONOMIC_R3N_FAILED_EXTREME_REVERSION_PREREG_V1.json",
+  "source_authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+  "authorized_member_count": 108,
+  "authorized_years": [2022, 2023, 2024],
+  "all_members_byte_identical_to_locked_manifest": true,
+  "method": {
+    "checkpoints_ist": ["10:00","10:05","10:10","10:15","10:20","10:25","10:30","10:35","10:40","10:45","10:50","10:55","11:00","11:05","11:10","11:15","11:20","11:25","11:30","11:35","11:40","11:45","11:50","11:55","12:00","12:05","12:10","12:15","12:20","12:25","12:30","12:35","12:40","12:45","12:50","12:55","13:00","13:05","13:10","13:15","13:20","13:25","13:30","13:35","13:40","13:45","13:50","13:55","14:00","14:05","14:10","14:15","14:20","14:25","14:30"],
+    "adaptive_history_dates_same_checkpoint": 126,
+    "minimum_history_dates": 120,
+    "wick_quantile": 0.6,
+    "horizons": [15, 30],
+    "max_trades_per_date": 2,
+    "one_trade_at_a_time": true,
+    "same_timestamp_conflict": "WAIT"
+  },
+  "boundary": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "2025_used": false,
+    "2026_used": false,
+    "real_orders": false,
+    "gpu_used": false
+  },
+  "development_year": 2023,
+  "candidate_count_2023": 5,
+  "development_2023": {
+    "net3": {
+      "n": 5,
+      "mean": 0.07278126405852134,
+      "pf": 1.0174784669678536,
+      "sum": 0.3639063202926067,
+      "win": 0.4,
+      "H1": {"n": 1, "mean": -12.54079727879975, "pf": 0.0, "sum": -12.54079727879975, "win": 0.0},
+      "H2": {"n": 4, "mean": 3.2261758997730894, "pf": 2.5586392118728614, "sum": 12.904703599092358, "win": 0.5},
+      "active_months": 5,
+      "positive_month_frac": 0.4,
+      "rm_top1": {"n": 4, "mean": -3.375987516229026, "pf": 0.35140355640045745, "sum": -13.503950064916104, "win": 0.25}
+    },
+    "net5": {
+      "n": 5,
+      "mean": -1.9272187359414787,
+      "pf": 0.6407159455105025,
+      "sum": -9.636093679707393,
+      "win": 0.4,
+      "H1": {"n": 1, "mean": -14.54079727879975, "pf": 0.0, "sum": -14.54079727879975, "win": 0.0},
+      "H2": {"n": 4, "mean": 1.2261758997730894, "pf": 1.3994231320220007, "sum": 4.9047035990923575, "win": 0.5},
+      "active_months": 5,
+      "positive_month_frac": 0.4,
+      "rm_top1": {"n": 4, "mean": -5.375987516229026, "pf": 0.19822008547582354, "sum": -21.503950064916104, "win": 0.25}
+    },
+    "pass": false
+  },
+  "audit_2024_opened": false,
+  "economic_edge_claimed": false,
+  "status": "RETIRED_NO_2023_GATE_PASS__2024_NOT_OPENED_FOR_R3N",
+  "workflow_run_id": 34305627861,
+  "artifact_id": 10086576993,
+  "artifact_zip_sha256": "cad973aeabfcda0a1a17d7e82a4fe74c6e79eaed3c08a4b1d182b088c2d81c76"
+}
