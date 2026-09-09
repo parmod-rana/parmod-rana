@@ -1,0 +1,98 @@
+{
+  "format": "VARDHANI_R3_TEACHER_ECONOMIC_R3H_OPENING_DISLOCATION_ROUTER_PREREG_V1",
+  "status": "FROZEN_BEFORE_ANY_R3H_OUTPUT",
+  "project": "VARDHANI HIGH-SPECIALIST R3 — GPT-5.6 SOL TEACHER / STUDENT-250 V2",
+  "purpose": "Move away from dense supervised minute ranking after R3E/R3F/R3G failed. Test a sparse structural opening-session hypothesis designed for larger gross movement: when an unusually large opening dislocation is followed by unusually strong 30-minute directional movement confirmed by SENSEX and inverse VIX, follow the current opening direction with a horizon chosen causally from trend efficiency.",
+  "source": {
+    "authority": "R3E_EXACT_MEMBER_RECONSTRUCTION_AUTHORITY_V1.json",
+    "archive_sha256": "bd7df469f6e7d95bee62a7c51d794a9119478cbc3c95b1e68debcafb4adc5b20",
+    "markets": ["NIFTY", "SENSEX", "India VIX"],
+    "resolution": "1 minute",
+    "authorized_years": [2022, 2023, 2024],
+    "authorized_monthly_members": 108,
+    "require_byte_identity_to_locked_manifest": true,
+    "2025_content_allowed": false,
+    "2026_content_allowed": false
+  },
+  "signal": {
+    "checkpoints_ist": ["09:45", "10:00", "10:15"],
+    "candidate_direction": "sign of NIFTY causal 30-minute return at the checkpoint; positive=CE, negative=PE",
+    "opening_gap_measure": "absolute NIFTY opening gap in bps versus prior session close",
+    "momentum_measure": "absolute NIFTY causal 30-minute return in bps",
+    "adaptive_history": "previous 126 completed trading-date checkpoint observations of the same clock checkpoint only",
+    "minimum_history_dates": 120,
+    "extremity_quantile_grid": [0.50, 0.60, 0.70],
+    "gap_condition": "abs opening gap >= prior-history quantile Q",
+    "momentum_condition": "abs NIFTY 30-minute return >= prior-history quantile Q",
+    "sensex_confirmation": "SENSEX causal 15-minute return has the same sign as candidate direction",
+    "vix_confirmation": "India VIX causal 15-minute return has the opposite sign to candidate direction",
+    "session_location_confirmation": "CE requires NIFTY session_pos >= 0.65; PE requires session_pos <= 0.35",
+    "no_future_values_in_signal": true
+  },
+  "horizon_router": {
+    "trend_measure": "NIFTY causal trend_eff_30 at checkpoint",
+    "trend_threshold": "median trend_eff_30 over previous 126 completed trading-date observations at the same checkpoint",
+    "if_at_or_above_median": 120,
+    "if_below_median": 60,
+    "horizons_minutes": [60, 120],
+    "entry": "next genuine same-session minute open after checkpoint",
+    "exit": "same-session NIFTY close at t+h",
+    "cross_session_targets": false
+  },
+  "execution": {
+    "one_trade_at_a_time": true,
+    "checkpoint_order": "chronological",
+    "if_multiple_same_timestamp": "not possible after deterministic direction/horizon router",
+    "fixed_costs_bps": [3.0, 5.0],
+    "real_orders": false
+  },
+  "calibration": {
+    "year": 2023,
+    "q_grid": [0.50, 0.60, 0.70],
+    "selection_rule": "Among Q values passing every gate, choose highest worst-half net3 mean, then highest overall net3 mean, then highest net5 mean, then stricter Q.",
+    "if_none_pass": "Retire R3H and do not open 2024 for R3H. Preregister a distinct R3I before any R3I output."
+  },
+  "year_gate": {
+    "minimum_trades": 60,
+    "minimum_H1_trades": 15,
+    "minimum_H2_trades": 15,
+    "net3_mean_gt": 0,
+    "net3_pf_gt": 1,
+    "net5_mean_gt": 0,
+    "net5_pf_gt": 1,
+    "H1_net3_mean_gt": 0,
+    "H1_net3_pf_gt": 1,
+    "H2_net3_mean_gt": 0,
+    "H2_net3_pf_gt": 1,
+    "remove_top_1_percent_net3_mean_gt": 0,
+    "remove_top_1_percent_net3_pf_gt": 1,
+    "minimum_active_months": 8,
+    "minimum_positive_month_fraction": 0.60
+  },
+  "audit_2024": {
+    "opened_only_if_2023_gate_passes": true,
+    "selected_q_frozen_before_open": true,
+    "same_signal_horizon_execution_and_gate_logic": true,
+    "retune_after_open": false
+  },
+  "option_gate": {
+    "run_only_if_2023_and_2024_underlying_gates_pass": true,
+    "data": "genuine 2024 full-chain NIFTY option candles from authorized Sep-Oct expiry weeks",
+    "premium_cost_bps": 100,
+    "minimum_trades": 20,
+    "mean_net_gt": 0,
+    "pf_gt": 1,
+    "minimum_positive_weeks": 3,
+    "total_weeks": 5,
+    "remove_top_1_percent_still_positive": true
+  },
+  "hard_boundaries": {
+    "teacher_v2_changed": false,
+    "student_optimizer_steps": 0,
+    "gpu_allowed": false,
+    "real_orders": false,
+    "2025_used": false,
+    "2026_used": false,
+    "economic_edge_claimed": false
+  }
+}
