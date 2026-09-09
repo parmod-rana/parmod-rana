@@ -1,0 +1,86 @@
+name: VARDHANI R3J CPU compute
+
+on:
+  push:
+    branches: [r3e-economic-router-freeze]
+    paths:
+      - '.github/workflows/r3j-cpu-compute.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Frozen R3J preflight
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3J
+        run: |
+          python -m py_compile r3j_runner.py r3j_exact_member_cpu.py
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          import r3j_runner as r
+          here=Path.cwd(); sys.path.insert(0,str(here.parent/'R3E'))
+          from r3e_authorized_source_manifest import ROWS
+          p=json.load(open('TEACHER_ECONOMIC_R3J_DENSE_OPEN_FIRST_EVENT_PREREG_V1.json'))
+          assert p['status']=='FROZEN_BEFORE_ANY_R3J_OUTPUT'
+          assert len(ROWS)==108 and {x[1] for x in ROWS}=={2022,2023,2024}
+          assert r.CHECKPOINT_STRINGS==('09:45','09:50','09:55','10:00','10:05','10:10','10:15','10:20','10:25','10:30')
+          assert r.FIXED_Q==0.70
+          assert r.LOOKBACK_DATES==126 and r.MIN_HISTORY==120
+          assert r.HORIZONS==(60,120)
+          assert p['signal']['first_event_per_date'] is True
+          h=p['hard_boundaries']
+          assert h['teacher_v2_changed'] is False and h['student_optimizer_steps']==0
+          assert h['gpu_allowed'] is False and h['2025_used'] is False and h['2026_used'] is False
+          assert h['economic_edge_claimed'] is False
+          print('R3J_FROZEN_PREFLIGHT_PASS')
+          PY
+
+  compute:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned research dependencies
+        run: pip install -r VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3E/requirements-r3e.txt
+      - name: Execute preregistered R3J on CPU
+        working-directory: VARDHANI_HIGH_SPECIALIST_R3/economic_research/R3J
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          NUMEXPR_NUM_THREADS: '1'
+        run: |
+          python r3j_exact_member_cpu.py --work "$RUNNER_TEMP/r3j_exact_cpu_work" | tee "$RUNNER_TEMP/r3j_compute.log"
+      - name: Publish result summary
+        if: always()
+        run: |
+          echo '--- R3J RESULT FILE ---'
+          if [ -f "$RUNNER_TEMP/r3j_exact_cpu_work/TEACHER_ECONOMIC_R3J_DEVELOPMENT_RESULT_V1.json" ]; then
+            cat "$RUNNER_TEMP/r3j_exact_cpu_work/TEACHER_ECONOMIC_R3J_DEVELOPMENT_RESULT_V1.json"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vardhani-r3j-cpu-result
+          path: |
+            ${{ runner.temp }}/r3j_exact_cpu_work/TEACHER_ECONOMIC_R3J_DEVELOPMENT_RESULT_V1.json
+            ${{ runner.temp }}/r3j_exact_cpu_work/R3J_EXACT_MEMBER_RECONSTRUCTION_AUDIT_V1.json
+            ${{ runner.temp }}/r3j_exact_cpu_work/R3J_2023_FROZEN_TRADES.csv
+            ${{ runner.temp }}/r3j_exact_cpu_work/R3J_2024_AUDIT_TRADES.csv
+            ${{ runner.temp }}/r3j_compute.log
+          if-no-files-found: warn
+          retention-days: 7
